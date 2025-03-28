@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { STATS_DEFINITIONS } from "@/lib/theme";
 import { Hero } from "@/lib/types";
 import { getHeroById } from "@/lib/storage";
 import { useToast } from "@/hooks/use-toast";
+import HeroSubnav from "@/components/hero/HeroSubnav";
 
 export default function StatsPage() {
   const [, navigate] = useLocation();
@@ -49,21 +49,14 @@ export default function StatsPage() {
   
   return (
     <div className="space-y-6">
-      {/* Header mit Zurück-Link */}
+      {/* Hero Subnav */}
+      <HeroSubnav heroId={heroId} activeTab="stats" />
+      
+      {/* Hero Info */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate(`/hero/${heroId}`)}
-            className="text-[#f5f5f5]/70 hover:text-[#f5f5f5]"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <h2 className="font-['Cinzel_Decorative'] text-2xl text-[#d4af37]">
-            {hero.name} - Attribute & Statistiken
-          </h2>
-        </div>
+        <h2 className="font-['Cinzel_Decorative'] text-2xl text-[#d4af37]">
+          {hero.name} - Attribute & Statistiken
+        </h2>
       </div>
       
       {/* Stats Content */}

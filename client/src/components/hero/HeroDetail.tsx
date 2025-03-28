@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
-import { ChevronRight, Edit, MoreHorizontal, ChevronUp, ChevronDown } from "lucide-react";
+import { ChevronRight, Edit, MoreHorizontal, ChevronUp, ChevronDown, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { 
   DropdownMenu,
@@ -28,6 +28,8 @@ import { STATS_DEFINITIONS } from "@/lib/theme";
 import NpcCard from "@/components/npc/NpcCard";
 import QuestItem from "@/components/quest/QuestItem";
 import { useToast } from "@/hooks/use-toast";
+import HeroSubnav from "@/components/hero/HeroSubnav";
+import DeleteHeroDialog from "@/components/hero/DeleteHeroDialog";
 
 interface HeroDetailProps {
   heroId: string;
@@ -94,9 +96,14 @@ export default function HeroDetail({ heroId }: HeroDetailProps) {
     );
   }
   
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  
   return (
     <div className="space-y-6">
-      {/* Hero Header */}
+      {/* Hero Subnav Bar */}
+      <HeroSubnav heroId={heroId} activeTab={activeTab} />
+      
+      {/* Hero Card */}
       <div className="flex flex-col md:flex-row md:items-end gap-6 bg-gradient-to-br from-[#1e1e2f] via-[#1e1e2f] to-[#7f5af0]/10 rounded-xl p-6 border border-[#d4af37]/20">
         <div className="flex-shrink-0">
           <div className="h-28 w-28 md:h-32 md:w-32 rounded-full overflow-hidden border-4 border-[#d4af37]/60 shadow-[0_0_10px_rgba(212,175,55,0.3)]">
@@ -133,82 +140,27 @@ export default function HeroDetail({ heroId }: HeroDetailProps) {
               <div className="mt-1 text-sm text-[#d4af37]/80">{hero.system}</div>
             </div>
             <div className="flex gap-2">
-              <Link href={`/hero/${hero.id}/edit`}>
-                <Button 
-                  variant="outline"
-                  className="px-3 py-1.5 bg-[#7f5af0]/20 hover:bg-[#7f5af0]/30 border border-[#7f5af0]/40 rounded-lg transition-colors flex items-center text-sm"
-                >
-                  <Edit className="h-4 w-4 mr-1" />
-                  Bearbeiten
-                </Button>
-              </Link>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button 
-                    variant="outline"
-                    className="p-1.5 bg-[#7f5af0]/20 hover:bg-[#7f5af0]/30 border border-[#7f5af0]/40 rounded-lg transition-colors"
-                  >
-                    <MoreHorizontal className="h-5 w-5" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem 
-                    className="text-red-500 focus:text-red-500"
-                    onClick={handleDeleteHero}
-                  >
-                    Held löschen
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate(`/hero/${heroId}/edit`)}
+                className="bg-[#1e1e2f]/80 hover:bg-[#1e1e2f] border border-[#d4af37]/40 text-[#f5f5f5] transition-colors"
+              >
+                <Edit className="h-4 w-4 mr-1" />
+                <span>Bearbeiten</span>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsDeleteDialogOpen(true)}
+                className="bg-[#1e1e2f]/80 hover:bg-[#1e1e2f] border border-[#7f5af0]/40 text-[#f5f5f5] transition-colors"
+              >
+                <Trash2 className="h-4 w-4 mr-1" />
+                <span>Löschen</span>
+              </Button>
             </div>
           </div>
         </div>
-      </div>
-      
-      {/* Hero Tabs Navigation */}
-      <div className="border-b border-[#d4af37]/20">
-        <nav className="flex overflow-x-auto hide-scrollbar space-x-6 px-2">
-          <button 
-            className={`py-2 px-1 font-medium ${activeTab === 'overview' 
-              ? 'text-[#d4af37] border-b-2 border-[#d4af37]' 
-              : 'text-[#f5f5f5]/70 hover:text-[#d4af37]'}`}
-            onClick={() => setActiveTab('overview')}
-          >
-            Übersicht
-          </button>
-          <button 
-            className={`py-2 px-1 font-medium ${activeTab === 'stats' 
-              ? 'text-[#d4af37] border-b-2 border-[#d4af37]' 
-              : 'text-[#f5f5f5]/70 hover:text-[#d4af37]'}`}
-            onClick={() => navigate(`/hero/${hero.id}/stats`)}
-          >
-            Attribute
-          </button>
-          <button 
-            className={`py-2 px-1 font-medium ${activeTab === 'npcs' 
-              ? 'text-[#d4af37] border-b-2 border-[#d4af37]' 
-              : 'text-[#f5f5f5]/70 hover:text-[#d4af37]'}`}
-            onClick={() => navigate(`/hero/${hero.id}/npcs`)}
-          >
-            NPCs
-          </button>
-          <button 
-            className={`py-2 px-1 font-medium ${activeTab === 'sessions' 
-              ? 'text-[#d4af37] border-b-2 border-[#d4af37]' 
-              : 'text-[#f5f5f5]/70 hover:text-[#d4af37]'}`}
-            onClick={() => navigate(`/hero/${hero.id}/sessions`)}
-          >
-            Sessions
-          </button>
-          <button 
-            className={`py-2 px-1 font-medium ${activeTab === 'quests' 
-              ? 'text-[#d4af37] border-b-2 border-[#d4af37]' 
-              : 'text-[#f5f5f5]/70 hover:text-[#d4af37]'}`}
-            onClick={() => navigate(`/hero/${hero.id}/quests`)}
-          >
-            Aufträge
-          </button>
-        </nav>
       </div>
       
       {/* Hero Overview Tab Content */}
@@ -261,28 +213,42 @@ export default function HeroDetail({ heroId }: HeroDetailProps) {
         
         {/* Hero Backstory */}
         <div className="bg-[#1e1e2f]/80 rounded-xl border border-[#d4af37]/30 p-5 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2720%27%20height%3D%2720%27%20viewBox%3D%270%200%2020%2020%27%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%3E%3Cg%20fill%3D%27%237f5af0%27%20fill-opacity%3D%270.05%27%20fill-rule%3D%27evenodd%27%3E%3Ccircle%20cx%3D%273%27%20cy%3D%273%27%20r%3D%271%27%2F%3E%3Ccircle%20cx%3D%2713%27%20cy%3D%2713%27%20r%3D%271%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E')]">
-          <h3 className="font-['Cinzel_Decorative'] text-xl text-[#d4af37] mb-3">Hintergrundgeschichte</h3>
-          <div className="prose prose-sm prose-invert max-w-none">
-            <p className="whitespace-pre-line">
-              {hero.backstory || "Keine Hintergrundgeschichte verfügbar."}
-            </p>
-          </div>
-          {hero.tags && hero.tags.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-4">
-              {hero.tags.map((tag, index) => (
-                <span 
-                  key={index}
-                  className={`text-xs rounded-full px-2 py-0.5 ${
-                    index % 3 === 0 ? "bg-[#7f5af0]/20 border border-[#7f5af0]/40" :
-                    index % 3 === 1 ? "bg-[#d4af37]/20 border border-[#d4af37]/40" :
-                    "bg-[#43ffaf]/20 border border-[#43ffaf]/40"
-                  }`}
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          )}
+          <Accordion type="single" collapsible defaultValue="backstory" className="w-full">
+            <AccordionItem value="backstory" className="border-0">
+              <AccordionTrigger className="py-0 hover:no-underline">
+                <h3 className="font-['Cinzel_Decorative'] text-xl text-[#d4af37] flex items-center">
+                  <span>Hintergrundgeschichte</span>
+                </h3>
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="prose prose-sm prose-invert max-w-none mt-3">
+                  {hero.backstory ? (
+                    <div className="whitespace-pre-line">
+                      {hero.backstory}
+                    </div>
+                  ) : (
+                    <p>Keine Hintergrundgeschichte verfügbar.</p>
+                  )}
+                </div>
+                {hero.tags && hero.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-4">
+                    {hero.tags.map((tag, index) => (
+                      <span 
+                        key={index}
+                        className={`text-xs rounded-full px-2 py-0.5 ${
+                          index % 3 === 0 ? "bg-[#7f5af0]/20 border border-[#7f5af0]/40" :
+                          index % 3 === 1 ? "bg-[#d4af37]/20 border border-[#d4af37]/40" :
+                          "bg-[#43ffaf]/20 border border-[#43ffaf]/40"
+                        }`}
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         </div>
         
         {/* Current Session Summary */}
@@ -359,6 +325,20 @@ export default function HeroDetail({ heroId }: HeroDetailProps) {
           </div>
         )}
       </div>
+      
+      {/* Delete Hero Dialog */}
+      <DeleteHeroDialog
+        hero={hero}
+        isOpen={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        onDeleted={() => {
+          navigate('/');
+          toast({
+            title: 'Held gelöscht',
+            description: `${hero.name} wurde erfolgreich gelöscht.`,
+          });
+        }}
+      />
     </div>
   );
 }
