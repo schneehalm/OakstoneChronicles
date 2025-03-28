@@ -177,6 +177,14 @@ export default function HeroDetail({ heroId }: HeroDetailProps) {
             Übersicht
           </button>
           <button 
+            className={`py-2 px-1 font-medium ${activeTab === 'stats' 
+              ? 'text-[#d4af37] border-b-2 border-[#d4af37]' 
+              : 'text-[#f5f5f5]/70 hover:text-[#d4af37]'}`}
+            onClick={() => navigate(`/hero/${hero.id}/stats`)}
+          >
+            Attribute
+          </button>
+          <button 
             className={`py-2 px-1 font-medium ${activeTab === 'npcs' 
               ? 'text-[#d4af37] border-b-2 border-[#d4af37]' 
               : 'text-[#f5f5f5]/70 hover:text-[#d4af37]'}`}

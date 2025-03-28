@@ -10,6 +10,7 @@ import EditHero from "@/pages/edit-hero";
 import Npcs from "@/pages/npcs";
 import Sessions from "@/pages/sessions";
 import Quests from "@/pages/quests";
+import Stats from "@/pages/stats";
 import Header from "@/components/layout/Header";
 import MobileNavigation from "@/components/layout/MobileNavigation";
 
@@ -22,6 +23,7 @@ function Router() {
       <Route path="/hero/:id/npcs" component={Npcs} />
       <Route path="/hero/:id/sessions" component={Sessions} />
       <Route path="/hero/:id/quests" component={Quests} />
+      <Route path="/hero/:id/stats" component={Stats} />
       <Route path="/hero/:id" component={HeroDetail} />
       <Route component={NotFound} />
     </Switch>
