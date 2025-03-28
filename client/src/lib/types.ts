@@ -8,6 +8,8 @@ export interface Hero {
   age?: number;
   portrait?: string;
   backstory?: string;
+  backstoryPdf?: string; // Base64 encoded PDF
+  backstoryPdfName?: string; // Original filename of the PDF
   tags: string[];
   stats?: HeroStats;
   createdAt: string;

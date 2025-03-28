@@ -43,6 +43,8 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
   const [portraitPreview, setPortraitPreview] = useState<string | null>(existingHero?.portrait || null);
   const [selectedSystem, setSelectedSystem] = useState<string>(existingHero?.system || '');
   const [stats, setStats] = useState<HeroStats>(existingHero?.stats || {});
+  const [backstoryPdf, setBackstoryPdf] = useState<string | null>(existingHero?.backstoryPdf || null);
+  const [backstoryPdfName, setBackstoryPdfName] = useState<string | null>(existingHero?.backstoryPdfName || null);
   
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<Hero>({
     defaultValues: {
@@ -139,6 +141,10 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
       
       // Make sure stats are included
       data.stats = stats;
+      
+      // Add backstory PDF information
+      data.backstoryPdf = backstoryPdf || undefined;
+      data.backstoryPdfName = backstoryPdfName || undefined;
       
       // Save hero
       const savedHero = saveHero(data);
@@ -302,14 +308,77 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
         
         {/* Backstory */}
         <div className="mb-6">
-          <Label htmlFor="heroBackstory" className="block text-[#d4af37] mb-1">Hintergrundgeschichte</Label>
+          <div className="flex justify-between items-center mb-1">
+            <Label htmlFor="heroBackstory" className="block text-[#d4af37]">Hintergrundgeschichte</Label>
+            <span className="text-xs text-[#f5f5f5]/70">
+              {watch('backstory')?.length || 0}/250 Zeichen
+            </span>
+          </div>
           <Textarea
             id="heroBackstory"
             rows={5}
-            placeholder="Erzähle die Geschichte deines Helden..."
+            placeholder="Erzähle die Geschichte deines Helden... (max. 250 Zeichen)"
             className="w-full bg-[#1e1e2f] border border-[#7f5af0]/40 rounded-lg focus:border-[#7f5af0] focus:ring-1 focus:ring-[#7f5af0]"
-            {...register('backstory')}
+            maxLength={250}
+            {...register('backstory', { maxLength: 250 })}
           />
+          
+          <div className="mt-3">
+            <Label className="block text-[#d4af37] mb-1 text-sm">PDF-Hintergrundgeschichte (optional)</Label>
+            <div className="flex items-center gap-3">
+              <div className="relative flex-grow">
+                <Input
+                  type="file"
+                  id="backstoryPdf"
+                  accept=".pdf"
+                  className="absolute inset-0 opacity-0 cursor-pointer z-10"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      const reader = new FileReader();
+                      reader.onload = (event) => {
+                        const result = event.target?.result as string;
+                        setBackstoryPdf(result);
+                        setBackstoryPdfName(file.name);
+                        setValue('backstoryPdf', result);
+                        setValue('backstoryPdfName', file.name);
+                      };
+                      reader.readAsDataURL(file);
+                    }
+                  }}
+                />
+                <div className="w-full bg-[#1e1e2f] border border-[#7f5af0]/40 rounded-lg px-4 py-2 text-sm flex items-center justify-between">
+                  <span className="text-[#f5f5f5]/80 truncate">
+                    {backstoryPdfName || "Wähle eine PDF-Datei..."}
+                  </span>
+                  <Upload className="h-4 w-4 text-[#d4af37]" />
+                </div>
+              </div>
+              
+              {backstoryPdf && (
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="icon"
+                  className="flex-shrink-0"
+                  onClick={() => {
+                    setBackstoryPdf(null);
+                    setBackstoryPdfName(null);
+                    setValue('backstoryPdf', '');
+                    setValue('backstoryPdfName', '');
+                  }}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
+            
+            {backstoryPdf && (
+              <p className="text-xs text-[#43ffaf] mt-1">
+                PDF-Datei "{backstoryPdfName}" wurde hochgeladen
+              </p>
+            )}
+          </div>
         </div>
         
         {/* Statistiken / Attribute */}
