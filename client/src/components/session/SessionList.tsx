@@ -153,19 +153,17 @@ export default function SessionList({ heroId }: SessionListProps) {
       )}
       
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-        <DialogContent className="bg-[#1e1e2f] border border-[#7f5af0]/30 text-[#f5f5f5] max-w-3xl max-h-[90vh] flex flex-col">
-          <DialogHeader className="flex-shrink-0">
+        <DialogContent className="bg-[#1e1e2f] border border-[#7f5af0]/30 text-[#f5f5f5] max-w-3xl">
+          <DialogHeader>
             <DialogTitle className="font-['Cinzel_Decorative'] text-[#d4af37] text-xl">
               {selectedSession ? "Session bearbeiten" : "Neue Session erstellen"}
             </DialogTitle>
           </DialogHeader>
-          <div className="overflow-y-auto pr-1 -mr-1">
-            <SessionForm 
-              heroId={heroId} 
-              existingSession={selectedSession} 
-              onSubmit={handleFormSubmit}
-            />
-          </div>
+          <SessionForm 
+            heroId={heroId} 
+            existingSession={selectedSession} 
+            onSubmit={handleFormSubmit}
+          />
         </DialogContent>
       </Dialog>
     </div>
