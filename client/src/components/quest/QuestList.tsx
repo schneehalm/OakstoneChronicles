@@ -152,17 +152,19 @@ export default function QuestList({ heroId }: QuestListProps) {
       )}
       
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-        <DialogContent className="bg-[#1e1e2f] border border-[#7f5af0]/30 text-[#f5f5f5]">
-          <DialogHeader>
+        <DialogContent className="bg-[#1e1e2f] border border-[#7f5af0]/30 text-[#f5f5f5] max-h-[90vh] flex flex-col">
+          <DialogHeader className="flex-shrink-0">
             <DialogTitle className="font-['Cinzel_Decorative'] text-[#d4af37] text-xl">
               {selectedQuest ? "Auftrag bearbeiten" : "Neuen Auftrag erstellen"}
             </DialogTitle>
           </DialogHeader>
-          <QuestForm 
-            heroId={heroId} 
-            existingQuest={selectedQuest} 
-            onSubmit={handleFormSubmit}
-          />
+          <div className="overflow-y-auto pr-1 -mr-1">
+            <QuestForm 
+              heroId={heroId} 
+              existingQuest={selectedQuest} 
+              onSubmit={handleFormSubmit}
+            />
+          </div>
         </DialogContent>
       </Dialog>
     </div>
