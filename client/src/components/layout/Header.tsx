@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Book, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function Header() {
@@ -11,9 +11,9 @@ export default function Header() {
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         <Link href="/">
           <div className="flex items-center cursor-pointer">
-            <Book className="h-8 w-8 text-[#d4af37]" />
+            <img src="/OSC_Logo.png" alt="Oukstone Chronicles Logo" className="h-10 w-auto" />
             <h1 className="ml-3 font-['Cinzel_Decorative'] text-xl md:text-2xl text-[#d4af37]">
-              Oakstone RPG Journal
+              Oukstone Chronicles
             </h1>
           </div>
         </Link>

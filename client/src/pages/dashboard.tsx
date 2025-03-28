@@ -15,6 +15,20 @@ export default function Dashboard() {
   const [filteredHeroes, setFilteredHeroes] = useState<Hero[]>([]);
   const [activities, setActivities] = useState<Activity[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [reloadTrigger, setReloadTrigger] = useState(0);
+  
+  // Attach a function to window to allow HeroCard to trigger a reload
+  useEffect(() => {
+    // @ts-ignore - Adding a custom method to window
+    window.reloadDashboard = () => {
+      setReloadTrigger(prev => prev + 1);
+    };
+    
+    return () => {
+      // @ts-ignore - Cleaning up
+      delete window.reloadDashboard;
+    };
+  }, []);
   
   useEffect(() => {
     // Load heroes
@@ -29,7 +43,7 @@ export default function Dashboard() {
     };
     
     loadData();
-  }, []);
+  }, [reloadTrigger]);
   
   useEffect(() => {
     // Filter heroes based on search term
