@@ -1,4 +1,9 @@
 import express, { type Request, Response, NextFunction } from "express";
+
+function log(message: string) {
+  console.log(`[SERVER] ${message}`);
+}
+
 import { registerRoutes } from "./routes";
 // import { setupVite, serveStatic, log } from "./vite";
 
