@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useForm } from "react-hook-form";
-import { X, Plus, Upload } from "lucide-react";
+import { X, Plus, Upload, ArrowUpCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -13,8 +13,21 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
-import { GAME_SYSTEMS } from "@/lib/theme";
-import { Hero } from "@/lib/types";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger
+} from "@/components/ui/accordion";
+import { 
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from "@/components/ui/card";
+import { GAME_SYSTEMS, STATS_DEFINITIONS } from "@/lib/theme";
+import { Hero, HeroStats } from "@/lib/types";
 import { saveHero } from "@/lib/storage";
 import { useToast } from "@/hooks/use-toast";
 
@@ -28,8 +41,10 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
   const [tags, setTags] = useState<string[]>(existingHero?.tags || []);
   const [newTag, setNewTag] = useState("");
   const [portraitPreview, setPortraitPreview] = useState<string | null>(existingHero?.portrait || null);
+  const [selectedSystem, setSelectedSystem] = useState<string>(existingHero?.system || '');
+  const [stats, setStats] = useState<HeroStats>(existingHero?.stats || {});
   
-  const { register, handleSubmit, setValue, formState: { errors } } = useForm<Hero>({
+  const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<Hero>({
     defaultValues: {
       id: existingHero?.id || '',
       name: existingHero?.name || '',
@@ -41,15 +56,44 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
       portrait: existingHero?.portrait || '',
       backstory: existingHero?.backstory || '',
       tags: existingHero?.tags || [],
+      stats: existingHero?.stats || {},
       createdAt: existingHero?.createdAt || '',
       updatedAt: existingHero?.updatedAt || ''
     }
   });
   
+  // Überwache Änderungen am system-Feld
+  const watchSystem = watch('system');
+  
   useEffect(() => {
     // Ensure the tags field is updated when tags change
     setValue('tags', tags);
   }, [tags, setValue]);
+  
+  // Initialisiere oder aktualisiere die Stats bei system-Änderungen
+  useEffect(() => {
+    if (watchSystem && watchSystem !== selectedSystem) {
+      setSelectedSystem(watchSystem);
+      
+      // Wenn das Regelwerk gewechselt wird, initialisiere die Stats neu
+      if (watchSystem in STATS_DEFINITIONS) {
+        const statDefs = STATS_DEFINITIONS[watchSystem as keyof typeof STATS_DEFINITIONS];
+        const newStats: HeroStats = {};
+        
+        statDefs.forEach(stat => {
+          // Behalte existierende Werte bei, falls sie existieren
+          if (existingHero?.stats && existingHero.stats[stat.id] !== undefined) {
+            newStats[stat.id] = existingHero.stats[stat.id];
+          } else {
+            newStats[stat.id] = stat.default || 0;
+          }
+        });
+        
+        setStats(newStats);
+        setValue('stats', newStats);
+      }
+    }
+  }, [watchSystem, selectedSystem, setValue, existingHero]);
   
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -81,10 +125,20 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
     setTags(tags.filter(tag => tag !== tagToRemove));
   };
   
+  // Stats-Werte ändern
+  const handleStatChange = (statId: string, value: number | string) => {
+    const updatedStats = { ...stats, [statId]: value };
+    setStats(updatedStats);
+    setValue('stats', updatedStats);
+  };
+  
   const onSubmit = (data: Hero) => {
     try {
       // Make sure tags are included
       data.tags = tags;
+      
+      // Make sure stats are included
+      data.stats = stats;
       
       // Save hero
       const savedHero = saveHero(data);
@@ -256,6 +310,57 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
             className="w-full bg-[#1e1e2f] border border-[#7f5af0]/40 rounded-lg focus:border-[#7f5af0] focus:ring-1 focus:ring-[#7f5af0]"
             {...register('backstory')}
           />
+        </div>
+        
+        {/* Statistiken / Attribute */}
+        <div className="mb-6">
+          <Accordion type="single" collapsible defaultValue="stats" className="w-full">
+            <AccordionItem value="stats">
+              <AccordionTrigger className="text-[#d4af37] hover:text-[#d4af37] hover:no-underline">
+                <span className="flex items-center gap-2">
+                  <ArrowUpCircle className="h-5 w-5" />
+                  Attribute & Statistiken
+                </span>
+              </AccordionTrigger>
+              <AccordionContent>
+                {watchSystem && STATS_DEFINITIONS[watchSystem as keyof typeof STATS_DEFINITIONS] ? (
+                  <div className="pt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                    {STATS_DEFINITIONS[watchSystem as keyof typeof STATS_DEFINITIONS].map((stat) => (
+                      <div key={stat.id} className="relative group">
+                        <Label
+                          htmlFor={`stat-${stat.id}`}
+                          className="block text-[#f5f5f5] text-sm mb-1"
+                        >
+                          {stat.label}
+                        </Label>
+                        <Input
+                          id={`stat-${stat.id}`}
+                          type={stat.type || 'number'}
+                          min={'min' in stat ? stat.min : undefined}
+                          max={'max' in stat ? stat.max : undefined}
+                          step={'step' in stat ? stat.step : 1}
+                          value={stats[stat.id] !== undefined ? stats[stat.id] : stat.default || 0}
+                          onChange={(e) => {
+                            const value = stat.type === 'number' ? 
+                              parseInt(e.target.value, 10) : 
+                              e.target.value;
+                            handleStatChange(stat.id, value);
+                          }}
+                          className="w-full bg-[#1e1e2f] border border-[#7f5af0]/40 hover:border-[#7f5af0]/60 rounded-lg focus:border-[#7f5af0] focus:ring-1 focus:ring-[#7f5af0]"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center p-4">
+                    <p className="text-[#f5f5f5]/70 italic">
+                      Bitte wähle zuerst ein Regelwerk, um die passenden Statistiken anzuzeigen.
+                    </p>
+                  </div>
+                )}
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         </div>
         
         {/* Tags */}

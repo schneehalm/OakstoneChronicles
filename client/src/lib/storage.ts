@@ -32,22 +32,26 @@ export const getHeroById = (id: string): Hero | undefined => {
 export const saveHero = (hero: Hero): Hero => {
   const heroes = getHeroes();
   const existingIndex = heroes.findIndex(h => h.id === hero.id);
+  let savedHero: Hero;
   
   if (existingIndex >= 0) {
     // Update existing hero
-    heroes[existingIndex] = {
+    savedHero = {
       ...heroes[existingIndex],
       ...hero,
       updatedAt: new Date().toISOString()
     };
+    heroes[existingIndex] = savedHero;
   } else {
     // Add new hero
-    heroes.push({
+    const newId = crypto.randomUUID();
+    savedHero = {
       ...hero,
-      id: crypto.randomUUID(),
+      id: newId,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
-    });
+    };
+    heroes.push(savedHero);
   }
   
   saveToStorage(STORAGE_KEYS.HEROES, heroes);
@@ -55,13 +59,13 @@ export const saveHero = (hero: Hero): Hero => {
   // Add activity
   const isNew = existingIndex < 0;
   addActivity({
-    heroId: hero.id,
+    heroId: savedHero.id, // Verwende die ID aus dem gespeicherten Helden
     type: isNew ? 'hero_created' : 'hero_updated',
     message: isNew ? `Neuer Held: ${hero.name}` : `Held aktualisiert: ${hero.name}`,
     date: new Date().toISOString()
   });
   
-  return hero;
+  return savedHero; // Gebe den gespeicherten Helden mit der korrekten ID zurück
 };
 
 export const deleteHero = (id: string): void => {
@@ -108,22 +112,26 @@ export const getNpcById = (id: string): Npc | undefined => {
 export const saveNpc = (npc: Npc): Npc => {
   const npcs = getNpcs();
   const existingIndex = npcs.findIndex(n => n.id === npc.id);
+  let savedNpc: Npc;
   
   if (existingIndex >= 0) {
     // Update existing NPC
-    npcs[existingIndex] = {
+    savedNpc = {
       ...npcs[existingIndex],
       ...npc,
       updatedAt: new Date().toISOString()
     };
+    npcs[existingIndex] = savedNpc;
   } else {
     // Add new NPC
-    npcs.push({
+    const newId = crypto.randomUUID();
+    savedNpc = {
       ...npc,
-      id: crypto.randomUUID(),
+      id: newId,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
-    });
+    };
+    npcs.push(savedNpc);
   }
   
   saveToStorage(STORAGE_KEYS.NPCS, npcs);
@@ -141,7 +149,7 @@ export const saveNpc = (npc: Npc): Npc => {
     });
   }
   
-  return npc;
+  return savedNpc;
 };
 
 export const deleteNpc = (id: string): void => {
@@ -186,22 +194,26 @@ export const getLatestSessionByHeroId = (heroId: string): Session | undefined =>
 export const saveSession = (session: Session): Session => {
   const sessions = getSessions();
   const existingIndex = sessions.findIndex(s => s.id === session.id);
+  let savedSession: Session;
   
   if (existingIndex >= 0) {
     // Update existing session
-    sessions[existingIndex] = {
+    savedSession = {
       ...sessions[existingIndex],
       ...session,
       updatedAt: new Date().toISOString()
     };
+    sessions[existingIndex] = savedSession;
   } else {
     // Add new session
-    sessions.push({
+    const newId = crypto.randomUUID();
+    savedSession = {
       ...session,
-      id: crypto.randomUUID(),
+      id: newId,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
-    });
+    };
+    sessions.push(savedSession);
   }
   
   saveToStorage(STORAGE_KEYS.SESSIONS, sessions);
@@ -219,7 +231,7 @@ export const saveSession = (session: Session): Session => {
     });
   }
   
-  return session;
+  return savedSession;
 };
 
 export const deleteSession = (id: string): void => {
@@ -261,22 +273,26 @@ export const getQuestById = (id: string): Quest | undefined => {
 export const saveQuest = (quest: Quest): Quest => {
   const quests = getQuests();
   const existingIndex = quests.findIndex(q => q.id === quest.id);
+  let savedQuest: Quest;
   
   if (existingIndex >= 0) {
     // Update existing quest
-    quests[existingIndex] = {
+    savedQuest = {
       ...quests[existingIndex],
       ...quest,
       updatedAt: new Date().toISOString()
     };
+    quests[existingIndex] = savedQuest;
   } else {
     // Add new quest
-    quests.push({
+    const newId = crypto.randomUUID();
+    savedQuest = {
       ...quest,
-      id: crypto.randomUUID(),
+      id: newId,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
-    });
+    };
+    quests.push(savedQuest);
   }
   
   saveToStorage(STORAGE_KEYS.QUESTS, quests);
@@ -294,7 +310,7 @@ export const saveQuest = (quest: Quest): Quest => {
     });
   }
   
-  return quest;
+  return savedQuest;
 };
 
 export const deleteQuest = (id: string): void => {

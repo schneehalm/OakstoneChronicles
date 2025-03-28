@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
-import { ChevronRight, Edit, MoreHorizontal } from "lucide-react";
+import { ChevronRight, Edit, MoreHorizontal, ChevronUp, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { 
   DropdownMenu,
@@ -8,6 +8,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger
+} from "@/components/ui/accordion";
 import { format } from "date-fns";
 import { de } from "date-fns/locale";
 import { Hero, Npc, Session, Quest } from "@/lib/types";
@@ -18,6 +24,7 @@ import {
   getActiveQuestsByHeroId, 
   deleteHero 
 } from "@/lib/storage";
+import { STATS_DEFINITIONS } from "@/lib/theme";
 import NpcCard from "@/components/npc/NpcCard";
 import QuestItem from "@/components/quest/QuestItem";
 import { useToast } from "@/hooks/use-toast";
@@ -198,6 +205,52 @@ export default function HeroDetail({ heroId }: HeroDetailProps) {
       
       {/* Hero Overview Tab Content */}
       <div className="space-y-8">
+        {/* Hero Stats / Attributes */}
+        {hero.stats && Object.keys(hero.stats).length > 0 && (
+          <div className="bg-[#1e1e2f]/80 rounded-xl border border-[#d4af37]/30 p-5 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2720%27%20height%3D%2720%27%20viewBox%3D%270%200%2020%2020%27%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%3E%3Cg%20fill%3D%27%237f5af0%27%20fill-opacity%3D%270.05%27%20fill-rule%3D%27evenodd%27%3E%3Ccircle%20cx%3D%273%27%20cy%3D%273%27%20r%3D%271%27%2F%3E%3Ccircle%20cx%3D%2713%27%20cy%3D%2713%27%20r%3D%271%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E')]">
+            <Accordion type="single" collapsible defaultValue="stats" className="w-full">
+              <AccordionItem value="stats" className="border-0">
+                <AccordionTrigger className="py-0 hover:no-underline">
+                  <h3 className="font-['Cinzel_Decorative'] text-xl text-[#d4af37] flex items-center">
+                    <span>Attribute & Statistiken</span>
+                  </h3>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                    {hero.system && STATS_DEFINITIONS[hero.system as keyof typeof STATS_DEFINITIONS] ? (
+                      // Zeige die Statistiken basierend auf dem Regelwerk
+                      STATS_DEFINITIONS[hero.system as keyof typeof STATS_DEFINITIONS]
+                        .filter(stat => hero.stats && hero.stats[stat.id] !== undefined)
+                        .map(stat => (
+                          <div 
+                            key={stat.id} 
+                            className="bg-[#7f5af0]/10 border border-[#7f5af0]/20 rounded-lg p-3 text-center"
+                          >
+                            <div className="text-sm text-[#f5f5f5]/70 mb-1">{stat.label}</div>
+                            <div className="text-xl font-medium text-[#43ffaf]">
+                              {hero.stats ? hero.stats[stat.id] : '–'}
+                            </div>
+                          </div>
+                        ))
+                    ) : (
+                      // Generische Anzeige, wenn kein passendes Regelwerk gefunden wird
+                      Object.entries(hero.stats || {}).map(([key, value]) => (
+                        <div 
+                          key={key} 
+                          className="bg-[#7f5af0]/10 border border-[#7f5af0]/20 rounded-lg p-3 text-center"
+                        >
+                          <div className="text-sm text-[#f5f5f5]/70 mb-1">{key}</div>
+                          <div className="text-xl font-medium text-[#43ffaf]">{value}</div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
+        )}
+        
         {/* Hero Backstory */}
         <div className="bg-[#1e1e2f]/80 rounded-xl border border-[#d4af37]/30 p-5 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2720%27%20height%3D%2720%27%20viewBox%3D%270%200%2020%2020%27%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%3E%3Cg%20fill%3D%27%237f5af0%27%20fill-opacity%3D%270.05%27%20fill-rule%3D%27evenodd%27%3E%3Ccircle%20cx%3D%273%27%20cy%3D%273%27%20r%3D%271%27%2F%3E%3Ccircle%20cx%3D%2713%27%20cy%3D%2713%27%20r%3D%271%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E')]">
           <h3 className="font-['Cinzel_Decorative'] text-xl text-[#d4af37] mb-3">Hintergrundgeschichte</h3>

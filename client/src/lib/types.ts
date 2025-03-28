@@ -9,8 +9,13 @@ export interface Hero {
   portrait?: string;
   backstory?: string;
   tags: string[];
+  stats?: HeroStats;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface HeroStats {
+  [key: string]: number | string;
 }
 
 export interface Npc {
