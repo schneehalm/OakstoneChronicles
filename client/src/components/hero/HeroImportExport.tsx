@@ -22,7 +22,7 @@ import {
   AlertTitle,
 } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
-import { exportAllHeroes, exportHeroData, importHeroCollection, ExportedHeroCollection } from "@/lib/storage";
+import { exportAllHeroes, exportHeroData, importHeroCollection, importHeroData, ExportedHeroCollection, ExportedHero } from "@/lib/storage";
 import { Hero } from "@/lib/types";
 
 interface HeroImportExportProps {
@@ -90,23 +90,39 @@ export default function HeroImportExport({ heroes, onImportSuccess }: HeroImport
     reader.onload = (e) => {
       try {
         const content = e.target?.result as string;
-        const data: ExportedHeroCollection = JSON.parse(content);
-        
-        // Validiere die importierten Daten
-        if (!data || !data.version || !Array.isArray(data.heroes)) {
-          setImportError("Die Datei enthält keine gültigen Heldendaten.");
+        const parsedData = JSON.parse(content);
+
+        // Versuche zuerst, die Daten als Sammlung zu verarbeiten
+        if (parsedData.version && Array.isArray(parsedData.heroes)) {
+          const data = parsedData as ExportedHeroCollection;
+          const result = importHeroCollection(data, false);
+          
+          if (result.success) {
+            setImportSuccess({ imported: result.imported, total: result.total });
+            onImportSuccess();
+          } else {
+            setImportError("Beim Importieren der Helden ist ein Fehler aufgetreten.");
+          }
           return;
         }
         
-        // Importiere die Helden
-        const result = importHeroCollection(data, false);
-        
-        if (result.success) {
-          setImportSuccess({ imported: result.imported, total: result.total });
-          onImportSuccess(); // Aktualisiere die Heldenliste
-        } else {
-          setImportError("Beim Importieren der Helden ist ein Fehler aufgetreten.");
+        // Versuche als einzelner Held zu verarbeiten
+        if (parsedData.hero && parsedData.npcs && parsedData.sessions && parsedData.quests) {
+          const singleHeroData = parsedData as ExportedHero;
+          const success = importHeroData(singleHeroData, false);
+          
+          if (success) {
+            setImportSuccess({ imported: 1, total: 1 });
+            onImportSuccess();
+          } else {
+            setImportError("Der Held existiert bereits. Um ihn zu überschreiben, exportiere alle Helden und bearbeite die JSON-Datei.");
+          }
+          return;
         }
+        
+        // Wenn keine der Optionen funktioniert hat
+        setImportError("Die Datei enthält keine gültigen Heldendaten.");
+        
       } catch (error) {
         console.error("Fehler beim Parsen der Import-Datei:", error);
         setImportError("Die Datei konnte nicht verarbeitet werden. Stellen Sie sicher, dass es sich um eine gültige JSON-Datei handelt.");
@@ -217,7 +233,7 @@ export default function HeroImportExport({ heroes, onImportSuccess }: HeroImport
               </div>
               
               <p className="text-[#f5f5f5]/60 text-xs text-center">
-                Nur Dateien im JSON-Format, die mit Oukstone Chronicles exportiert wurden.
+                Unterstützt sowohl einzelne Helden als auch Helden-Sammlungen im JSON-Format, die mit Oukstone Chronicles exportiert wurden.
               </p>
             </div>
           </div>

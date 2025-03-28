@@ -4,7 +4,15 @@ import { cn } from "@/lib/utils";
 import { Hero } from "@/lib/types";
 import { format } from "date-fns";
 import { de } from "date-fns/locale";
-import { Trash2 } from "lucide-react";
+import { Trash2, Download, MoreVertical } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useToast } from "@/hooks/use-toast";
+import { exportHeroData } from "@/lib/storage";
 import DeleteHeroDialog from "./DeleteHeroDialog";
 
 interface HeroCardProps {
@@ -14,6 +22,7 @@ interface HeroCardProps {
 export default function HeroCard({ hero }: HeroCardProps) {
   const [, setLocation] = useLocation();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const { toast } = useToast();
   
   // Format the date using date-fns with German locale
   const formattedDate = format(new Date(hero.updatedAt), "dd.MM.yyyy", { locale: de });
@@ -22,6 +31,48 @@ export default function HeroCard({ hero }: HeroCardProps) {
     e.preventDefault();
     e.stopPropagation();
     setShowDeleteDialog(true);
+  };
+  
+  const handleExportClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    try {
+      const exportData = exportHeroData(hero.id);
+      if (!exportData) {
+        toast({
+          title: "Export fehlgeschlagen",
+          description: "Der Held konnte nicht exportiert werden.",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      const jsonString = JSON.stringify(exportData, null, 2);
+      const blob = new Blob([jsonString], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      
+      // Erstelle einen temporären Download-Link
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `oukstone-held-${hero.name.replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      toast({
+        title: "Export erfolgreich",
+        description: `Held "${hero.name}" wurde exportiert.`,
+      });
+    } catch (error) {
+      console.error("Fehler beim Exportieren:", error);
+      toast({
+        title: "Export fehlgeschlagen",
+        description: "Beim Exportieren des Helden ist ein Fehler aufgetreten.",
+        variant: "destructive"
+      });
+    }
   };
   
   const handleHeroDeleted = () => {
@@ -60,14 +111,36 @@ export default function HeroCard({ hero }: HeroCardProps) {
                 <span>{hero.class}</span>
               </div>
             </div>
-            {/* Delete button */}
-            <button
-              onClick={handleDeleteClick}
-              className="absolute top-2 right-2 h-8 w-8 rounded-full bg-red-600/60 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center"
-              aria-label="Held löschen"
-            >
-              <Trash2 className="h-4 w-4 text-white" />
-            </button>
+            {/* Action Menu */}
+            <div className="absolute top-2 right-2 opacity-0 hover:opacity-100 focus-within:opacity-100 transition-opacity">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    onClick={(e) => e.preventDefault()}
+                    className="h-8 w-8 rounded-full bg-[#1e1e2f]/80 flex items-center justify-center"
+                    aria-label="Aktionen"
+                  >
+                    <MoreVertical className="h-4 w-4 text-[#f5f5f5]" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="bg-[#1e1e2f] border border-[#7f5af0]/40">
+                  <DropdownMenuItem 
+                    onClick={handleExportClick}
+                    className="flex items-center cursor-pointer hover:bg-[#7f5af0]/20"
+                  >
+                    <Download className="mr-2 h-4 w-4 text-[#d4af37]" />
+                    <span>Held exportieren</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={handleDeleteClick}
+                    className="flex items-center cursor-pointer text-red-500 hover:bg-red-500/10"
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    <span>Held löschen</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
           <div className="p-4">
             <div className="flex justify-between items-center mb-3">
