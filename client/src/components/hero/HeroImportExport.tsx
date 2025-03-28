@@ -59,7 +59,7 @@ export default function HeroImportExport({ heroes, onImportSuccess }: HeroImport
       // Erstelle einen temporären Download-Link
       const a = document.createElement("a");
       a.href = url;
-      a.download = `oukstone-helden-${new Date().toISOString().split('T')[0]}.json`;
+      a.download = `oakstone-helden-${new Date().toISOString().split('T')[0]}.json`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -258,7 +258,7 @@ export default function HeroImportExport({ heroes, onImportSuccess }: HeroImport
               </div>
               
               <p className="text-[#f5f5f5]/60 text-xs text-center">
-                Unterstützt sowohl einzelne Helden als auch Helden-Sammlungen im JSON-Format, die mit Oukstone Chronicles exportiert wurden.
+                Unterstützt sowohl einzelne Helden als auch Helden-Sammlungen im JSON-Format, die mit Oakstone Chronicles exportiert wurden.
               </p>
             </div>
           </div>
