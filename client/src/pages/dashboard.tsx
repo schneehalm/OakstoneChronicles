@@ -4,6 +4,7 @@ import { Search, ChevronRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import HeroCard from "@/components/hero/HeroCard";
+import DemoDataInitializer from "@/components/demo/DemoDataInitializer";
 import { Hero, Activity } from "@/lib/types";
 import { getHeroes, getRecentActivities, getHeroById } from "@/lib/storage";
 import { format } from "date-fns";
@@ -183,17 +184,22 @@ export default function Dashboard() {
       )}
       
       {heroes.length === 0 && !searchTerm && (
-        <div className="text-center py-16 bg-[#1e1e2f]/50 rounded-xl border border-[#7f5af0]/20">
-          <h3 className="font-['Cinzel_Decorative'] text-[#d4af37] text-xl mb-3">Willkommen bei Oakstone RPG Journal</h3>
-          <p className="text-[#f5f5f5]/70 mb-6">
-            Erstelle deinen ersten Helden, um deine Abenteuer zu dokumentieren.
-          </p>
-          <Link href="/hero/create">
-            <Button className="bg-[#7f5af0] hover:bg-[#7f5af0]/90">
-              Neuen Helden erstellen
-            </Button>
-          </Link>
-        </div>
+        <>
+          <div className="text-center py-16 bg-[#1e1e2f]/50 rounded-xl border border-[#7f5af0]/20">
+            <h3 className="font-['Cinzel_Decorative'] text-[#d4af37] text-xl mb-3">Willkommen bei Oakstone RPG Journal</h3>
+            <p className="text-[#f5f5f5]/70 mb-6">
+              Erstelle deinen ersten Helden, um deine Abenteuer zu dokumentieren.
+            </p>
+            <Link href="/hero/create">
+              <Button className="bg-[#7f5af0] hover:bg-[#7f5af0]/90">
+                Neuen Helden erstellen
+              </Button>
+            </Link>
+          </div>
+          
+          {/* Demo Data Initializer */}
+          <DemoDataInitializer />
+        </>
       )}
       
       {filteredHeroes.length === 0 && searchTerm && (
