@@ -14,18 +14,18 @@ export default function MobileNavigation() {
     <nav className="md:hidden bg-[#1e1e2f]/95 border-t border-[#d4af37]/20 sticky bottom-0 backdrop-blur-sm z-40">
       <div className="grid grid-cols-4 gap-1">
         <Link href="/">
-          <a className={`flex flex-col items-center justify-center py-3 ${isHome ? 'text-[#d4af37]' : 'text-[#f5f5f5]/70'}`}>
+          <div className={`flex flex-col items-center justify-center py-3 ${isHome ? 'text-[#d4af37]' : 'text-[#f5f5f5]/70'}`}>
             <Home className="h-6 w-6" />
             <span className="text-xs mt-1">Start</span>
-          </a>
+          </div>
         </Link>
         
         {isHeroDetailMatch ? (
           <Link href={`/hero/${heroId}/npcs`}>
-            <a className={`flex flex-col items-center justify-center py-3 ${isNpcs ? 'text-[#d4af37]' : 'text-[#f5f5f5]/70'}`}>
+            <div className={`flex flex-col items-center justify-center py-3 ${isNpcs ? 'text-[#d4af37]' : 'text-[#f5f5f5]/70'}`}>
               <Users className="h-6 w-6" />
               <span className="text-xs mt-1">NPCs</span>
-            </a>
+            </div>
           </Link>
         ) : (
           <div className="flex flex-col items-center justify-center py-3 text-[#f5f5f5]/30">
@@ -36,10 +36,10 @@ export default function MobileNavigation() {
         
         {isHeroDetailMatch ? (
           <Link href={`/hero/${heroId}/sessions`}>
-            <a className={`flex flex-col items-center justify-center py-3 ${isSessions ? 'text-[#d4af37]' : 'text-[#f5f5f5]/70'}`}>
+            <div className={`flex flex-col items-center justify-center py-3 ${isSessions ? 'text-[#d4af37]' : 'text-[#f5f5f5]/70'}`}>
               <Book className="h-6 w-6" />
               <span className="text-xs mt-1">Sessions</span>
-            </a>
+            </div>
           </Link>
         ) : (
           <div className="flex flex-col items-center justify-center py-3 text-[#f5f5f5]/30">

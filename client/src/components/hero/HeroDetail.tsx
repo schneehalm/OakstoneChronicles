@@ -260,15 +260,14 @@ export default function HeroDetail({ heroId }: HeroDetailProps) {
             <p className="text-sm line-clamp-4 whitespace-pre-line">{latestSession.content}</p>
             
             <div className="mt-3">
-              <Link href={`/hero/${hero.id}/sessions`}>
-                <Button 
-                  variant="link" 
-                  className="text-[#d4af37] hover:text-[#43ffaf] flex items-center text-sm p-0"
-                >
-                  <span>Vollständige Session anzeigen</span>
-                  <ChevronRight className="h-4 w-4 ml-1" />
-                </Button>
-              </Link>
+              <Button 
+                variant="link" 
+                className="text-[#d4af37] hover:text-[#43ffaf] flex items-center text-sm p-0"
+                onClick={() => navigate(`/hero/${hero.id}/sessions`)}
+              >
+                <span>Vollständige Session anzeigen</span>
+                <ChevronRight className="h-4 w-4 ml-1" />
+              </Button>
             </div>
           </div>
         )}
@@ -278,15 +277,14 @@ export default function HeroDetail({ heroId }: HeroDetailProps) {
           <div>
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-['Cinzel_Decorative'] text-xl text-[#d4af37]">Wichtige NPCs</h3>
-              <Link href={`/hero/${hero.id}/npcs`}>
-                <Button 
-                  variant="link" 
-                  className="text-[#d4af37] hover:text-[#43ffaf] flex items-center text-sm p-0"
-                >
-                  <span>Alle anzeigen</span>
-                  <ChevronRight className="h-4 w-4 ml-1" />
-                </Button>
-              </Link>
+              <Button 
+                variant="link" 
+                className="text-[#d4af37] hover:text-[#43ffaf] flex items-center text-sm p-0"
+                onClick={() => navigate(`/hero/${hero.id}/npcs`)}
+              >
+                <span>Alle anzeigen</span>
+                <ChevronRight className="h-4 w-4 ml-1" />
+              </Button>
             </div>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -302,15 +300,14 @@ export default function HeroDetail({ heroId }: HeroDetailProps) {
           <div>
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-['Cinzel_Decorative'] text-xl text-[#d4af37]">Aktive Aufträge</h3>
-              <Link href={`/hero/${hero.id}/quests`}>
-                <Button 
-                  variant="link" 
-                  className="text-[#d4af37] hover:text-[#43ffaf] flex items-center text-sm p-0"
-                >
-                  <span>Alle anzeigen</span>
-                  <ChevronRight className="h-4 w-4 ml-1" />
-                </Button>
-              </Link>
+              <Button 
+                variant="link" 
+                className="text-[#d4af37] hover:text-[#43ffaf] flex items-center text-sm p-0"
+                onClick={() => navigate(`/hero/${hero.id}/quests`)}
+              >
+                <span>Alle anzeigen</span>
+                <ChevronRight className="h-4 w-4 ml-1" />
+              </Button>
             </div>
             
             <div className="space-y-3">
