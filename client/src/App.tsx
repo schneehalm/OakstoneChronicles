@@ -17,12 +17,12 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Dashboard} />
-      <Route path="/hero/:id" component={HeroDetail} />
       <Route path="/hero/create" component={CreateHero} />
       <Route path="/hero/:id/edit" component={EditHero} />
       <Route path="/hero/:id/npcs" component={Npcs} />
       <Route path="/hero/:id/sessions" component={Sessions} />
       <Route path="/hero/:id/quests" component={Quests} />
+      <Route path="/hero/:id" component={HeroDetail} />
       <Route component={NotFound} />
     </Switch>
   );
