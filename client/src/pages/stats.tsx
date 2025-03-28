@@ -48,12 +48,14 @@ export default function StatsPage() {
   }
   
   return (
-    <div className="space-y-6">
-      {/* Hero Subnav */}
-      <HeroSubnav heroId={heroId} activeTab="stats" />
+    <div>
+      {/* Hero Subnav - immer oben */}
+      <div className="mb-6 sticky top-0 z-10 bg-[#1e1e2f]/95 backdrop-blur-sm pt-4 pb-1">
+        <HeroSubnav heroId={heroId} activeTab="stats" />
+      </div>
       
       {/* Hero Info */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-6">
         <h2 className="font-['Cinzel_Decorative'] text-2xl text-[#d4af37]">
           {hero.name} - Attribute & Statistiken
         </h2>

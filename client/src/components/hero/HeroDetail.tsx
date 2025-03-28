@@ -209,42 +209,58 @@ export default function HeroDetail({ heroId }: HeroDetailProps) {
         
         {/* Hero Backstory */}
         <div className="bg-[#1e1e2f]/80 rounded-xl border border-[#d4af37]/30 p-5 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2720%27%20height%3D%2720%27%20viewBox%3D%270%200%2020%2020%27%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%3E%3Cg%20fill%3D%27%237f5af0%27%20fill-opacity%3D%270.05%27%20fill-rule%3D%27evenodd%27%3E%3Ccircle%20cx%3D%273%27%20cy%3D%273%27%20r%3D%271%27%2F%3E%3Ccircle%20cx%3D%2713%27%20cy%3D%2713%27%20r%3D%271%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E')]">
-          <Accordion type="single" collapsible defaultValue="backstory" className="w-full">
-            <AccordionItem value="backstory" className="border-0">
-              <AccordionTrigger className="py-0 hover:no-underline">
-                <h3 className="font-['Cinzel_Decorative'] text-xl text-[#d4af37] flex items-center">
-                  <span>Hintergrundgeschichte</span>
-                </h3>
-              </AccordionTrigger>
-              <AccordionContent>
-                <div className="prose prose-sm prose-invert max-w-none mt-3">
-                  {hero.backstory ? (
-                    <div className="whitespace-pre-line">
-                      {hero.backstory}
-                    </div>
-                  ) : (
-                    <p>Keine Hintergrundgeschichte verfügbar.</p>
-                  )}
-                </div>
-                {hero.tags && hero.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-4">
-                    {hero.tags.map((tag, index) => (
-                      <span 
-                        key={index}
-                        className={`text-xs rounded-full px-2 py-0.5 ${
-                          index % 3 === 0 ? "bg-[#7f5af0]/20 border border-[#7f5af0]/40" :
-                          index % 3 === 1 ? "bg-[#d4af37]/20 border border-[#d4af37]/40" :
-                          "bg-[#43ffaf]/20 border border-[#43ffaf]/40"
-                        }`}
-                      >
-                        {tag}
-                      </span>
-                    ))}
+          <div className="w-full">
+            <h3 className="font-['Cinzel_Decorative'] text-xl text-[#d4af37] mb-3">Hintergrundgeschichte</h3>
+            
+            <div className="prose prose-sm prose-invert max-w-none">
+              {hero.backstory ? (
+                <>
+                  <div className="whitespace-pre-line">
+                    {/* Zeige die ersten zwei Sätze immer an */}
+                    {hero.backstory.split(/(?<=\.)\s+/).slice(0, 2).join(' ')}
+                    {hero.backstory.split(/(?<=\.)\s+/).length > 2 && (
+                      <span className="text-[#f5f5f5]/60">...</span>
+                    )}
                   </div>
-                )}
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
+                  
+                  {/* Klappbarer Bereich für den Rest des Textes */}
+                  {hero.backstory.split(/(?<=\.)\s+/).length > 2 && (
+                    <Accordion type="single" collapsible className="mt-2">
+                      <AccordionItem value="backstory-full" className="border-0">
+                        <AccordionTrigger className="py-0 hover:no-underline">
+                          <span className="text-[#d4af37] text-sm">Mehr anzeigen</span>
+                        </AccordionTrigger>
+                        <AccordionContent>
+                          <div className="whitespace-pre-line mt-2">
+                            {hero.backstory.split(/(?<=\.)\s+/).slice(2).join(' ')}
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                  )}
+                </>
+              ) : (
+                <p>Keine Hintergrundgeschichte verfügbar.</p>
+              )}
+            </div>
+            
+            {hero.tags && hero.tags.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-4">
+                {hero.tags.map((tag, index) => (
+                  <span 
+                    key={index}
+                    className={`text-xs rounded-full px-2 py-0.5 ${
+                      index % 3 === 0 ? "bg-[#7f5af0]/20 border border-[#7f5af0]/40" :
+                      index % 3 === 1 ? "bg-[#d4af37]/20 border border-[#d4af37]/40" :
+                      "bg-[#43ffaf]/20 border border-[#43ffaf]/40"
+                    }`}
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
         
         {/* Current Session Summary */}
