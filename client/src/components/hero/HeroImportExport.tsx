@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { Download, Upload, X, AlertCircle, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Tooltip,
   TooltipContent,
@@ -35,6 +36,7 @@ export default function HeroImportExport({ heroes, onImportSuccess }: HeroImport
   const [isImportOpen, setIsImportOpen] = useState(false);
   const [importError, setImportError] = useState<string | null>(null);
   const [importSuccess, setImportSuccess] = useState<{ imported: number; total: number } | null>(null);
+  const [replaceExisting, setReplaceExisting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   // Exportiere alle Helden als JSON-Datei
@@ -95,7 +97,7 @@ export default function HeroImportExport({ heroes, onImportSuccess }: HeroImport
         // Versuche zuerst, die Daten als Sammlung zu verarbeiten
         if (parsedData.version && Array.isArray(parsedData.heroes)) {
           const data = parsedData as ExportedHeroCollection;
-          const result = importHeroCollection(data, false);
+          const result = importHeroCollection(data, replaceExisting);
           
           if (result.success) {
             setImportSuccess({ imported: result.imported, total: result.total });
@@ -107,15 +109,22 @@ export default function HeroImportExport({ heroes, onImportSuccess }: HeroImport
         }
         
         // Versuche als einzelner Held zu verarbeiten
-        if (parsedData.hero && parsedData.npcs && parsedData.sessions && parsedData.quests) {
-          const singleHeroData = parsedData as ExportedHero;
-          const success = importHeroData(singleHeroData, false);
-          
-          if (success) {
-            setImportSuccess({ imported: 1, total: 1 });
-            onImportSuccess();
-          } else {
-            setImportError("Der Held existiert bereits. Um ihn zu überschreiben, exportiere alle Helden und bearbeite die JSON-Datei.");
+        if (parsedData.hero && Array.isArray(parsedData.npcs) && Array.isArray(parsedData.sessions) && Array.isArray(parsedData.quests)) {
+          try {
+            const singleHeroData = parsedData as ExportedHero;
+            const success = importHeroData(singleHeroData, replaceExisting);
+            
+            if (success) {
+              setImportSuccess({ imported: 1, total: 1 });
+              onImportSuccess();
+            } else {
+              setImportError(
+                `Der Held existiert bereits. ${!replaceExisting ? 'Aktiviere die Option "Vorhandene Helden ersetzen" und versuche es erneut.' : 'Es ist ein Fehler beim Überschreiben aufgetreten.'}`
+              );
+            }
+          } catch (error) {
+            console.error("Fehler beim Importieren eines einzelnen Helden:", error);
+            setImportError("Fehler beim Import: Die Datenstruktur des Helden ist ungültig.");
           }
           return;
         }
@@ -140,6 +149,7 @@ export default function HeroImportExport({ heroes, onImportSuccess }: HeroImport
   const resetImportDialog = () => {
     setImportError(null);
     setImportSuccess(null);
+    setReplaceExisting(false);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -230,6 +240,21 @@ export default function HeroImportExport({ heroes, onImportSuccess }: HeroImport
                   </span>
                   <Upload className="h-4 w-4 text-[#7f5af0]" />
                 </div>
+              </div>
+              
+              <div className="w-full flex items-center space-x-2 py-2">
+                <Checkbox 
+                  id="replaceExisting" 
+                  checked={replaceExisting}
+                  onCheckedChange={(checked) => setReplaceExisting(checked === true)}
+                  className="bg-[#1e1e2f] border-[#7f5af0]/40 text-[#7f5af0] data-[state=checked]:bg-[#7f5af0]"
+                />
+                <label
+                  htmlFor="replaceExisting"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-[#f5f5f5]/90"
+                >
+                  Vorhandene Helden ersetzen
+                </label>
               </div>
               
               <p className="text-[#f5f5f5]/60 text-xs text-center">
