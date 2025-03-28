@@ -4,6 +4,7 @@ import { Search, ChevronRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import HeroCard from "@/components/hero/HeroCard";
+import HeroImportExport from "@/components/hero/HeroImportExport";
 import DemoDataInitializer from "@/components/demo/DemoDataInitializer";
 import { Hero, Activity } from "@/lib/types";
 import { getHeroes, getRecentActivities, getHeroById } from "@/lib/storage";
@@ -121,15 +122,23 @@ export default function Dashboard() {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
         <h2 className="font-['Cinzel_Decorative'] text-2xl text-[#d4af37] mb-3 md:mb-0">Deine Helden</h2>
-        <div className="relative w-full md:w-64">
-          <Input 
-            type="text" 
-            placeholder="Suche nach Helden..." 
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-[#1e1e2f] border border-[#7f5af0]/40 rounded-lg px-4 py-2 focus:outline-none focus:border-[#7f5af0] focus:ring-1 focus:ring-[#7f5af0]"
+        <div className="flex flex-col sm:flex-row gap-3 items-stretch w-full md:w-auto">
+          <div className="relative w-full sm:w-64">
+            <Input 
+              type="text" 
+              placeholder="Suche nach Helden..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full bg-[#1e1e2f] border border-[#7f5af0]/40 rounded-lg px-4 py-2 focus:outline-none focus:border-[#7f5af0] focus:ring-1 focus:ring-[#7f5af0]"
+            />
+            <Search className="absolute right-3 top-2.5 text-[#7f5af0]/60 h-5 w-5" />
+          </div>
+          
+          {/* Import/Export Komponente */}
+          <HeroImportExport
+            heroes={heroes}
+            onImportSuccess={() => setReloadTrigger(prev => prev + 1)}
           />
-          <Search className="absolute right-3 top-2.5 text-[#7f5af0]/60 h-5 w-5" />
         </div>
       </div>
 

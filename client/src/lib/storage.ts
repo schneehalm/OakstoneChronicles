@@ -9,6 +9,20 @@ const STORAGE_KEYS = {
   ACTIVITIES: 'oakstone-activities'
 };
 
+// Export/Import-Typen
+export interface ExportedHero {
+  hero: Hero;
+  npcs: Npc[];
+  sessions: Session[];
+  quests: Quest[];
+}
+
+export interface ExportedHeroCollection {
+  version: string;
+  heroes: ExportedHero[];
+  exportDate: string;
+}
+
 // Helper functions
 const getFromStorage = <T>(key: string): T[] => {
   const data = localStorage.getItem(key);
@@ -356,4 +370,114 @@ export const addActivity = (activity: Omit<Activity, 'id'>): Activity => {
 export const getRecentActivities = (limit: number = 10): Activity[] => {
   const activities = getActivities();
   return activities.slice(0, limit);
+};
+
+// Export/Import Funktionen
+export const exportHeroData = (heroId: string): ExportedHero | null => {
+  const hero = getHeroById(heroId);
+  if (!hero) return null;
+  
+  const npcs = getNpcsByHeroId(heroId);
+  const sessions = getSessionsByHeroId(heroId);
+  const quests = getQuestsByHeroId(heroId);
+  
+  return {
+    hero,
+    npcs,
+    sessions,
+    quests
+  };
+};
+
+export const exportAllHeroes = (): ExportedHeroCollection => {
+  const heroes = getHeroes();
+  const exportedHeroes: ExportedHero[] = [];
+  
+  for (const hero of heroes) {
+    const exportedHero = exportHeroData(hero.id);
+    if (exportedHero) {
+      exportedHeroes.push(exportedHero);
+    }
+  }
+  
+  return {
+    version: '1.0',
+    heroes: exportedHeroes,
+    exportDate: new Date().toISOString()
+  };
+};
+
+export const importHeroData = (data: ExportedHero, replaceIfExists: boolean = false): boolean => {
+  try {
+    // Prüfe, ob ein Held mit der selben ID bereits existiert
+    const existingHero = getHeroById(data.hero.id);
+    
+    if (existingHero && !replaceIfExists) {
+      return false; // Abbrechen, wenn der Held existiert und nicht ersetzt werden soll
+    }
+    
+    // Held speichern (oder ersetzen)
+    saveHero(data.hero);
+    
+    // Zugehörige NPCs speichern
+    for (const npc of data.npcs) {
+      saveNpc(npc);
+    }
+    
+    // Zugehörige Sessions speichern
+    for (const session of data.sessions) {
+      saveSession(session);
+    }
+    
+    // Zugehörige Quests speichern
+    for (const quest of data.quests) {
+      saveQuest(quest);
+    }
+    
+    // Aktivität hinzufügen
+    addActivity({
+      heroId: data.hero.id,
+      type: existingHero ? 'hero_updated' : 'hero_created',
+      message: existingHero ? `Held importiert: ${data.hero.name}` : `Neuer Held importiert: ${data.hero.name}`,
+      date: new Date().toISOString()
+    });
+    
+    return true;
+  } catch (error) {
+    console.error('Fehler beim Importieren der Heldendaten:', error);
+    return false;
+  }
+};
+
+export const importHeroCollection = (data: ExportedHeroCollection, replaceExisting: boolean = false): { success: boolean; imported: number; total: number } => {
+  try {
+    let importedCount = 0;
+    const totalHeroes = data.heroes.length;
+    
+    // Prüfe, ob die Datenversion kompatibel ist
+    if (data.version !== '1.0') {
+      console.warn(`Warnung: Import einer unbekannten Version (${data.version}). Es könnte zu Kompatibilitätsproblemen kommen.`);
+    }
+    
+    // Importiere jeden Helden
+    for (const heroData of data.heroes) {
+      const success = importHeroData(heroData, replaceExisting);
+      if (success) {
+        importedCount++;
+      }
+    }
+    
+    return {
+      success: importedCount > 0,
+      imported: importedCount,
+      total: totalHeroes
+    };
+  } catch (error) {
+    console.error('Fehler beim Importieren der Helden-Sammlung:', error);
+    return {
+      success: false,
+      imported: 0,
+      total: data.heroes.length
+    };
+  }
 };
