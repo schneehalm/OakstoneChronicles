@@ -42,7 +42,7 @@ export default function HeroDetail({ heroId }: HeroDetailProps) {
   const [recentNpcs, setRecentNpcs] = useState<Npc[]>([]);
   const [latestSession, setLatestSession] = useState<Session | null>(null);
   const [activeQuests, setActiveQuests] = useState<Quest[]>([]);
-  const [activeTab, setActiveTab] = useState<string>("overview");
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   
   useEffect(() => {
     // Load hero and related data
@@ -96,12 +96,8 @@ export default function HeroDetail({ heroId }: HeroDetailProps) {
     );
   }
   
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  
   return (
     <div className="space-y-6">
-      {/* Hero Subnav Bar */}
-      <HeroSubnav heroId={heroId} activeTab={activeTab} />
       
       {/* Hero Card */}
       <div className="flex flex-col md:flex-row md:items-end gap-6 bg-gradient-to-br from-[#1e1e2f] via-[#1e1e2f] to-[#7f5af0]/10 rounded-xl p-6 border border-[#d4af37]/20">
