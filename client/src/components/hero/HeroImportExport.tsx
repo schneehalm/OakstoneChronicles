@@ -198,28 +198,30 @@ export default function HeroImportExport({ heroes, onImportSuccess }: HeroImport
         setIsImportOpen(open);
         if (!open) resetImportDialog();
       }}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md bg-[#1e1e2f] border-2 border-[#7f5af0]/60 shadow-lg shadow-[#7f5af0]/20">
           <DialogHeader>
-            <DialogTitle>Helden importieren</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-[#d4af37] font-['Cinzel_Decorative'] text-xl">
+              Helden importieren
+            </DialogTitle>
+            <DialogDescription className="text-[#f5f5f5] mt-2">
               Wähle eine JSON-Datei mit Heldendaten aus, um sie zu importieren.
             </DialogDescription>
           </DialogHeader>
           
           <div className="py-4">
             {importError && (
-              <Alert variant="destructive" className="mb-4">
-                <AlertCircle className="h-4 w-4" />
-                <AlertTitle>Fehler</AlertTitle>
-                <AlertDescription>{importError}</AlertDescription>
+              <Alert variant="destructive" className="mb-4 border-2 border-red-700 bg-red-900/30">
+                <AlertCircle className="h-5 w-5" />
+                <AlertTitle className="text-white font-semibold">Fehler</AlertTitle>
+                <AlertDescription className="text-white">{importError}</AlertDescription>
               </Alert>
             )}
             
             {importSuccess && (
-              <Alert className="mb-4 bg-[#43ffaf]/10 border-[#43ffaf]/30">
-                <Check className="h-4 w-4 text-[#43ffaf]" />
-                <AlertTitle>Import erfolgreich</AlertTitle>
-                <AlertDescription>
+              <Alert className="mb-4 bg-[#43ffaf]/10 border-2 border-[#43ffaf]/50">
+                <Check className="h-5 w-5 text-[#43ffaf]" />
+                <AlertTitle className="text-[#43ffaf] font-semibold">Import erfolgreich</AlertTitle>
+                <AlertDescription className="text-[#f5f5f5]">
                   {importSuccess.imported} von {importSuccess.total} Helden wurden erfolgreich importiert.
                 </AlertDescription>
               </Alert>
@@ -234,41 +236,43 @@ export default function HeroImportExport({ heroes, onImportSuccess }: HeroImport
                   className="absolute inset-0 opacity-0 cursor-pointer z-10"
                   onChange={handleFileChange}
                 />
-                <div className="w-full bg-[#1e1e2f] border border-[#7f5af0]/40 rounded-lg px-4 py-3 text-sm flex items-center justify-between">
-                  <span className="text-[#f5f5f5]/80">
+                <div className="w-full bg-[#1e1e2f] border-2 border-[#7f5af0]/60 rounded-lg px-4 py-3 text-sm flex items-center justify-between hover:border-[#7f5af0] transition-colors">
+                  <span className="text-[#f5f5f5]">
                     Datei auswählen...
                   </span>
-                  <Upload className="h-4 w-4 text-[#7f5af0]" />
+                  <Upload className="h-5 w-5 text-[#7f5af0]" />
                 </div>
               </div>
               
-              <div className="w-full flex items-center space-x-2 py-2">
+              <div className="w-full flex items-center space-x-3 py-2">
                 <Checkbox 
                   id="replaceExisting" 
                   checked={replaceExisting}
                   onCheckedChange={(checked) => setReplaceExisting(checked === true)}
-                  className="bg-[#1e1e2f] border-[#7f5af0]/40 text-[#7f5af0] data-[state=checked]:bg-[#7f5af0]"
+                  className="h-5 w-5 bg-[#1e1e2f] border-2 border-[#7f5af0]/60 text-[#7f5af0] data-[state=checked]:bg-[#7f5af0]"
                 />
                 <label
                   htmlFor="replaceExisting"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-[#f5f5f5]/90"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-[#f5f5f5]"
                 >
                   Vorhandene Helden ersetzen
                 </label>
               </div>
               
-              <p className="text-[#f5f5f5]/60 text-xs text-center">
-                Unterstützt sowohl einzelne Helden als auch Helden-Sammlungen im JSON-Format, die mit Oakstone Chronicles exportiert wurden.
-              </p>
+              <div className="w-full bg-[#1e1e2f]/90 border border-[#7f5af0]/30 p-3 rounded-md">
+                <p className="text-[#f5f5f5]/90 text-xs text-center">
+                  Unterstützt sowohl einzelne Helden als auch Helden-Sammlungen im JSON-Format, die mit Oakstone Chronicles exportiert wurden.
+                </p>
+              </div>
             </div>
           </div>
           
-          <DialogFooter className="flex justify-between sm:justify-between">
+          <DialogFooter className="flex justify-between sm:justify-between gap-3 mt-4">
             <DialogClose asChild>
               <Button 
                 type="button" 
                 variant="secondary"
-                className="bg-[#1e1e2f] hover:bg-[#1e1e2f]/80 border border-[#f5f5f5]/30"
+                className="bg-[#1e1e2f] hover:bg-[#1e1e2f]/80 border-2 border-[#7f5af0]/60 text-[#f5f5f5] hover:border-[#7f5af0]"
               >
                 Schließen
               </Button>
@@ -278,7 +282,7 @@ export default function HeroImportExport({ heroes, onImportSuccess }: HeroImport
               type="button"
               variant="ghost"
               onClick={resetImportDialog}
-              className="text-[#f5f5f5]/70 hover:text-[#f5f5f5]"
+              className="text-[#f5f5f5] hover:text-[#f5f5f5] hover:bg-[#1e1e2f]/80 border border-[#f5f5f5]/30"
             >
               <X className="h-4 w-4 mr-2" />
               Zurücksetzen

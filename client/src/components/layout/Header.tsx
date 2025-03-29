@@ -1,10 +1,21 @@
 import { Link, useLocation } from "wouter";
-import { Plus } from "lucide-react";
+import { LogOut, Plus, User, UserCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/use-auth";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Header() {
   const [location] = useLocation();
   const isCreatingHero = location === "/hero/create";
+  const { user, isLoading, logoutMutation } = useAuth();
   
   return (
     <header className="sticky top-0 z-50 bg-[#1e1e2f]/95 border-b border-[#d4af37]/20 backdrop-blur-sm">
@@ -17,7 +28,8 @@ export default function Header() {
             </h1>
           </div>
         </Link>
-        <div>
+        
+        <div className="flex items-center space-x-3">
           {!isCreatingHero && (
             <Link href="/hero/create">
               <Button
@@ -29,6 +41,36 @@ export default function Header() {
               </Button>
             </Link>
           )}
+          
+          {isLoading ? (
+            <Skeleton className="h-10 w-10 rounded-full" />
+          ) : user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  className="rounded-full h-10 w-10 p-0 text-[#d4af37] hover:text-[#f0c040] hover:bg-[#2a2a3f]"
+                >
+                  <UserCircle className="h-6 w-6" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel className="flex items-center">
+                  <User className="mr-2 h-4 w-4" />
+                  <span>{user.username}</span>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem 
+                  className="cursor-pointer text-red-500 focus:text-red-500"
+                  onClick={() => logoutMutation.mutate()}
+                  disabled={logoutMutation.isPending}
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Abmelden</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : null}
         </div>
       </div>
     </header>
