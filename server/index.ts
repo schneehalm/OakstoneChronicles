@@ -70,4 +70,6 @@ const __dirname = path.dirname(__filename);
     host: "0.0.0.0",
     reusePort: true,
   }, () => {
-    log(`
+    log(`serving on port ${port}`);
+  });
+})();
