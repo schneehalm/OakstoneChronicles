@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useLocation } from "wouter";
 import { Loader2 } from "lucide-react";
 import { z } from "zod";
+import logoPath from "@assets/OSC_Logo.png";
 
 type LoginValues = z.infer<typeof loginSchema>;
 type RegisterValues = z.infer<typeof registerSchema>;
@@ -70,7 +71,7 @@ export default function AuthPage() {
           <h1 className="text-4xl md:text-5xl font-display text-gold mb-8">Oakstone Chronicles</h1>
           <div className="mb-8">
             <img 
-              src="/OSC_Logo.png" 
+              src={logoPath} 
               alt="Oakstone Chronicles Logo" 
               className="w-32 h-32 mx-auto" 
             />
