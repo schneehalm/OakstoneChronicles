@@ -65,6 +65,29 @@ app.use((req, res, next) => {
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
   const port = 5000;
+  import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// ➤ Nach registerRoutes und vor listen:
+app.use(express.static(path.join(__dirname, "../client/dist")));
+
+app.get("*", (_, res) => {
+  res.sendFile(path.join(__dirname, "../client/dist/index.html"));
+});
+
+// Server starten
+const port = 5000;
+server.listen({
+  port,
+  host: "0.0.0.0",
+  reusePort: true,
+}, () => {
+  log(`serving on port ${port}`);
+});
+
   server.listen({
     port,
     host: "0.0.0.0",
