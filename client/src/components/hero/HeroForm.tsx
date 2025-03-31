@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/card";
 import { GAME_SYSTEMS, STATS_DEFINITIONS } from "@/lib/theme";
 import { Hero, HeroStats } from "@/lib/types";
-import { saveHero } from "@/lib/storage";
+import { createHero, updateHero } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 
 interface HeroFormProps {
@@ -145,8 +145,14 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
     setValue('stats', updatedStats);
   };
   
-  const onSubmit = (data: Hero) => {
+  const onSubmit = async (data: Hero) => {
     try {
+      // Zeige ein Toast für die laufende Aktion
+      toast({
+        title: "Wird gespeichert...",
+        description: "Dein Held wird gespeichert. Bitte warte kurz.",
+      });
+      
       // Make sure tags are included
       data.tags = tags;
       
@@ -157,8 +163,16 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
       data.backstoryPdf = backstoryPdf || undefined;
       data.backstoryPdfName = backstoryPdfName || undefined;
       
-      // Save hero
-      const savedHero = saveHero(data);
+      // Save hero via API
+      let savedHero: Hero;
+      
+      if (existingHero && existingHero.id) {
+        // Update existing hero
+        savedHero = await updateHero(existingHero.id, data);
+      } else {
+        // Create new hero
+        savedHero = await createHero(data);
+      }
       
       toast({
         title: existingHero ? "Held aktualisiert" : "Held erstellt",
@@ -168,6 +182,7 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
       // Navigate to the hero detail page
       navigate(`/hero/${savedHero.id}`);
     } catch (error) {
+      console.error("Fehler beim Speichern des Helden:", error);
       toast({
         title: "Fehler",
         description: "Ein Fehler ist aufgetreten. Bitte versuche es erneut.",
