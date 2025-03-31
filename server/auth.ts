@@ -68,7 +68,10 @@ export function setupAuth(app: Express) {
   
   // Cookie-Parser einrichten
   app.use(cookieParser(SESSION_SECRET));
-  
+
+  // Wichtig für HTTPS-Session auf Render
+  app.set('trust proxy', 1);
+
   // Session-Einstellungen
   app.use(
     session({
