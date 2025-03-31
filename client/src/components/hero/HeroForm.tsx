@@ -172,6 +172,10 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
       } else {
         // Create new hero
         savedHero = await createHero(data);
+        
+        // Warte kurz, um sicherzustellen, dass der Cache aktualisiert wird
+        // Das ist ein Workaround für ein React Query Race Condition Problem
+        await new Promise(resolve => setTimeout(resolve, 300));
       }
       
       toast({

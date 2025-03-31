@@ -29,9 +29,17 @@ export const createHero = async (hero: Omit<Hero, 'id' | 'createdAt' | 'updatedA
   delete (formattedHero as any).updatedAt;
 
   const response = await apiRequest('POST', '/api/heroes', formattedHero);
-  // Nach erfolgreichem Erstellen die Heldenliste ungültig machen, um ein Neuladen zu erzwingen
-  queryClient.invalidateQueries({ queryKey: ['/api/heroes'] });
-  return await response.json();
+  const newHero = await response.json();
+  
+  // Nach erfolgreichem Erstellen die Heldenliste invalidieren mit höherer Priorität
+  // und auf die Invalidierung warten
+  await queryClient.invalidateQueries({ 
+    queryKey: ['/api/heroes'],
+    refetchType: 'active',
+    exact: true
+  });
+  
+  return newHero;
 };
 
 export const updateHero = async (id: string, hero: Partial<Hero>): Promise<Hero> => {
@@ -56,16 +64,31 @@ export const updateHero = async (id: string, hero: Partial<Hero>): Promise<Hero>
   delete formattedHero.updatedAt;
 
   const response = await apiRequest('PUT', `/api/heroes/${id}`, formattedHero);
+  const updatedHero = await response.json();
+  
   // Ungültig machen sowohl der Liste als auch des spezifischen Helden
-  queryClient.invalidateQueries({ queryKey: ['/api/heroes'] });
-  queryClient.invalidateQueries({ queryKey: ['/api/heroes', id] });
-  return await response.json();
+  // und auf die Invalidierung warten
+  await Promise.all([
+    queryClient.invalidateQueries({ 
+      queryKey: ['/api/heroes'],
+      refetchType: 'active'
+    }),
+    queryClient.invalidateQueries({ 
+      queryKey: ['/api/heroes', id],
+      refetchType: 'active'
+    })
+  ]);
+  
+  return updatedHero;
 };
 
 export const deleteHero = async (id: string): Promise<void> => {
   await apiRequest('DELETE', `/api/heroes/${id}`);
-  // Ungültig machen der Heldenliste
-  queryClient.invalidateQueries({ queryKey: ['/api/heroes'] });
+  // Ungültig machen der Heldenliste mit höherer Priorität und auf die Invalidierung warten
+  await queryClient.invalidateQueries({ 
+    queryKey: ['/api/heroes'],
+    refetchType: 'active'
+  });
 };
 
 // NPC API
