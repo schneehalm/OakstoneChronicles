@@ -242,7 +242,7 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
             <div className="mt-3">
               <Input
                 placeholder="Bild-URL (optional)"
-                className="w-full bg-[#1e1e2f] border border-[#7f5af0]/40 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-[#7f5af0] focus:ring-1 focus:ring-[#7f5af0]"
+                className="w-full form-input focus:outline-none focus:border-[#7f5af0] focus:ring-1 focus:ring-[#7f5af0]"
                 value={typeof portraitPreview === 'string' ? portraitPreview : ''}
                 onChange={handleImageUrlChange}
               />
@@ -257,7 +257,7 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
             <Input
               id="heroName"
               placeholder="Name deines Helden"
-              className="w-full bg-[#1e1e2f] border border-[#7f5af0]/40 rounded-lg focus:border-[#7f5af0] focus:ring-1 focus:ring-[#7f5af0]"
+              className="w-full form-input focus:border-[#7f5af0] focus:ring-1 focus:ring-[#7f5af0]"
               {...register('name', { required: true })}
             />
             {errors.name && <p className="text-red-500 text-sm mt-1">Name ist erforderlich</p>}
@@ -271,7 +271,7 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
             >
               <SelectTrigger 
                 id="heroSystem"
-                className="w-full bg-[#1e1e2f] border border-[#7f5af0]/40 rounded-lg focus:border-[#7f5af0] focus:ring-1 focus:ring-[#7f5af0]"
+                className="w-full form-input focus:border-[#7f5af0] focus:ring-1 focus:ring-[#7f5af0]"
               >
                 <SelectValue placeholder="Regelwerk auswählen" />
               </SelectTrigger>
@@ -291,7 +291,7 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
             <Input
               id="heroRace"
               placeholder="z.B. Mensch, Elf, Zwerg..."
-              className="w-full bg-[#1e1e2f] border border-[#7f5af0]/40 rounded-lg focus:border-[#7f5af0] focus:ring-1 focus:ring-[#7f5af0]"
+              className="w-full form-input focus:border-[#7f5af0] focus:ring-1 focus:ring-[#7f5af0]"
               {...register('race')}
             />
           </div>
@@ -301,7 +301,7 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
             <Input
               id="heroClass"
               placeholder="z.B. Krieger, Magier, Händler..."
-              className="w-full bg-[#1e1e2f] border border-[#7f5af0]/40 rounded-lg focus:border-[#7f5af0] focus:ring-1 focus:ring-[#7f5af0]"
+              className="w-full form-input focus:border-[#7f5af0] focus:ring-1 focus:ring-[#7f5af0]"
               {...register('class')}
             />
           </div>
@@ -313,7 +313,7 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
               type="number"
               min="0"
               placeholder="Alter des Charakters"
-              className="w-full bg-[#1e1e2f] border border-[#7f5af0]/40 rounded-lg focus:border-[#7f5af0] focus:ring-1 focus:ring-[#7f5af0]"
+              className="w-full form-input focus:border-[#7f5af0] focus:ring-1 focus:ring-[#7f5af0]"
               {...register('age', { valueAsNumber: true })}
             />
           </div>
@@ -325,7 +325,7 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
               type="number"
               min="1"
               placeholder="Level"
-              className="w-full bg-[#1e1e2f] border border-[#7f5af0]/40 rounded-lg focus:border-[#7f5af0] focus:ring-1 focus:ring-[#7f5af0]"
+              className="w-full form-input focus:border-[#7f5af0] focus:ring-1 focus:ring-[#7f5af0]"
               {...register('level', { required: true, valueAsNumber: true, min: 1 })}
             />
             {errors.level && <p className="text-red-500 text-sm mt-1">Level ist erforderlich</p>}
@@ -337,7 +337,7 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
               <input
                 type="checkbox"
                 id="heroDeceased"
-                className="rounded-sm bg-[#1e1e2f] border border-[#7f5af0]/40 focus:border-[#7f5af0] focus:ring-1 focus:ring-[#7f5af0] text-[#7f5af0] w-5 h-5"
+                className="rounded-sm form-checkbox text-[#7f5af0] w-5 h-5 focus:border-[#7f5af0] focus:ring-1 focus:ring-[#7f5af0]"
                 {...register('deceased')}
               />
               <Label 
@@ -347,7 +347,7 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
                 <span className="mr-2">⚰️</span> Held ist verstorben
               </Label>
             </div>
-            <p className="text-xs text-[#f5f5f5]/60 mt-1 ml-7">
+            <p className="text-xs text-muted-foreground mt-1 ml-7">
               Verstorbene Helden werden in der Übersicht entsprechend markiert.
             </p>
           </div>
@@ -357,7 +357,7 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
         <div className="mb-6">
           <div className="flex justify-between items-center mb-1">
             <Label htmlFor="heroBackstory" className="block form-label">Hintergrundgeschichte</Label>
-            <span className="text-xs text-[#f5f5f5]/70">
+            <span className="text-xs text-muted-foreground">
               {watch('backstory')?.length || 0}/250 Zeichen
             </span>
           </div>
@@ -365,7 +365,7 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
             id="heroBackstory"
             rows={5}
             placeholder="Erzähle die Geschichte deines Helden... (max. 250 Zeichen)"
-            className="w-full bg-[#1e1e2f] border border-[#7f5af0]/40 rounded-lg focus:border-[#7f5af0] focus:ring-1 focus:ring-[#7f5af0]"
+            className="w-full form-textarea focus:border-[#7f5af0] focus:ring-1 focus:ring-[#7f5af0]"
             maxLength={250}
             {...register('backstory', { maxLength: 250 })}
           />
@@ -394,8 +394,8 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
                     }
                   }}
                 />
-                <div className="w-full bg-[#1e1e2f] border border-[#7f5af0]/40 rounded-lg px-4 py-2 text-sm flex items-center justify-between">
-                  <span className="text-[#f5f5f5]/80 truncate">
+                <div className="w-full form-input flex items-center justify-between px-4 py-2 text-sm rounded-lg">
+                  <span className="text-foreground/80 truncate">
                     {backstoryPdfName || "Wähle eine PDF-Datei..."}
                   </span>
                   <Upload className="h-4 w-4 text-[#d4af37]" />
@@ -421,7 +421,7 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
             </div>
             
             {backstoryPdf && (
-              <p className="text-xs text-[#43ffaf] mt-1">
+              <p className="text-xs text-accent mt-1">
                 PDF-Datei "{backstoryPdfName}" wurde hochgeladen
               </p>
             )}
@@ -462,14 +462,14 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
                               e.target.value;
                             handleStatChange(stat.id, value);
                           }}
-                          className="w-full bg-[#1e1e2f] border border-[#7f5af0]/40 hover:border-[#7f5af0]/60 rounded-lg focus:border-[#7f5af0] focus:ring-1 focus:ring-[#7f5af0]"
+                          className="w-full form-input focus:border-[#7f5af0] focus:ring-1 focus:ring-[#7f5af0]"
                         />
                       </div>
                     ))}
                   </div>
                 ) : (
                   <div className="flex items-center justify-center p-4">
-                    <p className="text-[#f5f5f5]/70 italic">
+                    <p className="text-muted-foreground italic">
                       Bitte wähle zuerst ein Regelwerk, um die passenden Statistiken anzuzeigen.
                     </p>
                   </div>
@@ -511,7 +511,7 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
             <Input
               id="newTag"
               placeholder="Neuen Tag hinzufügen"
-              className="flex-grow bg-[#1e1e2f] border border-[#7f5af0]/40 rounded-lg focus:border-[#7f5af0] focus:ring-1 focus:ring-[#7f5af0]"
+              className="flex-grow form-input focus:border-[#7f5af0] focus:ring-1 focus:ring-[#7f5af0]"
               value={newTag}
               onChange={(e) => setNewTag(e.target.value)}
               onKeyDown={(e) => {
@@ -525,7 +525,7 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
               type="button" 
               variant="outline"
               onClick={addTag}
-              className="px-4 py-2 bg-[#7f5af0]/20 hover:bg-[#7f5af0]/30 border border-[#7f5af0]/40 rounded-lg transition-colors flex items-center"
+              className="px-4 py-2 border-[#7f5af0]/40 rounded-lg transition-colors flex items-center"
             >
               <Plus className="h-5 w-5" />
             </Button>
@@ -538,7 +538,7 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
             type="button"
             variant="outline"
             onClick={() => navigate(existingHero ? `/hero/${existingHero.id}` : "/")}
-            className="px-5 py-2 bg-[#1e1e2f] hover:bg-[#1e1e2f]/80 border border-[#d4af37]/40 rounded-lg transition-colors"
+            className="px-5 py-2 border border-[#d4af37]/40 rounded-lg transition-colors"
           >
             Abbrechen
           </Button>

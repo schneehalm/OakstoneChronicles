@@ -110,7 +110,8 @@
   /* Formular-Styling für beide Modi */
   .form-input, 
   .form-select, 
-  .form-textarea {
+  .form-textarea,
+  .form-checkbox {
     @apply bg-input text-foreground border-[hsl(var(--content-border))]/70 placeholder:text-muted-foreground focus:ring-[hsl(var(--content-border))];
   }
   
