@@ -424,12 +424,14 @@ export class DatabaseStorage implements IStorage {
     const sql = neon(process.env.DATABASE_URL!);
     this.db = drizzle(sql);
 
-    // PostgreSQL-Session-Store
+    // PostgreSQL-Session-Store mit korrektem Tabellennamen
     this.sessionStore = new PostgresStore({
       conObject: {
         connectionString: process.env.DATABASE_URL
       },
-      createTableIfMissing: true
+      tableName: 'session',
+      createTableIfMissing: true,
+      pruneSessionInterval: 60
     });
   }
 
