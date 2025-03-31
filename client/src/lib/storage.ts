@@ -381,9 +381,13 @@ export const exportHeroData = (heroId: string): ExportedHero | null => {
   const sessions = getSessionsByHeroId(heroId);
   const quests = getQuestsByHeroId(heroId);
   
+  // Sicherstellen, dass alle Bild-Daten korrekt exportiert werden
+  const heroWithImages = { ...hero };
+  const npcsWithImages = npcs.map(npc => ({ ...npc }));
+  
   return {
-    hero,
-    npcs,
+    hero: heroWithImages,
+    npcs: npcsWithImages,
     sessions,
     quests
   };
@@ -416,23 +420,47 @@ export const importHeroData = (data: ExportedHero, replaceIfExists: boolean = fa
       return false; // Abbrechen, wenn der Held existiert und nicht ersetzt werden soll
     }
     
-    // Held speichern (oder ersetzen)
-    saveHero(data.hero);
+    // Held speichern (oder ersetzen) mit allen Bildinformationen
+    const heroToSave = {
+      ...data.hero,
+      // Sicherstellen, dass das Porträt und PDF korrekt importiert werden
+      portrait: data.hero.portrait || existingHero?.portrait,
+      backstoryPdf: data.hero.backstoryPdf || existingHero?.backstoryPdf,
+      backstoryPdfName: data.hero.backstoryPdfName || existingHero?.backstoryPdfName
+    };
     
-    // Zugehörige NPCs speichern
+    saveHero(heroToSave);
+    
+    // Bestehende Daten für diesen Helden löschen
+    const existingNpcs = getNpcsByHeroId(data.hero.id);
+    const existingSessions = getSessionsByHeroId(data.hero.id);
+    const existingQuests = getQuestsByHeroId(data.hero.id);
+    
+    // NPCs, Sessions und Quests entfernen, die zum Helden gehören
+    // um Duplikate zu vermeiden
+    const allNpcs = getNpcs().filter(npc => !existingNpcs.some(e => e.id === npc.id));
+    const allSessions = getSessions().filter(session => !existingSessions.some(e => e.id === session.id));
+    const allQuests = getQuests().filter(quest => !existingQuests.some(e => e.id === quest.id));
+    
+    // Zugehörige NPCs importieren mit Bildbeibehaltung
     for (const npc of data.npcs) {
-      saveNpc(npc);
+      // Das Bild vom Originalzustand beibehalten
+      const npcToSave = { ...npc };
+      allNpcs.push(npcToSave);
     }
+    saveToStorage(STORAGE_KEYS.NPCS, allNpcs);
     
-    // Zugehörige Sessions speichern
+    // Zugehörige Sessions importieren
     for (const session of data.sessions) {
-      saveSession(session);
+      allSessions.push(session);
     }
+    saveToStorage(STORAGE_KEYS.SESSIONS, allSessions);
     
-    // Zugehörige Quests speichern
+    // Zugehörige Quests importieren
     for (const quest of data.quests) {
-      saveQuest(quest);
+      allQuests.push(quest);
     }
+    saveToStorage(STORAGE_KEYS.QUESTS, allQuests);
     
     // Aktivität hinzufügen
     addActivity({
