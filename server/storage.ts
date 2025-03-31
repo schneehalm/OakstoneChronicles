@@ -767,7 +767,5 @@ export class DatabaseStorage implements IStorage {
   }
 }
 
-// Hier entscheiden wir, welche Storage-Implementierung verwendet wird
-export const storage = process.env.DATABASE_URL 
-  ? new DatabaseStorage() 
-  : new MemStorage();
+// Wir verwenden temporär ausschließlich MemStorage, bis die Datenbankprobleme behoben sind
+export const storage = new MemStorage();
