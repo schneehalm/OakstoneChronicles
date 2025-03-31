@@ -155,31 +155,120 @@
     @apply bg-[hsl(var(--content-box))] border border-[hsl(var(--content-border))] rounded-lg p-4 shadow-sm;
   }
   
-  /* Dialog und Modal Anpassungen */
+  /* Dialog und Modal Anpassungen - Gemeinsame Styles */
   .dialog-content, 
   [role="dialog"],
-  [data-state="open"] {
-    @apply bg-[hsl(var(--content-box))] border-[hsl(var(--content-border))];
+  [data-state="open"],
+  [data-shadcn-dialog],
+  [data-shadcn-dialog-content],
+  .modal-content {
+    @apply bg-[hsl(var(--content-box))] border border-[hsl(var(--content-border))] rounded-lg shadow-md;
   }
   
-  /* Formular-Styling für beide Modi */
+  /* Dialog im Dark Mode */
+  .dark .dialog-content,
+  .dark [role="dialog"],
+  .dark [data-state="open"],
+  .dark [data-shadcn-dialog],
+  .dark [data-shadcn-dialog-content],
+  .dark .modal-content {
+    @apply bg-[#1e1e2f] border-[#d4af37]/70 text-[#f5f5f5];
+  }
+  
+  /* Dialog im Light Mode */
+  .light .dialog-content,
+  .light [role="dialog"],
+  .light [data-state="open"],
+  .light [data-shadcn-dialog],
+  .light [data-shadcn-dialog-content],
+  .light .modal-content {
+    @apply bg-white border-[#7f5af0]/70 text-[#121212];
+  }
+  
+  /* Dialog Titel */
+  .dialog-title,
+  [data-shadcn-dialog-title],
+  .modal-title {
+    @apply text-xl mb-4 font-medium;
+    font-family: var(--font-heading);
+  }
+  
+  /* Dark Mode Dialog Titel */
+  .dark .dialog-title,
+  .dark [data-shadcn-dialog-title],
+  .dark .modal-title {
+    @apply text-[#d4af37];
+  }
+  
+  /* Light Mode Dialog Titel */
+  .light .dialog-title,
+  .light [data-shadcn-dialog-title],
+  .light .modal-title {
+    @apply text-[#7f5af0];
+  }
+  
+  /* Globales Formular-Styling für beide Modi */
   .form-input, 
   .form-select, 
   .form-textarea,
-  .form-checkbox {
-    @apply bg-input text-foreground border-[hsl(var(--content-border))]/70 placeholder:text-muted-foreground focus:ring-[hsl(var(--content-border))];
+  .form-checkbox,
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), 
+  textarea, 
+  select,
+  .input,
+  .select,
+  .textarea,
+  [data-shadcn-input],
+  [data-shadcn-textarea],
+  [data-shadcn-select] {
+    @apply bg-[hsl(var(--input))] text-foreground border border-[hsl(var(--content-border))]/70 rounded-md placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[hsl(var(--content-border))] focus-visible:border-[hsl(var(--content-border))];
   }
   
-  /* Eingabefelder im Dark Mode mit hellerer Textfarbe */
-  .dark input,
+  /* Eingabefelder im Dark Mode mit angepassten Eigenschaften */
+  .dark input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
   .dark textarea,
-  .dark select {
-    @apply text-[#f5f5f5];
+  .dark select,
+  .dark .input,
+  .dark .select,
+  .dark .textarea,
+  .dark [data-shadcn-input],
+  .dark [data-shadcn-textarea],
+  .dark [data-shadcn-select] {
+    @apply text-[#f5f5f5] bg-[#1e1e2f] border-[#7f5af0]/40;
+  }
+  
+  /* Eingabefelder im Light Mode mit angepassten Eigenschaften */
+  .light input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  .light textarea,
+  .light select,
+  .light .input,
+  .light .select,
+  .light .textarea,
+  .light [data-shadcn-input],
+  .light [data-shadcn-textarea],
+  .light [data-shadcn-select] {
+    @apply text-[#121212] bg-white border-[#d4af37]/40;
   }
   
   /* Formular-Labels */
-  .form-label {
-    @apply text-[hsl(var(--secondary))] font-medium;
+  .form-label,
+  label:not(.checkbox-label),
+  [data-shadcn-label] {
+    @apply text-[hsl(var(--secondary))] font-medium mb-1 block;
+  }
+  
+  /* Formular-Label im Dark Mode */
+  .dark .form-label,
+  .dark label:not(.checkbox-label),
+  .dark [data-shadcn-label] {
+    @apply text-[#d4af37] font-medium;
+  }
+  
+  /* Formular-Label im Light Mode */
+  .light .form-label,
+  .light label:not(.checkbox-label),
+  .light [data-shadcn-label] {
+    @apply text-[#7f5af0] font-medium;
   }
   
   /* Statistik-Labels */
@@ -192,9 +281,28 @@
     @apply bg-[hsl(var(--content-box))] border-[hsl(var(--content-border))] shadow-md;
   }
   
-  /* Karten und Listen */
-  .card {
+  /* Karten und Listen - Allgemein */
+  .card,
+  .list-card,
+  .list-item-card,
+  [data-shadcn-card] {
     @apply bg-[hsl(var(--content-box))] text-card-foreground rounded-lg border border-[hsl(var(--content-border))] shadow-sm;
+  }
+  
+  /* Karten im Dark Mode */
+  .dark .card,
+  .dark .list-card,
+  .dark .list-item-card,
+  .dark [data-shadcn-card] {
+    @apply bg-[#1e1e2f] border-[#d4af37]/50 text-[#f5f5f5];
+  }
+  
+  /* Karten im Light Mode */
+  .light .card,
+  .light .list-card,
+  .light .list-item-card,
+  .light [data-shadcn-card] {
+    @apply bg-white border-[#7f5af0]/40 text-[#121212];
   }
   
   /* Tabellen */
@@ -251,9 +359,29 @@
     @apply bg-[hsl(var(--content-box))] border border-[hsl(var(--content-border))] rounded-lg overflow-hidden shadow-md transition-transform hover:scale-[1.01];
   }
   
+  /* Hero-Karten im Dark Mode */
+  .dark .hero-card {
+    @apply bg-[#1e1e2f] border-[#d4af37]/50 text-[#f5f5f5];
+  }
+  
+  /* Hero-Karten im Light Mode */
+  .light .hero-card {
+    @apply bg-white border-[#7f5af0]/40 text-[#121212];
+  }
+  
   /* Infoboxen */
   .info-box {
     @apply bg-[hsl(var(--content-box))]/70 border border-[hsl(var(--content-border))]/50 rounded-md p-3 text-sm;
+  }
+  
+  /* Infoboxen im Dark Mode */
+  .dark .info-box {
+    @apply bg-[#1e1e2f]/90 border-[#d4af37]/30 text-[#f5f5f5];
+  }
+  
+  /* Infoboxen im Light Mode */
+  .light .info-box {
+    @apply bg-white/90 border-[#7f5af0]/30 text-[#121212];
   }
   
   /* Statistik-Zahlen */
@@ -315,14 +443,32 @@
   }
   
   /* Buttons */
-  .btn-primary {
+  .btn-primary,
+  button[type="submit"],
+  [data-shadcn-button="primary"] {
     @apply px-5 py-2 font-medium rounded-lg text-[#121212] transition-all duration-300;
     background: linear-gradient(to right, var(--theme-gold), color-mix(in srgb, var(--theme-gold) 80%, transparent));
     box-shadow: 0 0 0 rgba(212,175,55,0);
   }
   
-  .btn-primary:hover {
+  .btn-primary:hover,
+  button[type="submit"]:hover,
+  [data-shadcn-button="primary"]:hover {
     box-shadow: 0 0 10px rgba(212,175,55,0.3);
+  }
+  
+  /* Light Mode Buttons */
+  .light .btn-primary,
+  .light button[type="submit"],
+  .light [data-shadcn-button="primary"] {
+    background: linear-gradient(to right, var(--theme-purple), color-mix(in srgb, var(--theme-purple) 80%, transparent));
+    color: white;
+  }
+  
+  .light .btn-primary:hover,
+  .light button[type="submit"]:hover,
+  .light [data-shadcn-button="primary"]:hover {
+    box-shadow: 0 0 10px rgba(127,90,240,0.3);
   }
   
   .btn-secondary {
@@ -335,6 +481,16 @@
     background-color: color-mix(in srgb, var(--theme-gold) 10%, transparent);
   }
   
+  /* Light Mode Secondary Button */
+  .light .btn-secondary {
+    border: 1px solid color-mix(in srgb, var(--theme-purple) 40%, transparent);
+    color: var(--theme-purple);
+  }
+  
+  .light .btn-secondary:hover {
+    background-color: color-mix(in srgb, var(--theme-purple) 10%, transparent);
+  }
+  
   .btn-accent {
     @apply px-4 py-2 rounded-lg bg-transparent transition-colors;
     border: 1px solid color-mix(in srgb, var(--theme-purple) 40%, transparent);
@@ -345,6 +501,16 @@
     background-color: color-mix(in srgb, var(--theme-purple) 10%, transparent);
   }
   
+  /* Light Mode Accent Button */
+  .light .btn-accent {
+    border: 1px solid color-mix(in srgb, var(--theme-gold) 40%, transparent);
+    color: var(--theme-gold);
+  }
+  
+  .light .btn-accent:hover {
+    background-color: color-mix(in srgb, var(--theme-gold) 10%, transparent);
+  }
+  
   /* Empty States */
   .empty-state {
     @apply text-muted-foreground italic;
@@ -353,6 +519,16 @@
   /* NPC Card */
   .npc-card {
     @apply bg-[hsl(var(--content-box))] border border-[hsl(var(--content-border))] rounded-lg p-4 shadow-sm transition-all hover:scale-[1.01] cursor-pointer;
+  }
+  
+  /* NPC Card im Dark Mode */
+  .dark .npc-card {
+    @apply bg-[#1e1e2f] border-[#d4af37]/50 text-[#f5f5f5];
+  }
+  
+  /* NPC Card im Light Mode */
+  .light .npc-card {
+    @apply bg-white border-[#7f5af0]/40 text-[#121212];
   }
   
   /* Relationship Types */
