@@ -29,7 +29,7 @@ export default function HeroSubnav({ heroId, activeTab }: HeroSubnavProps) {
       <div className="border-b border-primary/30">
         <nav className="flex overflow-x-auto hide-scrollbar space-x-6 px-2">
           <button 
-            className={`py-2 px-1 font-medium ${activeTab === 'overview' 
+            className={`py-2 px-1 font-medium subnav-item ${activeTab === 'overview' 
               ? 'text-primary border-b-2 border-primary' 
               : 'text-foreground hover:text-primary'}`}
             onClick={() => navigate(`/hero/${heroId}`)}
@@ -37,7 +37,7 @@ export default function HeroSubnav({ heroId, activeTab }: HeroSubnavProps) {
             Übersicht
           </button>
           <button 
-            className={`py-2 px-1 font-medium ${activeTab === 'npcs' 
+            className={`py-2 px-1 font-medium subnav-item ${activeTab === 'npcs' 
               ? 'text-primary border-b-2 border-primary' 
               : 'text-foreground hover:text-primary'}`}
             onClick={() => navigate(`/hero/${heroId}/npcs`)}
@@ -45,7 +45,7 @@ export default function HeroSubnav({ heroId, activeTab }: HeroSubnavProps) {
             NPCs
           </button>
           <button 
-            className={`py-2 px-1 font-medium ${activeTab === 'sessions' 
+            className={`py-2 px-1 font-medium subnav-item ${activeTab === 'sessions' 
               ? 'text-primary border-b-2 border-primary' 
               : 'text-foreground hover:text-primary'}`}
             onClick={() => navigate(`/hero/${heroId}/sessions`)}
@@ -53,7 +53,7 @@ export default function HeroSubnav({ heroId, activeTab }: HeroSubnavProps) {
             Sessions
           </button>
           <button 
-            className={`py-2 px-1 font-medium ${activeTab === 'quests' 
+            className={`py-2 px-1 font-medium subnav-item ${activeTab === 'quests' 
               ? 'text-primary border-b-2 border-primary' 
               : 'text-foreground hover:text-primary'}`}
             onClick={() => navigate(`/hero/${heroId}/quests`)}

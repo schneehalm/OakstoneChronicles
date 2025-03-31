@@ -1,3 +1,9 @@
+/* Import der Schriftarten für die CI */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Uncial+Antiqua&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -8,6 +14,12 @@
     --theme-gold: #d4af37;
     --theme-purple: #7f5af0;
     --theme-green: #43ffaf;
+    
+    /* Schriftart-Variablen */
+    --font-heading: 'Cinzel Decorative', serif;
+    --font-heading-alt: 'Uncial Antiqua', serif;
+    --font-sans: 'Inter', sans-serif;
+    --font-sans-alt: 'Lato', sans-serif;
     
     --background: 0 0% 98%;
     --foreground: 240 10% 15%;
@@ -62,6 +74,12 @@
     --theme-purple: #7f5af0;
     --theme-green: #43ffaf;
     
+    /* Schriftart-Variablen - gleich wie in :root */
+    --font-heading: 'Cinzel Decorative', serif;
+    --font-heading-alt: 'Uncial Antiqua', serif;
+    --font-sans: 'Inter', sans-serif;
+    --font-sans-alt: 'Lato', sans-serif;
+    
     --background: 234 23% 15%;
     --foreground: 0 0% 96%;
     
@@ -112,7 +130,8 @@
   }
 
   body {
-    @apply font-sans antialiased bg-background text-foreground;
+    @apply antialiased bg-background text-foreground;
+    font-family: var(--font-sans);
   }
   
   /* Klassen für das CI-Design */
@@ -190,7 +209,8 @@
   
   /* Überschriften in Content-Boxen */
   .content-heading {
-    @apply text-[hsl(var(--secondary))] font-['Cinzel_Decorative'] text-xl mb-2;
+    @apply text-[hsl(var(--secondary))] text-xl mb-2;
+    font-family: var(--font-heading);
   }
   
   /* Hervorhebungen */
@@ -256,6 +276,12 @@
     background-color: var(--subnav-bg);
   }
   
+  /* Navigation-Element im Submenü */
+  .subnav-item {
+    font-family: var(--font-heading);
+    letter-spacing: 0.02em;
+  }
+  
   /* Select-Menus */
   .select-trigger {
     @apply bg-[hsl(var(--content-box))] border-[hsl(var(--content-border))]/70 text-foreground focus:ring-[hsl(var(--content-border))];
@@ -290,15 +316,33 @@
   
   /* Buttons */
   .btn-primary {
-    @apply px-5 py-2 font-medium rounded-lg bg-gradient-to-r from-[#d4af37] to-[#d4af37]/80 text-[#121212] hover:shadow-[0_0_10px_rgba(212,175,55,0.3)] transition-all duration-300;
+    @apply px-5 py-2 font-medium rounded-lg text-[#121212] transition-all duration-300;
+    background: linear-gradient(to right, var(--theme-gold), color-mix(in srgb, var(--theme-gold) 80%, transparent));
+    box-shadow: 0 0 0 rgba(212,175,55,0);
+  }
+  
+  .btn-primary:hover {
+    box-shadow: 0 0 10px rgba(212,175,55,0.3);
   }
   
   .btn-secondary {
-    @apply px-5 py-2 border border-[#d4af37]/40 rounded-lg text-[#d4af37] bg-transparent hover:bg-[#d4af37]/10 transition-colors;
+    @apply px-5 py-2 rounded-lg bg-transparent transition-colors;
+    border: 1px solid color-mix(in srgb, var(--theme-gold) 40%, transparent);
+    color: var(--theme-gold);
+  }
+  
+  .btn-secondary:hover {
+    background-color: color-mix(in srgb, var(--theme-gold) 10%, transparent);
   }
   
   .btn-accent {
-    @apply px-4 py-2 border-[#7f5af0]/40 rounded-lg text-[#7f5af0] bg-transparent hover:bg-[#7f5af0]/10 transition-colors;
+    @apply px-4 py-2 rounded-lg bg-transparent transition-colors;
+    border: 1px solid color-mix(in srgb, var(--theme-purple) 40%, transparent);
+    color: var(--theme-purple);
+  }
+  
+  .btn-accent:hover {
+    background-color: color-mix(in srgb, var(--theme-purple) 10%, transparent);
   }
   
   /* Empty States */
