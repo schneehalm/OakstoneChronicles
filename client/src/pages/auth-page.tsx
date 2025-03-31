@@ -182,7 +182,7 @@ export default function AuthPage() {
                           <FormControl>
                             <Input 
                               placeholder="Dein Benutzername" 
-                              className="bg-[#1e1e2f]/80 border-[#7f5af0]/30 focus:border-[#d4af37]/60 focus:ring-[#d4af37]/20 placeholder:text-[#f5f5f5]/50"
+                              className="bg-[#1e1e2f]/80 text-[#f5f5f5] border-[#7f5af0]/30 focus:border-[#d4af37]/60 focus:ring-[#d4af37]/20 placeholder:text-[#f5f5f5]/50"
                               {...field} 
                             />
                           </FormControl>
@@ -201,7 +201,7 @@ export default function AuthPage() {
                             <Input 
                               type="password" 
                               placeholder="Dein Passwort" 
-                              className="bg-[#1e1e2f]/80 border-[#7f5af0]/30 focus:border-[#d4af37]/60 focus:ring-[#d4af37]/20 placeholder:text-[#f5f5f5]/50"
+                              className="bg-[#1e1e2f]/80 text-[#f5f5f5] border-[#7f5af0]/30 focus:border-[#d4af37]/60 focus:ring-[#d4af37]/20 placeholder:text-[#f5f5f5]/50"
                               {...field} 
                             />
                           </FormControl>
@@ -234,7 +234,7 @@ export default function AuthPage() {
                           <FormControl>
                             <Input 
                               placeholder="Wähle einen Benutzernamen" 
-                              className="bg-[#1e1e2f]/80 border-[#7f5af0]/30 focus:border-[#d4af37]/60 focus:ring-[#d4af37]/20 placeholder:text-[#f5f5f5]/50"
+                              className="bg-[#1e1e2f]/80 text-[#f5f5f5] border-[#7f5af0]/30 focus:border-[#d4af37]/60 focus:ring-[#d4af37]/20 placeholder:text-[#f5f5f5]/50"
                               {...field}
                             />
                           </FormControl>
@@ -253,7 +253,7 @@ export default function AuthPage() {
                             <Input 
                               type="password" 
                               placeholder="Wähle ein sicheres Passwort" 
-                              className="bg-[#1e1e2f]/80 border-[#7f5af0]/30 focus:border-[#d4af37]/60 focus:ring-[#d4af37]/20 placeholder:text-[#f5f5f5]/50"
+                              className="bg-[#1e1e2f]/80 text-[#f5f5f5] border-[#7f5af0]/30 focus:border-[#d4af37]/60 focus:ring-[#d4af37]/20 placeholder:text-[#f5f5f5]/50"
                               {...field} 
                             />
                           </FormControl>
@@ -272,7 +272,7 @@ export default function AuthPage() {
                             <Input 
                               type="password" 
                               placeholder="Passwort wiederholen" 
-                              className="bg-[#1e1e2f]/80 border-[#7f5af0]/30 focus:border-[#d4af37]/60 focus:ring-[#d4af37]/20 placeholder:text-[#f5f5f5]/50"
+                              className="bg-[#1e1e2f]/80 text-[#f5f5f5] border-[#7f5af0]/30 focus:border-[#d4af37]/60 focus:ring-[#d4af37]/20 placeholder:text-[#f5f5f5]/50"
                               {...field} 
                             />
                           </FormControl>
