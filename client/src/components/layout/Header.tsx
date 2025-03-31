@@ -47,7 +47,8 @@ export default function Header() {
       });
       setUser(null);
       // Nach dem Abmelden zur Login-Seite umleiten
-      navigate('/auth');
+      // Verwende window.location.href für eine vollständige Neuladung der Seite
+      window.location.href = '/auth';
     } catch (error) {
       console.error('Fehler beim Abmelden:', error);
     }
