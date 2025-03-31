@@ -2,8 +2,37 @@ import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
-    const text = (await res.text()) || res.statusText;
-    throw new Error(`${res.status}: ${text}`);
+    let errorData;
+    try {
+      // Clone the response to avoid consuming it
+      const resClone = res.clone();
+      try {
+        errorData = await resClone.json();
+        console.error("API Error Details:", JSON.stringify(errorData, null, 2));
+        
+        if (errorData.message) {
+          let errorMsg = errorData.message;
+          
+          // Füge detaillierte Fehlerinformationen hinzu, wenn verfügbar
+          if (errorData.errors && Array.isArray(errorData.errors)) {
+            errorMsg += ": " + errorData.errors.map((e: any) => 
+              `${e.path ? e.path.join('.') + ': ' : ''}${e.message || e.code}`
+            ).join('; ');
+          }
+          
+          throw new Error(errorMsg);
+        }
+      } catch {
+        // Wenn wir es nicht als JSON parsen können, versuchen wir es als Text
+        const text = await res.text() || res.statusText;
+        throw new Error(`${res.status}: ${text}`);
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error(`${res.status}: ${res.statusText}`);
+    }
   }
 }
 
