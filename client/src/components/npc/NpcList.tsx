@@ -289,17 +289,19 @@ export default function NpcList({ heroId }: NpcListProps) {
       )}
       
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-        <DialogContent className="dialog-content">
-          <DialogHeader>
+        <DialogContent className="dialog-content max-h-screen flex flex-col p-0 overflow-hidden">
+          <DialogHeader className="p-6 pb-2">
             <DialogTitle className="content-heading">
               {selectedNpc ? "NPC bearbeiten" : "Neuen NPC erstellen"}
             </DialogTitle>
           </DialogHeader>
-          <NpcForm 
-            heroId={heroId} 
-            existingNpc={selectedNpc} 
-            onSubmit={handleFormSubmit}
-          />
+          <div className="overflow-y-auto flex-grow px-6 py-2">
+            <NpcForm 
+              heroId={heroId} 
+              existingNpc={selectedNpc} 
+              onSubmit={handleFormSubmit}
+            />
+          </div>
         </DialogContent>
       </Dialog>
     </div>
