@@ -421,34 +421,16 @@ export class DatabaseStorage implements IStorage {
 
   constructor() {
     // PostgreSQL-Verbindung mit Neon Serverless
-    const sql = neon(process.env.DATABASE_URL!);
-    this.db = drizzle(sql);
+    // Die Verbindung muss als String übergeben werden, nicht als Funktion
+    this.db = drizzle(neon(process.env.DATABASE_URL!));
 
-    // Erstellen der Session-Tabelle manuell
-    this.createSessionTableIfNotExists().catch(e => console.error("Fehler beim Erstellen der Session-Tabelle:", e));
-
-    // Temporär MemoryStore verwenden, bis Postgres-Session-Store funktioniert
+    // Ausschließlich MemoryStore für Sessions verwenden
+    // Dies ist einfacher für die Entwicklung und vermeidet DB-Probleme
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000 // 24h
     });
-  }
 
-  private async createSessionTableIfNotExists() {
-    try {
-      const sql = neon(process.env.DATABASE_URL!);
-      await sql(`
-        CREATE TABLE IF NOT EXISTS "session" (
-          "sid" varchar NOT NULL COLLATE "default",
-          "sess" json NOT NULL,
-          "expire" timestamp(6) NOT NULL,
-          CONSTRAINT "session_pkey" PRIMARY KEY ("sid") NOT DEFERRABLE INITIALLY IMMEDIATE
-        );
-        CREATE INDEX IF NOT EXISTS "IDX_session_expire" ON "session" ("expire");
-      `);
-      console.log("Session-Tabelle erfolgreich erstellt oder existiert bereits");
-    } catch (error) {
-      console.error("Fehler beim Erstellen der Session-Tabelle:", error);
-    }
+    // Session-Tabellenerstellung nicht erforderlich mit MemoryStore
   }
 
   // User Management Methods

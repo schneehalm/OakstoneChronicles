@@ -46,8 +46,6 @@ app.use((req, res, next) => {
   if (process.env.DATABASE_URL) {
     try {
       log("Starten der Datenbank-Migration...");
-      const sql = neon(process.env.DATABASE_URL);
-      const db = drizzle(sql);
       
       // Statt migrate verwenden wir push
       const { exec } = await import("child_process");
