@@ -227,155 +227,159 @@ export default function NpcForm({ heroId, existingNpc, onSubmit }: NpcFormProps)
   };
   
   return (
-    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
-      {/* NPC Image */}
-      <div className="flex flex-col sm:flex-row gap-4 items-center">
-        <div className="flex-shrink-0">
-          <div className="h-20 w-20 rounded-full overflow-hidden border-2 border-[#7f5af0]/40 bg-[#7f5af0]/10 flex items-center justify-center relative group">
-            {imagePreview ? (
-              <img 
-                src={imagePreview} 
-                className="h-full w-full object-cover transition-opacity" 
-                alt="NPC portrait preview"
+    <div>
+      <form id="npc-form" onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4 pb-16">
+        {/* NPC Image */}
+        <div className="flex flex-col sm:flex-row gap-4 items-center">
+          <div className="flex-shrink-0">
+            <div className="h-20 w-20 rounded-full overflow-hidden border-2 border-[#7f5af0]/40 bg-[#7f5af0]/10 flex items-center justify-center relative group">
+              {imagePreview ? (
+                <img 
+                  src={imagePreview} 
+                  className="h-full w-full object-cover transition-opacity" 
+                  alt="NPC portrait preview"
+                />
+              ) : (
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-2">
+                  <Upload className="h-6 w-6 text-[#7f5af0]/70 group-hover:text-[#7f5af0] transition-colors" />
+                </div>
+              )}
+              <input 
+                type="file" 
+                id="npcImage" 
+                className="absolute inset-0 opacity-0 cursor-pointer" 
+                accept="image/*"
+                onChange={handleImageChange}
               />
-            ) : (
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-2">
-                <Upload className="h-6 w-6 text-[#7f5af0]/70 group-hover:text-[#7f5af0] transition-colors" />
-              </div>
-            )}
-            <input 
-              type="file" 
-              id="npcImage" 
-              className="absolute inset-0 opacity-0 cursor-pointer" 
-              accept="image/*"
-              onChange={handleImageChange}
+            </div>
+          </div>
+          <div className="flex-grow">
+            <Label htmlFor="imageUrl" className="form-label">Bild-URL</Label>
+            <Input
+              id="imageUrl"
+              placeholder="URL zum Bild (optional)"
+              className="bg-[#1e1e2f] border border-[#7f5af0]/40"
+              value={imagePreview && !imagePreview.startsWith('data:') ? imagePreview : ''}
+              onChange={handleImageUrlChange}
             />
           </div>
         </div>
-        <div className="flex-grow">
-          <Label htmlFor="imageUrl" className="form-label">Bild-URL</Label>
+        
+        {/* NPC Name */}
+        <div>
+          <Label htmlFor="name" className="form-label">Name *</Label>
           <Input
-            id="imageUrl"
-            placeholder="URL zum Bild (optional)"
+            id="name"
             className="bg-[#1e1e2f] border border-[#7f5af0]/40"
-            value={imagePreview && !imagePreview.startsWith('data:') ? imagePreview : ''}
-            onChange={handleImageUrlChange}
+            {...register('name', { required: true })}
+          />
+          {errors.name && <p className="text-red-500 text-xs mt-1">Name ist erforderlich</p>}
+        </div>
+        
+        {/* Relationship */}
+        <div>
+          <Label htmlFor="relationship" className="form-label">Beziehung</Label>
+          <Select 
+            defaultValue={existingNpc?.relationship || 'neutral'} 
+            onValueChange={(value) => setValue('relationship', value)}
+          >
+            <SelectTrigger 
+              id="relationship"
+              className="bg-[#1e1e2f] border border-[#7f5af0]/40"
+            >
+              <SelectValue placeholder="Beziehung wählen" />
+            </SelectTrigger>
+            <SelectContent className="bg-[#1e1e2f] border border-[#7f5af0]/40">
+              {RELATIONSHIP_TYPES.map((type) => (
+                <SelectItem key={type.value} value={type.value}>
+                  {type.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        
+        {/* Location */}
+        <div>
+          <Label htmlFor="location" className="form-label">Ort des Treffens</Label>
+          <Input
+            id="location"
+            placeholder="Wo habt ihr euch getroffen?"
+            className="bg-[#1e1e2f] border border-[#7f5af0]/40"
+            {...register('location')}
           />
         </div>
-      </div>
-      
-      {/* NPC Name */}
-      <div>
-        <Label htmlFor="name" className="form-label">Name *</Label>
-        <Input
-          id="name"
-          className="bg-[#1e1e2f] border border-[#7f5af0]/40"
-          {...register('name', { required: true })}
-        />
-        {errors.name && <p className="text-red-500 text-xs mt-1">Name ist erforderlich</p>}
-      </div>
-      
-      {/* Relationship */}
-      <div>
-        <Label htmlFor="relationship" className="form-label">Beziehung</Label>
-        <Select 
-          defaultValue={existingNpc?.relationship || 'neutral'} 
-          onValueChange={(value) => setValue('relationship', value)}
-        >
-          <SelectTrigger 
-            id="relationship"
+        
+        {/* Notes */}
+        <div>
+          <Label htmlFor="notes" className="form-label">Notizen</Label>
+          <Textarea
+            id="notes"
+            placeholder="Notizen über diesen NPC..."
             className="bg-[#1e1e2f] border border-[#7f5af0]/40"
+            rows={4}
+            {...register('notes')}
+          />
+        </div>
+        
+        {/* Favorite NPC */}
+        <div className="flex items-center space-x-2">
+          <Checkbox 
+            id="favorite" 
+            className="border-[#7f5af0]/40 data-[state=checked]:bg-[#d4af37] data-[state=checked]:border-[#d4af37]"
+            checked={watch('favorite')}
+            onCheckedChange={(checked) => setValue('favorite', checked === true)}
+          />
+          <Label 
+            htmlFor="favorite" 
+            className="font-normal cursor-pointer text-sm flex items-center flex-wrap"
           >
-            <SelectValue placeholder="Beziehung wählen" />
-          </SelectTrigger>
-          <SelectContent className="bg-[#1e1e2f] border border-[#7f5af0]/40">
-            {RELATIONSHIP_TYPES.map((type) => (
-              <SelectItem key={type.value} value={type.value}>
-                {type.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      
-      {/* Location */}
-      <div>
-        <Label htmlFor="location" className="form-label">Ort des Treffens</Label>
-        <Input
-          id="location"
-          placeholder="Wo habt ihr euch getroffen?"
-          className="bg-[#1e1e2f] border border-[#7f5af0]/40"
-          {...register('location')}
-        />
-      </div>
-      
-      {/* Notes */}
-      <div>
-        <Label htmlFor="notes" className="form-label">Notizen</Label>
-        <Textarea
-          id="notes"
-          placeholder="Notizen über diesen NPC..."
-          className="bg-[#1e1e2f] border border-[#7f5af0]/40"
-          rows={4}
-          {...register('notes')}
-        />
-      </div>
-      
-      {/* Favorite NPC */}
-      <div className="flex items-center space-x-2">
-        <Checkbox 
-          id="favorite" 
-          className="border-[#7f5af0]/40 data-[state=checked]:bg-[#d4af37] data-[state=checked]:border-[#d4af37]"
-          checked={watch('favorite')}
-          onCheckedChange={(checked) => setValue('favorite', checked === true)}
-        />
-        <Label 
-          htmlFor="favorite" 
-          className="font-normal cursor-pointer text-sm flex items-center"
-        >
-          Als Favorit markieren <Star className="h-3 w-3 ml-1 text-[#d4af37] fill-[#d4af37]" />
-          <span className="ml-1 text-[#f5f5f5]/60">(erscheint auf der Übersichtsseite, max. 6)</span>
-        </Label>
-      </div>
-      
-      {/* First Session */}
-      <div>
-        <Label htmlFor="firstSessionId" className="form-label">Erste Begegnung</Label>
-        <Select 
-          defaultValue={existingNpc?.firstSessionId || 'none'} 
-          onValueChange={(value) => setValue('firstSessionId', value)}
-          disabled={isLoadingSessions}
-        >
-          <SelectTrigger 
-            id="firstSessionId"
-            className="bg-[#1e1e2f] border border-[#7f5af0]/40"
+            Als Favorit markieren <Star className="h-3 w-3 ml-1 text-[#d4af37] fill-[#d4af37]" />
+            <span className="ml-1 text-[#f5f5f5]/60">(erscheint auf der Übersichtsseite, max. 6)</span>
+          </Label>
+        </div>
+        
+        {/* First Session */}
+        <div>
+          <Label htmlFor="firstSessionId" className="form-label">Erste Begegnung</Label>
+          <Select 
+            defaultValue={existingNpc?.firstSessionId || 'none'} 
+            onValueChange={(value) => setValue('firstSessionId', value)}
+            disabled={isLoadingSessions}
           >
-            {isLoadingSessions ? (
-              <div className="flex items-center">
-                <Loader2 className="h-4 w-4 animate-spin mr-2 text-[#7f5af0]" />
-                <span>Sessions werden geladen...</span>
-              </div>
-            ) : (
-              <SelectValue placeholder="In welcher Session wurde dieser NPC getroffen?" />
-            )}
-          </SelectTrigger>
-          <SelectContent className="bg-[#1e1e2f] border border-[#7f5af0]/40 max-h-[300px]">
-            <SelectItem value="none">Keine Angabe</SelectItem>
-            {sessions.map((session) => (
-              <SelectItem key={session.id} value={session.id}>
-                {session.title} ({format(new Date(session.date), "dd.MM.yyyy", { locale: de })})
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+            <SelectTrigger 
+              id="firstSessionId"
+              className="bg-[#1e1e2f] border border-[#7f5af0]/40"
+            >
+              {isLoadingSessions ? (
+                <div className="flex items-center">
+                  <Loader2 className="h-4 w-4 animate-spin mr-2 text-[#7f5af0]" />
+                  <span>Sessions werden geladen...</span>
+                </div>
+              ) : (
+                <SelectValue placeholder="In welcher Session wurde dieser NPC getroffen?" />
+              )}
+            </SelectTrigger>
+            <SelectContent className="bg-[#1e1e2f] border border-[#7f5af0]/40 max-h-[300px]">
+              <SelectItem value="none">Keine Angabe</SelectItem>
+              {sessions.map((session) => (
+                <SelectItem key={session.id} value={session.id}>
+                  {session.title} ({format(new Date(session.date), "dd.MM.yyyy", { locale: de })})
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </form>
       
-      {/* Buttons */}
-      <div className="flex justify-end gap-2 pt-2">
+      {/* Buttons - Fixed at bottom */}
+      <div className="absolute bottom-0 left-0 right-0 p-4 bg-background border-t border-border flex justify-end gap-2">
         <Button 
-          type="submit" 
+          type="submit"
+          form="npc-form"
           className="bg-[#7f5af0] hover:bg-[#7f5af0]/90"
           disabled={isSubmitting || isLoadingSessions}
+          onClick={handleSubmit(handleFormSubmit)}
         >
           {isSubmitting ? (
             <>
@@ -387,6 +391,6 @@ export default function NpcForm({ heroId, existingNpc, onSubmit }: NpcFormProps)
           )}
         </Button>
       </div>
-    </form>
+    </div>
   );
 }
