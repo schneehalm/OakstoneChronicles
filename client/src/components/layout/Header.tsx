@@ -81,8 +81,6 @@ export default function Header() {
             </Link>
           )}
           
-          <ThemeSwitch />
-          
           {user && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
