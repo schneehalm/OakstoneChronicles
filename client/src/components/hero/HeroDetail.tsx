@@ -227,7 +227,7 @@ export default function HeroDetail({ heroId }: HeroDetailProps) {
                         .map(stat => (
                           <div 
                             key={stat.id} 
-                            className="bg-primary/10 border border-primary/20 rounded-lg p-3 text-center"
+                            className="bg-primary/10 rounded-lg p-3 text-center"
                           >
                             <div className="text-sm text-muted-foreground mb-1">{stat.label}</div>
                             <div className="stat-value">
@@ -240,7 +240,7 @@ export default function HeroDetail({ heroId }: HeroDetailProps) {
                       Object.entries(hero.stats || {}).map(([key, value]) => (
                         <div 
                           key={key} 
-                          className="bg-primary/10 border border-primary/20 rounded-lg p-3 text-center"
+                          className="bg-primary/10 rounded-lg p-3 text-center"
                         >
                           <div className="text-sm text-muted-foreground mb-1">{key}</div>
                           <div className="stat-value">{value}</div>
