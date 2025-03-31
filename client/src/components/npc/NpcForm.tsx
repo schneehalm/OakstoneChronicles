@@ -58,16 +58,80 @@ export default function NpcForm({ heroId, existingNpc, onSubmit }: NpcFormProps)
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Prüfe die Dateigröße (max 1MB)
+      if (file.size > 1024 * 1024) {
+        toast({
+          title: "Fehler",
+          description: "Die Bilddatei ist zu groß. Bitte verwende ein Bild mit maximal 1MB.",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      // Lese die Datei
       const reader = new FileReader();
       reader.onload = (event) => {
-        const result = event.target?.result as string;
-        setImagePreview(result);
-        // Setze das Bild im Formular
-        setValue('image', result);
-        // Leere das URL-Feld, da wir jetzt ein hochgeladenes Bild haben
-        const urlInput = document.getElementById('imageUrl') as HTMLInputElement;
-        if (urlInput) urlInput.value = '';
+        try {
+          const result = event.target?.result as string;
+          
+          // Komprimiere das Bild wenn möglich
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const MAX_WIDTH = 300;
+            const MAX_HEIGHT = 300;
+            let width = img.width;
+            let height = img.height;
+            
+            // Skaliere das Bild herunter, wenn es zu groß ist
+            if (width > height) {
+              if (width > MAX_WIDTH) {
+                height *= MAX_WIDTH / width;
+                width = MAX_WIDTH;
+              }
+            } else {
+              if (height > MAX_HEIGHT) {
+                width *= MAX_HEIGHT / height;
+                height = MAX_HEIGHT;
+              }
+            }
+            
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx?.drawImage(img, 0, 0, width, height);
+            
+            // Erzeuge das komprimierte Bild
+            const compressedImage = canvas.toDataURL('image/jpeg', 0.7);
+            
+            // Aktualisiere das Formular
+            setImagePreview(compressedImage);
+            setValue('image', compressedImage);
+            
+            // Leere das URL-Feld
+            const urlInput = document.getElementById('imageUrl') as HTMLInputElement;
+            if (urlInput) urlInput.value = '';
+          };
+          
+          img.src = result;
+        } catch (error) {
+          console.error("Fehler beim Verarbeiten des Bildes:", error);
+          toast({
+            title: "Fehler",
+            description: "Das Bild konnte nicht verarbeitet werden. Bitte versuche ein anderes Bild.",
+            variant: "destructive"
+          });
+        }
       };
+      
+      reader.onerror = () => {
+        toast({
+          title: "Fehler",
+          description: "Das Bild konnte nicht gelesen werden. Bitte versuche es erneut.",
+          variant: "destructive"
+        });
+      };
+      
       reader.readAsDataURL(file);
     }
   };
