@@ -45,6 +45,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   } = useQuery<User | null>({
     queryKey: ["/api/user"],
     queryFn: getQueryFn({ on401: "returnNull" }),
+    staleTime: 1000 * 60, // 1 Minute Cache-Zeit
+    retry: 1, // Bei Fehler maximal 1 Wiederholung
   });
 
   // Login-Mutation

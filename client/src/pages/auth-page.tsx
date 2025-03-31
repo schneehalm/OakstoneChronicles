@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-// import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/hooks/use-auth";
 import { Redirect, useLocation } from "wouter";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -31,115 +31,8 @@ const registerSchema = z.object({
 });
 
 export default function AuthPage() {
-  const [user, setUser] = useState<{ username: string } | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [loginPending, setLoginPending] = useState(false);
-  const [registerPending, setRegisterPending] = useState(false);
+  const { user, loginMutation, registerMutation, isLoading } = useAuth();
   const { toast } = useToast();
-  
-  const checkAuth = async () => {
-    try {
-      const response = await fetch('/api/user', { credentials: 'include' });
-      if (response.ok) {
-        const userData = await response.json();
-        setUser(userData);
-        return true;
-      }
-      return false;
-    } catch (error) {
-      console.error('Fehler beim Abrufen der Benutzerdaten:', error);
-      return false;
-    }
-  };
-  
-  useEffect(() => {
-    checkAuth();
-  }, []);
-  
-  // Simuliert die loginMutation.mutate Funktion
-  const loginUser = async (data: { username: string; password: string }) => {
-    try {
-      setLoginPending(true);
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-        credentials: 'include'
-      });
-      
-      if (response.ok) {
-        const userData = await response.json();
-        setUser(userData);
-        toast({
-          title: "Anmeldung erfolgreich",
-          description: `Willkommen zurück, ${userData.username}!`,
-        });
-      } else {
-        const error = await response.json();
-        toast({
-          title: "Anmeldung fehlgeschlagen",
-          description: error.message || "Bitte überprüfe deine Anmeldedaten.",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      toast({
-        title: "Anmeldung fehlgeschlagen",
-        description: "Es ist ein Fehler aufgetreten. Bitte versuche es später erneut.",
-        variant: "destructive",
-      });
-    } finally {
-      setLoginPending(false);
-    }
-  };
-  
-  // Simuliert die registerMutation.mutate Funktion
-  const registerUser = async (data: { username: string; password: string }) => {
-    try {
-      setRegisterPending(true);
-      const response = await fetch('/api/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-        credentials: 'include'
-      });
-      
-      if (response.ok) {
-        const userData = await response.json();
-        setUser(userData);
-        toast({
-          title: "Registrierung erfolgreich",
-          description: `Willkommen, ${userData.username}!`,
-        });
-      } else {
-        const error = await response.json();
-        toast({
-          title: "Registrierung fehlgeschlagen",
-          description: error.message || "Bitte wähle einen anderen Benutzernamen.",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      toast({
-        title: "Registrierung fehlgeschlagen",
-        description: "Es ist ein Fehler aufgetreten. Bitte versuche es später erneut.",
-        variant: "destructive",
-      });
-    } finally {
-      setRegisterPending(false);
-    }
-  };
-  
-  // Vereinfachte Mock-Objekte für Mutation-Kompatibilität
-  const loginMutation = { 
-    isPending: loginPending, 
-    mutate: loginUser 
-  };
-  
-  const registerMutation = { 
-    isPending: registerPending, 
-    mutate: registerUser 
-  };
   const [activeTab, setActiveTab] = useState<string>("login");
 
   // Formular für Login

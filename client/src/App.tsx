@@ -12,25 +12,11 @@ import Stats from "@/pages/stats";
 import AuthPage from "@/pages/auth-page";
 import Header from "@/components/layout/Header";
 import MobileNavigation from "@/components/layout/MobileNavigation";
+
+// Importiere die ProtectedRoute Komponente anstatt direkt useAuth zu verwenden
 import { ProtectedRoute } from "@/lib/protected-route";
 
-function Router() {
-  return (
-    <Switch>
-      <ProtectedRoute path="/" component={Dashboard} />
-      <ProtectedRoute path="/hero/create" component={CreateHero} />
-      <ProtectedRoute path="/hero/:id/edit" component={EditHero} />
-      <ProtectedRoute path="/hero/:id/npcs" component={Npcs} />
-      <ProtectedRoute path="/hero/:id/sessions" component={Sessions} />
-      <ProtectedRoute path="/hero/:id/quests" component={Quests} />
-      <ProtectedRoute path="/hero/:id/stats" component={Stats} />
-      <ProtectedRoute path="/hero/:id" component={HeroDetail} />
-      <Route path="/auth" component={AuthPage} />
-      <Route component={NotFound} />
-    </Switch>
-  );
-}
-
+// Hauptanwendungskomponente
 function App() {
   const [location] = useLocation();
   const isAuthPage = location === "/auth";
@@ -40,7 +26,21 @@ function App() {
       {!isAuthPage && <Header />}
       
       <main className={`flex-grow ${!isAuthPage ? 'container mx-auto px-4 py-6' : 'p-0'}`}>
-        <Router />
+        <Switch>
+          {/* Geschützte Routen mit der ProtectedRoute Komponente */}
+          <ProtectedRoute path="/" component={Dashboard} />
+          <ProtectedRoute path="/hero/create" component={CreateHero} />
+          <ProtectedRoute path="/hero/:id/edit" component={EditHero} />
+          <ProtectedRoute path="/hero/:id/npcs" component={Npcs} />
+          <ProtectedRoute path="/hero/:id/sessions" component={Sessions} />
+          <ProtectedRoute path="/hero/:id/quests" component={Quests} />
+          <ProtectedRoute path="/hero/:id/stats" component={Stats} />
+          <ProtectedRoute path="/hero/:id" component={HeroDetail} />
+            
+          {/* Öffentliche Routen */}
+          <Route path="/auth" component={AuthPage} />
+          <Route component={NotFound} />
+        </Switch>
       </main>
       
       {!isAuthPage && !location.includes("/hero/create") && !location.includes("/edit") && (

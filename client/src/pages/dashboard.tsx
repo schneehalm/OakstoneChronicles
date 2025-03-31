@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "wouter";
+import { Link, Redirect } from "wouter";
 import { Search, ChevronRight, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -11,11 +11,13 @@ import { format } from "date-fns";
 import { de } from "date-fns/locale";
 import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function Dashboard() {
   const [filteredHeroes, setFilteredHeroes] = useState<Hero[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
+  // Wir verwenden jetzt den geschützten Routing-Mechanismus aus App.tsx
   
   // API-Abfragen mit React Query
   // Abfrage für Helden

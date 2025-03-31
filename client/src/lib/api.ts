@@ -32,12 +32,15 @@ export const createHero = async (hero: Omit<Hero, 'id' | 'createdAt' | 'updatedA
   const newHero = await response.json();
   
   // Nach erfolgreichem Erstellen die Heldenliste invalidieren mit höherer Priorität
-  // und auf die Invalidierung warten
+  // und auf die Invalidierung warten, erzwinge Refetch
   await queryClient.invalidateQueries({ 
     queryKey: ['/api/heroes'],
-    refetchType: 'active',
+    refetchType: 'all',
     exact: true
   });
+  
+  // Expliziter Refetch der Heldenliste, um sicherzustellen, dass die neuesten Daten geladen werden
+  await queryClient.fetchQuery({ queryKey: ['/api/heroes'] });
   
   return newHero;
 };
