@@ -192,6 +192,7 @@ export default function NpcList({ heroId }: NpcListProps) {
           
           <Button
             onClick={handleAddNpc}
+            variant="outline"
             className="PrimaryButtonOutlined"
           >
             <Plus className="h-5 w-5 mr-1" />

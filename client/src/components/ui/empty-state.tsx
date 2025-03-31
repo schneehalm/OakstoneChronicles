@@ -51,6 +51,7 @@ export function EmptyState({
             <Button
               onClick={onAction}
               className="PrimaryButton mt-2"
+              variant="default"
             >
               {actionLabel}
             </Button>
