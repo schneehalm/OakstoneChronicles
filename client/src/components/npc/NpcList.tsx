@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useLocation } from "wouter";
 import { Plus, Search, Filter, Loader2, UserIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -69,12 +69,14 @@ export default function NpcList({ heroId }: NpcListProps) {
     setFilteredNpcs(filtered);
   }, [searchTerm, relationshipFilter, npcs]);
   
-  // Count NPCs by relationship type
-  const relationshipCounts = npcs.reduce((counts, npc) => {
-    const rel = npc.relationship || 'neutral';
-    counts[rel] = (counts[rel] || 0) + 1;
-    return counts;
-  }, {} as Record<string, number>);
+  // Count NPCs by relationship type - memoized, um Infinite Loops zu vermeiden
+  const relationshipCounts = useMemo(() => {
+    return npcs.reduce((counts, npc) => {
+      const rel = npc.relationship || 'neutral';
+      counts[rel] = (counts[rel] || 0) + 1;
+      return counts;
+    }, {} as Record<string, number>);
+  }, [npcs]);
   
   const handleAddNpc = () => {
     setSelectedNpc(null);
@@ -106,7 +108,8 @@ export default function NpcList({ heroId }: NpcListProps) {
   };
   
   const handleFormSubmit = () => {
-    // Die Daten werden automatisch neu geladen dank React Query's Cache Invalidation
+    // Explizit die Daten neu laden
+    queryClient.invalidateQueries({ queryKey: ['/api/heroes', heroId, 'npcs'] });
     setIsFormOpen(false);
   };
   
