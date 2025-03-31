@@ -578,8 +578,68 @@
   }
   
   /* Empty States */
-  .empty-state {
-    @apply text-muted-foreground italic;
+  .empty-state,
+  .empty-box,
+  .no-content-box,
+  [data-empty-state],
+  .empty-content {
+    @apply bg-[hsl(var(--content-box))]/80 border border-[hsl(var(--content-border))]/30 rounded-lg p-5 text-center my-6 shadow-sm;
+  }
+  
+  /* Empty State Text */
+  .empty-state-text,
+  .empty-state p,
+  .empty-box p,
+  .no-content-box p,
+  [data-empty-state] p,
+  .empty-content p {
+    @apply text-muted-foreground italic mb-4;
+  }
+  
+  /* Empty State im Dark Mode */
+  .dark .empty-state,
+  .dark .empty-box,
+  .dark .no-content-box,
+  .dark [data-empty-state],
+  .dark .empty-content {
+    @apply bg-[#1e1e2f]/60 border-[#d4af37]/20 text-[#a0a0b8];
+  }
+  
+  /* Empty State im Light Mode */
+  .light .empty-state,
+  .light .empty-box,
+  .light .no-content-box,
+  .light [data-empty-state],
+  .light .empty-content {
+    @apply bg-white/90 border-[#7f5af0]/20 text-[#6b6b6b];
+  }
+  
+  /* Empty State Icon */
+  .empty-state-icon,
+  .empty-state svg,
+  .empty-box svg,
+  .no-content-box svg,
+  [data-empty-state] svg,
+  .empty-content svg {
+    @apply mx-auto h-12 w-12 mb-3 opacity-40;
+  }
+  
+  /* Empty State im Dark Mode Icon */
+  .dark .empty-state svg,
+  .dark .empty-box svg,
+  .dark .no-content-box svg,
+  .dark [data-empty-state] svg,
+  .dark .empty-content svg {
+    @apply text-[#d4af37]/50;
+  }
+  
+  /* Empty State im Light Mode Icon */
+  .light .empty-state svg,
+  .light .empty-box svg,
+  .light .no-content-box svg,
+  .light [data-empty-state] svg,
+  .light .empty-content svg {
+    @apply text-[#7f5af0]/50;
   }
   
   /* NPC Card */
