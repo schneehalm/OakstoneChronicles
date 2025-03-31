@@ -46,6 +46,19 @@ export function setupAuth(app: Express) {
   app.use(expressSession(sessionSettings));
   app.use(passport.initialize());
   app.use(passport.session());
+  
+  // Middleware zur automatischen Abmeldung ungültiger Benutzer
+  app.use((req, res, next) => {
+    if (req.isAuthenticated() && !req.user) {
+      console.log("Ungültiger Benutzer erkannt, Session wird beendet");
+      req.logout((err) => {
+        if (err) {
+          console.error("Fehler beim Beenden der Session:", err);
+        }
+      });
+    }
+    next();
+  });
 
   // Lokale Strategie für die Benutzerauthentifizierung
   passport.use(
@@ -68,6 +81,10 @@ export function setupAuth(app: Express) {
   passport.deserializeUser(async (id: number, done) => {
     try {
       const user = await storage.getUser(id);
+      if (!user) {
+        // Wenn der Benutzer in der Datenbank nicht gefunden wird, Session löschen
+        return done(null, false);
+      }
       done(null, user);
     } catch (error) {
       done(error);
@@ -164,33 +181,59 @@ export function setupAuth(app: Express) {
   });
 
   // Benutzerinformationen abrufen
-  app.get("/api/user", (req, res) => {
-    if (!req.isAuthenticated()) {
+  app.get("/api/user", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user) {
       return res.status(401).json({ error: "Nicht authentifiziert" });
     }
     
+    // Überprüfen, ob der Benutzer noch in der Datenbank existiert
+    const userId = (req.user as SelectUser).id;
+    const freshUser = await storage.getUser(userId);
+    
+    if (!freshUser) {
+      // Benutzer nicht mehr in der Datenbank vorhanden, Session beenden
+      req.logout((err) => {
+        if (err) {
+          console.error("Fehler beim Beenden der Session:", err);
+        }
+      });
+      return res.status(401).json({ error: "Benutzer existiert nicht mehr" });
+    }
+    
     // Wir senden nicht das Passwort-Hash zurück
-    const { password, ...userWithoutPassword } = req.user as SelectUser;
+    const { password, ...userWithoutPassword } = freshUser;
     res.json(userWithoutPassword);
   });
   
   // Profil aktualisieren
   app.patch("/api/user", async (req, res, next) => {
-    if (!req.isAuthenticated()) {
+    if (!req.isAuthenticated() || !req.user) {
       return res.status(401).json({ error: "Nicht authentifiziert" });
     }
     
     try {
       const userId = (req.user as SelectUser).id;
       
+      // Überprüfen, ob der Benutzer noch in der Datenbank existiert
+      const freshUser = await storage.getUser(userId);
+      if (!freshUser) {
+        // Benutzer nicht mehr in der Datenbank vorhanden, Session beenden
+        req.logout((err) => {
+          if (err) {
+            console.error("Fehler beim Beenden der Session:", err);
+          }
+        });
+        return res.status(401).json({ error: "Benutzer existiert nicht mehr" });
+      }
+      
       // Validierung der Aktualisierungsdaten
       const { email, password, ...otherData } = req.body;
       const updateData: any = { ...otherData };
       
       // E-Mail-Änderung
-      if (email && email !== (req.user as SelectUser).email) {
+      if (email && email !== freshUser.email) {
         const existingEmail = await storage.getUserByEmail(email);
-        if (existingEmail) {
+        if (existingEmail && existingEmail.id !== userId) {
           return res.status(400).json({ error: "E-Mail existiert bereits" });
         }
         updateData.email = email;
@@ -225,7 +268,7 @@ export function setupAuth(app: Express) {
 
 // Middleware: Authentifizierung erforderlich
 export function requireAuth(req: Request, res: Response, next: NextFunction) {
-  if (!req.isAuthenticated()) {
+  if (!req.isAuthenticated() || !req.user) {
     return res.status(401).json({ error: "Nicht authentifiziert" });
   }
   next();
@@ -234,11 +277,24 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
 // Middleware: Überprüfung des Benutzer-Besitzes einer Ressource
 export function checkOwnership(resourceField: string) {
   return async (req: Request, res: Response, next: NextFunction) => {
-    if (!req.isAuthenticated()) {
+    if (!req.isAuthenticated() || !req.user) {
       return res.status(401).json({ error: "Nicht authentifiziert" });
     }
     
     const userId = (req.user as Express.User).id;
+    
+    // Überprüfen, ob der Benutzer noch in der Datenbank existiert
+    const freshUser = await storage.getUser(userId);
+    if (!freshUser) {
+      // Benutzer nicht mehr in der Datenbank vorhanden, Session beenden
+      req.logout((err) => {
+        if (err) {
+          console.error("Fehler beim Beenden der Session:", err);
+        }
+      });
+      return res.status(401).json({ error: "Benutzer existiert nicht mehr" });
+    }
+    
     const resourceId = req.params[resourceField];
     
     // Implementierung der Besitzprüfung je nach Ressourcentyp
