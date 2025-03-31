@@ -125,7 +125,7 @@ export default function Dashboard() {
       {heroes.length === 0 && !searchTerm && (
         <>
           <div className="text-center py-16 bg-[#1e1e2f]/50 rounded-xl border border-[#7f5af0]/20">
-            <h3 className="font-['Cinzel_Decorative'] text-[#d4af37] text-xl mb-3">Willkommen bei Oakstone RPG Journal</h3>
+            <h3 className="font-['Cinzel_Decorative'] text-[#d4af37] text-xl mb-3">Willkommen bei Oakstone Chronicles</h3>
             <p className="text-[#f5f5f5]/70 mb-6">
               Erstelle deinen ersten Helden, um deine Abenteuer zu dokumentieren.
             </p>

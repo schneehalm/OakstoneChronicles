@@ -62,7 +62,7 @@ function App() {
   }
   
   return (
-    <div className="flex flex-col min-h-screen bg-[#1e1e2f] text-[#f5f5f5] font-inter bg-[radial-gradient(circle_at_25%_25%,rgba(127,90,240,0.05)_0%,transparent_50%),radial-gradient(circle_at_75%_75%,rgba(212,175,55,0.05)_0%,transparent_50%)]">
+    <div className="flex flex-col min-h-screen bg-background text-foreground font-inter hero-gradient">
       {!isAuthPage && user && <Header />}
       
       <main className={`flex-grow ${!isAuthPage ? 'container mx-auto px-4 py-6' : 'p-0'}`}>

@@ -10,7 +10,7 @@ import { queryClient } from "./lib/queryClient";
 // 2. ThemeProvider for UI theme
 createRoot(document.getElementById("root")!).render(
   <QueryClientProvider client={queryClient}>
-    <ThemeProvider defaultTheme="dark" storageKey="oakstone-ui-theme">
+    <ThemeProvider defaultTheme="dark" storageKey="oakstone-chronicles-theme">
       <App />
     </ThemeProvider>
   </QueryClientProvider>
