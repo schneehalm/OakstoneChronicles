@@ -424,10 +424,15 @@ export class DatabaseStorage implements IStorage {
     // Die Verbindung muss als String übergeben werden, nicht als Funktion
     this.db = drizzle(neon(process.env.DATABASE_URL!));
 
-    // Ausschließlich MemoryStore für Sessions verwenden
-    // Dies ist einfacher für die Entwicklung und vermeidet DB-Probleme
-    this.sessionStore = new MemoryStore({
-      checkPeriod: 86400000 // 24h
+    // PostgreSQL für die Sitzungsverwaltung verwenden
+    // Das stellt sicher, dass Benutzeranmeldungen nach einem Neustart bestehen bleiben
+    this.sessionStore = new PostgresStore({
+      conObject: {
+        connectionString: process.env.DATABASE_URL!,
+        ssl: true
+      },
+      createTableIfMissing: true,
+      tableName: 'session'
     });
 
     // Session-Tabellenerstellung nicht erforderlich mit MemoryStore
@@ -768,4 +773,5 @@ export class DatabaseStorage implements IStorage {
 }
 
 // Wir verwenden temporär ausschließlich MemStorage, bis die Datenbankprobleme behoben sind
-export const storage = new MemStorage();
+// Verwende DatabaseStorage statt MemStorage für persistente Datenspeicherung
+export const storage = new DatabaseStorage();
