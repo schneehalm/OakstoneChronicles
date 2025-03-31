@@ -424,15 +424,31 @@ export class DatabaseStorage implements IStorage {
     const sql = neon(process.env.DATABASE_URL!);
     this.db = drizzle(sql);
 
-    // PostgreSQL-Session-Store mit korrektem Tabellennamen
-    this.sessionStore = new PostgresStore({
-      conObject: {
-        connectionString: process.env.DATABASE_URL
-      },
-      tableName: 'session',
-      createTableIfMissing: true,
-      pruneSessionInterval: 60
+    // Erstellen der Session-Tabelle manuell
+    this.createSessionTableIfNotExists().catch(e => console.error("Fehler beim Erstellen der Session-Tabelle:", e));
+
+    // Temporär MemoryStore verwenden, bis Postgres-Session-Store funktioniert
+    this.sessionStore = new MemoryStore({
+      checkPeriod: 86400000 // 24h
     });
+  }
+
+  private async createSessionTableIfNotExists() {
+    try {
+      const sql = neon(process.env.DATABASE_URL!);
+      await sql(`
+        CREATE TABLE IF NOT EXISTS "session" (
+          "sid" varchar NOT NULL COLLATE "default",
+          "sess" json NOT NULL,
+          "expire" timestamp(6) NOT NULL,
+          CONSTRAINT "session_pkey" PRIMARY KEY ("sid") NOT DEFERRABLE INITIALLY IMMEDIATE
+        );
+        CREATE INDEX IF NOT EXISTS "IDX_session_expire" ON "session" ("expire");
+      `);
+      console.log("Session-Tabelle erfolgreich erstellt oder existiert bereits");
+    } catch (error) {
+      console.error("Fehler beim Erstellen der Session-Tabelle:", error);
+    }
   }
 
   // User Management Methods
