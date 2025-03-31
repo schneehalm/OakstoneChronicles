@@ -132,7 +132,7 @@ export default function NpcList({ heroId }: NpcListProps) {
               placeholder="Suche nach NPCs..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-[#1e1e2f] border border-[#7f5af0]/40 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:border-[#7f5af0] focus:ring-1 focus:ring-[#7f5af0]"
+              className="w-full pl-10 pr-4 py-2 form-input"
             />
             <Search className="absolute left-3 top-2.5 h-5 w-5 text-[#7f5af0]/60" />
           </div>
@@ -142,10 +142,10 @@ export default function NpcList({ heroId }: NpcListProps) {
               value={relationshipFilter}
               onValueChange={setRelationshipFilter}
             >
-              <SelectTrigger className="bg-[#1e1e2f] border border-[#7f5af0]/40 h-10 pl-10">
+              <SelectTrigger className="select-trigger h-10 pl-10">
                 <SelectValue placeholder="Beziehung wählen" />
               </SelectTrigger>
-              <SelectContent className="bg-[#1e1e2f] border border-[#7f5af0]/40">
+              <SelectContent className="select-content">
                 <SelectItem value="all">
                   <span className="flex justify-between w-full">
                     <span>Alle Beziehungen</span>
@@ -169,7 +169,7 @@ export default function NpcList({ heroId }: NpcListProps) {
           
           <Button
             onClick={handleAddNpc}
-            className="bg-[#7f5af0] hover:bg-[#7f5af0]/90 text-white"
+            className="btn-accent"
           >
             <Plus className="h-5 w-5 mr-1" />
             NPC
@@ -179,38 +179,36 @@ export default function NpcList({ heroId }: NpcListProps) {
       
       {/* Relationship filter badges for mobile */}
       <div className="flex flex-wrap gap-2 md:hidden">
-        <Badge 
-          variant={relationshipFilter === "all" ? "default" : "outline"}
-          className={`cursor-pointer ${relationshipFilter === "all" ? "bg-[#7f5af0]" : "bg-transparent hover:bg-[#7f5af0]/10"}`}
+        <span 
+          className={`filter-chip ${relationshipFilter === "all" ? "active" : ""}`}
           onClick={() => setRelationshipFilter("all")}
         >
           Alle ({npcs.length})
-        </Badge>
+        </span>
         {RELATIONSHIP_TYPES.map((type) => (
           relationshipCounts[type.value] ? (
-            <Badge 
+            <span 
               key={type.value}
-              variant={relationshipFilter === type.value ? "default" : "outline"}
-              className={`cursor-pointer ${relationshipFilter === type.value ? "bg-[#7f5af0]" : "bg-transparent hover:bg-[#7f5af0]/10"}`}
+              className={`filter-chip ${relationshipFilter === type.value ? "active" : ""}`}
               onClick={() => setRelationshipFilter(type.value)}
             >
               {type.label} ({relationshipCounts[type.value]})
-            </Badge>
+            </span>
           ) : null
         ))}
       </div>
       
       {relationshipFilter !== "all" && (
-        <div className="bg-[#1e1e2f]/50 rounded-lg p-3 border border-[#7f5af0]/20">
-          <p className="text-sm text-[#f5f5f5]/70">
-            <span className="font-semibold text-[#d4af37]">Filter aktiv:</span>{" "}
+        <div className="info-box">
+          <p className="text-sm">
+            <span className="font-semibold highlight">Filter aktiv:</span>{" "}
             Beziehung = {getRelationshipLabel(relationshipFilter)}
             {filteredNpcs.length ? ` (${filteredNpcs.length} NPCs)` : ''}
             <Button 
               variant="link" 
               size="sm"
               onClick={() => setRelationshipFilter("all")}
-              className="ml-2 text-[#7f5af0] p-0 h-auto"
+              className="ml-2 p-0 h-auto"
             >
               Filter zurücksetzen
             </Button>
@@ -219,9 +217,9 @@ export default function NpcList({ heroId }: NpcListProps) {
       )}
       
       {filteredNpcs.length === 0 ? (
-        <div className="text-center py-10 bg-[#1e1e2f]/50 rounded-xl border border-[#7f5af0]/20">
+        <div className="text-center py-10 content-box">
           {searchTerm || relationshipFilter !== "all" ? (
-            <p className="text-[#f5f5f5]/70">
+            <p className="empty-state">
               Keine NPCs gefunden. 
               {relationshipFilter !== "all" && " Versuche einen anderen Beziehungsfilter oder "}
               {searchTerm && " Versuche eine andere Suche oder "}
@@ -231,18 +229,17 @@ export default function NpcList({ heroId }: NpcListProps) {
                   setSearchTerm("");
                   setRelationshipFilter("all");
                 }}
-                className="text-[#7f5af0] p-0"
+                className="p-0"
               >
                 setze alle Filter zurück
               </Button>.
             </p>
           ) : (
             <div className="space-y-3">
-              <p className="text-[#f5f5f5]/70">Du hast noch keine NPCs erstellt.</p>
+              <p className="empty-state">Du hast noch keine NPCs erstellt.</p>
               <Button
                 onClick={handleAddNpc}
-                variant="outline"
-                className="border-[#7f5af0]/40 text-[#7f5af0]"
+                className="btn-accent"
               >
                 Ersten NPC erstellen
               </Button>
@@ -276,9 +273,9 @@ export default function NpcList({ heroId }: NpcListProps) {
       )}
       
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-        <DialogContent className="bg-[#1e1e2f] border border-[#7f5af0]/30 text-[#f5f5f5]">
+        <DialogContent className="dialog-content">
           <DialogHeader>
-            <DialogTitle className="font-['Cinzel_Decorative'] text-[#d4af37] text-xl">
+            <DialogTitle className="content-heading">
               {selectedNpc ? "NPC bearbeiten" : "Neuen NPC erstellen"}
             </DialogTitle>
           </DialogHeader>

@@ -4,6 +4,11 @@
 
 @layer base {
   :root {
+    /* Theme Colors */
+    --theme-gold: #d4af37;
+    --theme-purple: #7f5af0;
+    --theme-green: #43ffaf;
+    
     --background: 0 0% 98%;
     --foreground: 240 10% 15%;
     
@@ -36,9 +41,27 @@
     --ring: 43 74% 53%;
     
     --radius: 0.5rem;
+    
+    /* UI Specific Colors */
+    --subnav-bg: rgba(245, 245, 245, 0.95);
+    --selection-bg: rgba(212, 175, 55, 0.2);
+    --tag-bg-1: rgba(127, 90, 240, 0.15);
+    --tag-bg-2: rgba(212, 175, 55, 0.15);
+    --tag-bg-3: rgba(67, 255, 175, 0.15);
+    --tag-border-1: rgba(127, 90, 240, 0.5);
+    --tag-border-2: rgba(212, 175, 55, 0.5);
+    --tag-border-3: rgba(67, 255, 175, 0.5);
+    --tag-text-1: rgba(127, 90, 240, 1);
+    --tag-text-2: rgba(212, 175, 55, 1);
+    --tag-text-3: rgba(67, 255, 175, 1);
   }
 
   .dark {
+    /* Theme Colors */
+    --theme-gold: #d4af37;
+    --theme-purple: #7f5af0;
+    --theme-green: #43ffaf;
+    
     --background: 234 23% 15%;
     --foreground: 0 0% 96%;
     
@@ -69,6 +92,19 @@
     --border: 43 74% 53%;
     --input: 234 25% 16%;
     --ring: 43 74% 53%;
+    
+    /* UI Specific Colors */
+    --subnav-bg: rgba(30, 30, 47, 0.95);
+    --selection-bg: rgba(212, 175, 55, 0.2);
+    --tag-bg-1: rgba(127, 90, 240, 0.2);
+    --tag-bg-2: rgba(212, 175, 55, 0.2);
+    --tag-bg-3: rgba(67, 255, 175, 0.2);
+    --tag-border-1: rgba(127, 90, 240, 0.4);
+    --tag-border-2: rgba(212, 175, 55, 0.4);
+    --tag-border-3: rgba(67, 255, 175, 0.4);
+    --tag-text-1: rgba(127, 90, 240, 1);
+    --tag-text-2: rgba(212, 175, 55, 1);
+    --tag-text-3: rgba(67, 255, 175, 1);
   }
   
   * {
@@ -205,5 +241,92 @@
   
   .content-list-item {
     @apply py-2 hover:bg-muted/20 rounded-md px-2 transition-colors;
+  }
+  
+  /* Navigation Header */
+  .subnav-header {
+    @apply sticky top-0 z-10 backdrop-blur-sm pt-4 pb-1;
+    background-color: var(--subnav-bg);
+  }
+  
+  /* Select-Menus */
+  .select-trigger {
+    @apply bg-[hsl(var(--content-box))] border-[hsl(var(--content-border))]/70 text-foreground focus:ring-[hsl(var(--content-border))];
+  }
+  
+  .select-content {
+    @apply bg-[hsl(var(--content-box))] border-[hsl(var(--content-border))]/70 text-foreground max-h-[300px];
+  }
+  
+  /* Tags */
+  .tag {
+    @apply border rounded-full px-3 py-1 text-sm flex items-center;
+  }
+  
+  .tag-purple {
+    background-color: var(--tag-bg-1);
+    border-color: var(--tag-border-1);
+    color: var(--tag-text-1);
+  }
+  
+  .tag-gold {
+    background-color: var(--tag-bg-2);
+    border-color: var(--tag-border-2);
+    color: var(--tag-text-2);
+  }
+  
+  .tag-green {
+    background-color: var(--tag-bg-3);
+    border-color: var(--tag-border-3);
+    color: var(--tag-text-3);
+  }
+  
+  /* Buttons */
+  .btn-primary {
+    @apply px-5 py-2 font-medium rounded-lg bg-gradient-to-r from-[#d4af37] to-[#d4af37]/80 text-[#121212] hover:shadow-[0_0_10px_rgba(212,175,55,0.3)] transition-all duration-300;
+  }
+  
+  .btn-secondary {
+    @apply px-5 py-2 border border-[#d4af37]/40 rounded-lg text-[#d4af37] bg-transparent hover:bg-[#d4af37]/10 transition-colors;
+  }
+  
+  .btn-accent {
+    @apply px-4 py-2 border-[#7f5af0]/40 rounded-lg text-[#7f5af0] bg-transparent hover:bg-[#7f5af0]/10 transition-colors;
+  }
+  
+  /* Empty States */
+  .empty-state {
+    @apply text-muted-foreground italic;
+  }
+  
+  /* NPC Card */
+  .npc-card {
+    @apply bg-[hsl(var(--content-box))] border border-[hsl(var(--content-border))] rounded-lg p-4 shadow-sm transition-all hover:scale-[1.01] cursor-pointer;
+  }
+  
+  /* Relationship Types */
+  .relationship-ally, .relationship-neutral, .relationship-family, .relationship-mentor, .relationship-student {
+    color: var(--theme-purple);
+  }
+  
+  .relationship-enemy, .relationship-rival {
+    color: var(--theme-gold);
+  }
+  
+  .relationship-romance {
+    color: var(--theme-green);
+  }
+  
+  /* Filter Buttons */
+  .filter-chip {
+    @apply rounded-full px-3 py-1 text-sm font-medium transition-colors cursor-pointer;
+  }
+  
+  .filter-chip.active {
+    @apply bg-[hsl(var(--secondary))]/20 text-[hsl(var(--secondary))];
+  }
+  
+  .filter-chip:not(.active) {
+    @apply bg-muted/40 text-muted-foreground hover:bg-muted/60;
   }
 }
