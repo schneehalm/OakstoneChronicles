@@ -16,7 +16,7 @@ function Calendar({
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
-      className={cn("p-3 bg-[#272737] border-2 border-[#7f5af0]/60 rounded-lg shadow-lg shadow-black/20 calendar", className)}
+      className={cn("p-3 bg-[#272737] border-2 border-[#7f5af0]/60 rounded-lg shadow-lg shadow-black/20 calendar text-white", className)}
       classNames={{
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
         month: "space-y-4",
