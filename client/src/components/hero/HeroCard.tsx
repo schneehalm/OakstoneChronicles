@@ -93,13 +93,13 @@ export default function HeroCard({ hero }: HeroCardProps) {
       <div 
         onClick={handleCardClick}
         className={cn(
-          "bg-[#1e1e2f]/95 border border-[#d4af37]/30 rounded-xl overflow-hidden transition-all cursor-pointer transform hover:scale-[1.02] bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2720%27%20height%3D%2720%27%20viewBox%3D%270%200%2020%2020%27%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%3E%3Cg%20fill%3D%27%237f5af0%27%20fill-opacity%3D%270.05%27%20fill-rule%3D%27evenodd%27%3E%3Ccircle%20cx%3D%273%27%20cy%3D%273%27%20r%3D%271%27%2F%3E%3Ccircle%20cx%3D%2713%27%20cy%3D%2713%27%20r%3D%271%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E')]",
+          "hero-card overflow-hidden transition-all cursor-pointer transform hover:scale-[1.02] bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2720%27%20height%3D%2720%27%20viewBox%3D%270%200%2020%2020%27%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%3E%3Cg%20fill%3D%27%237f5af0%27%20fill-opacity%3D%270.05%27%20fill-rule%3D%27evenodd%27%3E%3Ccircle%20cx%3D%273%27%20cy%3D%273%27%20r%3D%271%27%2F%3E%3Ccircle%20cx%3D%2713%27%20cy%3D%2713%27%20r%3D%271%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E')]",
           hero.deceased 
             ? "opacity-70 grayscale hover:opacity-90" 
-            : "hover:shadow-[0_0_10px_rgba(212,175,55,0.3)]"
+            : "hover:shadow-lg"
         )}
       >
-        <div className="relative h-40 overflow-hidden bg-gradient-to-br from-[#7f5af0]/30 to-[#1e1e2f]">
+        <div className="relative h-40 overflow-hidden bg-gradient-to-br from-[hsl(var(--primary))]/30 to-[hsl(var(--background))]">
           {hero.portrait ? (
             <img 
               src={hero.portrait} 
@@ -108,18 +108,18 @@ export default function HeroCard({ hero }: HeroCardProps) {
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center">
-              <span className="text-[#f5f5f5]/40 text-2xl">Kein Portrait</span>
+              <span className="text-muted-foreground text-2xl">Kein Portrait</span>
             </div>
           )}
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#1e1e2f] to-transparent p-3">
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[hsl(var(--background))] to-transparent p-3">
             <div className="flex items-end justify-between">
-              <h3 className="font-['Cinzel_Decorative'] text-xl text-[#d4af37] flex items-center">
+              <h3 className="content-heading flex items-center m-0">
                 {hero.deceased && <span className="mr-2" title="Verstorben">⚰️</span>}
                 {hero.name}
               </h3>
-              <span className="text-xs bg-[#7f5af0]/60 rounded-full px-2 py-0.5">Lvl {hero.level}</span>
+              <span className="text-xs bg-primary/60 rounded-full px-2 py-0.5 text-primary-foreground">Lvl {hero.level}</span>
             </div>
-            <div className="flex items-center text-sm opacity-80 mt-1">
+            <div className="flex items-center text-sm text-foreground/80 mt-1">
               {hero.deceased ? (
                 <span className="text-red-400">(verstorben)</span>
               ) : (
@@ -140,25 +140,25 @@ export default function HeroCard({ hero }: HeroCardProps) {
                     e.preventDefault();
                     e.stopPropagation();
                   }}
-                  className="h-8 w-8 rounded-full bg-[#1e1e2f]/80 flex items-center justify-center"
+                  className="h-8 w-8 rounded-full bg-[hsl(var(--content-box))]/80 flex items-center justify-center"
                   aria-label="Aktionen"
                 >
-                  <MoreVertical className="h-4 w-4 text-[#f5f5f5]" />
+                  <MoreVertical className="h-4 w-4 text-foreground" />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 sideOffset={5}
                 align="end" 
-                className="z-[100] w-48 bg-[#1e1e2f] border border-[#7f5af0]/40"
+                className="z-[100] w-48 dropdown-content"
               >
                 <DropdownMenuItem 
                   onSelect={(e) => {
                     e.preventDefault();
                     handleExportClick(e as any);
                   }}
-                  className="flex items-center gap-2 cursor-pointer text-[#f5f5f5] hover:bg-[#7f5af0]/20 focus:bg-[#7f5af0]/20"
+                  className="flex items-center gap-2 cursor-pointer text-foreground hover:bg-primary/10 focus:bg-primary/10"
                 >
-                  <Download className="h-4 w-4 text-[#d4af37]" />
+                  <Download className="h-4 w-4 text-[hsl(var(--secondary))]" />
                   <span>Held exportieren</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem 
@@ -166,7 +166,7 @@ export default function HeroCard({ hero }: HeroCardProps) {
                     e.preventDefault();
                     handleDeleteClick(e as any);
                   }}
-                  className="flex items-center gap-2 cursor-pointer text-red-500 hover:bg-red-500/10 focus:bg-red-500/10"
+                  className="flex items-center gap-2 cursor-pointer text-destructive hover:bg-destructive/10 focus:bg-destructive/10"
                 >
                   <Trash2 className="h-4 w-4" />
                   <span>Held löschen</span>
@@ -177,10 +177,10 @@ export default function HeroCard({ hero }: HeroCardProps) {
         </div>
         <div className="p-4">
           <div className="flex justify-between items-center mb-3">
-            <span className="text-[#d4af37]/80 text-sm">{hero.system}</span>
-            <span className="text-[#f5f5f5]/60 text-xs">Zuletzt aktiv: {formattedDate}</span>
+            <span className="highlight text-sm">{hero.system}</span>
+            <span className="text-muted-foreground text-xs">Zuletzt aktiv: {formattedDate}</span>
           </div>
-          <p className="text-sm line-clamp-2 text-[#f5f5f5]/90">
+          <p className="text-sm line-clamp-2 text-foreground/90">
             {hero.backstory || "Keine Hintergrundgeschichte verfügbar."}
           </p>
           {hero.tags && (
@@ -195,9 +195,9 @@ export default function HeroCard({ hero }: HeroCardProps) {
                   key={index}
                   className={cn(
                     "text-xs rounded-full px-2 py-0.5",
-                    index % 3 === 0 ? "bg-[#7f5af0]/20 border border-[#7f5af0]/40" :
-                    index % 3 === 1 ? "bg-[#d4af37]/20 border border-[#d4af37]/40" :
-                    "bg-[#43ffaf]/20 border border-[#43ffaf]/40"
+                    index % 3 === 0 ? "bg-primary/20 border border-primary/40" :
+                    index % 3 === 1 ? "bg-secondary/20 border border-secondary/40" :
+                    "bg-accent/20 border border-accent/40"
                   )}
                 >
                   {tag}

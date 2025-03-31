@@ -79,7 +79,7 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
-        <h2 className="font-['Cinzel_Decorative'] text-2xl text-[#d4af37] mb-3 md:mb-0">Deine Helden</h2>
+        <h2 className="content-heading">Deine Helden</h2>
         <div className="flex flex-col sm:flex-row gap-3 items-stretch w-full md:w-auto">
           <div className="relative w-full sm:w-64">
             <Input 
@@ -87,9 +87,9 @@ export default function Dashboard() {
               placeholder="Suche nach Helden..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-[#1e1e2f] border border-[#7f5af0]/40 rounded-lg px-4 py-2 focus:outline-none focus:border-[#7f5af0] focus:ring-1 focus:ring-[#7f5af0]"
+              className="search-input"
             />
-            <Search className="absolute right-3 top-2.5 text-[#7f5af0]/60 h-5 w-5" />
+            <Search className="absolute right-3 top-2.5 text-[hsl(var(--secondary))]/60 h-5 w-5" />
           </div>
           
           {/* Import/Export Komponente */}
@@ -108,14 +108,14 @@ export default function Dashboard() {
         
         {/* Create New Hero Card */}
         <Link href="/hero/create">
-          <div className="bg-[#1e1e2f]/50 border border-dashed border-[#7f5af0]/40 rounded-xl overflow-hidden transition-all hover:shadow-[0_0_10px_rgba(127,90,240,0.3)] cursor-pointer flex flex-col items-center justify-center p-8 group">
-            <div className="h-16 w-16 rounded-full bg-[#7f5af0]/10 border border-[#7f5af0]/30 flex items-center justify-center mb-4 group-hover:bg-[#7f5af0]/20 transition-all">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-[#7f5af0]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="content-box border-dashed flex flex-col items-center justify-center p-8 group cursor-pointer hover:bg-[hsl(var(--content-box))]/80 transition-all">
+            <div className="h-16 w-16 rounded-full bg-[hsl(var(--primary))]/10 border border-[hsl(var(--content-border))]/30 flex items-center justify-center mb-4 group-hover:bg-[hsl(var(--primary))]/20 transition-all">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-[hsl(var(--primary))]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
               </svg>
             </div>
-            <h3 className="font-['Cinzel_Decorative'] text-[#7f5af0] text-xl text-center">Neuen Helden erstellen</h3>
-            <p className="text-[#f5f5f5]/60 text-sm text-center mt-2">Beginne eine neue Heldenreise</p>
+            <h3 className="content-heading text-center">Neuen Helden erstellen</h3>
+            <p className="text-muted-foreground text-sm text-center mt-2">Beginne eine neue Heldenreise</p>
           </div>
         </Link>
       </div>
@@ -124,13 +124,13 @@ export default function Dashboard() {
       
       {heroes.length === 0 && !searchTerm && (
         <>
-          <div className="text-center py-16 bg-[#1e1e2f]/50 rounded-xl border border-[#7f5af0]/20">
-            <h3 className="font-['Cinzel_Decorative'] text-[#d4af37] text-xl mb-3">Willkommen bei Oakstone Chronicles</h3>
-            <p className="text-[#f5f5f5]/70 mb-6">
+          <div className="content-box text-center py-16">
+            <h3 className="content-heading mb-3">Willkommen bei Oakstone Chronicles</h3>
+            <p className="text-muted-foreground mb-6">
               Erstelle deinen ersten Helden, um deine Abenteuer zu dokumentieren.
             </p>
             <Link href="/hero/create">
-              <Button className="bg-[#7f5af0] hover:bg-[#7f5af0]/90">
+              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
                 Neuen Helden erstellen
               </Button>
             </Link>
@@ -141,8 +141,8 @@ export default function Dashboard() {
       )}
       
       {filteredHeroes.length === 0 && searchTerm && (
-        <div className="text-center py-10 bg-[#1e1e2f]/50 rounded-xl border border-[#7f5af0]/20">
-          <p className="text-[#f5f5f5]/70">Keine Helden gefunden. Versuche eine andere Suche.</p>
+        <div className="content-box text-center py-10">
+          <p className="text-muted-foreground">Keine Helden gefunden. Versuche eine andere Suche.</p>
         </div>
       )}
     </div>

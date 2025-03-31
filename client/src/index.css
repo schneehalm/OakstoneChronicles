@@ -10,6 +10,9 @@
     --card: 0 0% 100%;
     --card-foreground: 240 10% 15%;
     
+    --content-box: 0 0% 99%;
+    --content-border: 43 74% 53%;
+    
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 15%;
     
@@ -19,7 +22,7 @@
     --secondary: 43 74% 53%;
     --secondary-foreground: 240 10% 10%;
     
-    --muted: 210 40% 93%;
+    --muted: 210 40% 96%;
     --muted-foreground: 240 3.8% 40%;
     
     --accent: 143 92% 63%;
@@ -29,8 +32,8 @@
     --destructive-foreground: 0 0% 100%;
     
     --border: 240 5.9% 85%;
-    --input: 240 5.9% 90%;
-    --ring: 263 86% 62%;
+    --input: 0 0% 100%;
+    --ring: 43 74% 53%;
     
     --radius: 0.5rem;
   }
@@ -41,6 +44,9 @@
     
     --card: 234 25% 18%;
     --card-foreground: 0 0% 96%;
+    
+    --content-box: 234 25% 16%;
+    --content-border: 43 74% 53%;
     
     --popover: 234 25% 18%;
     --popover-foreground: 0 0% 96%;
@@ -60,9 +66,9 @@
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 96%;
     
-    --border: 234 25% 25%;
-    --input: 234 25% 22%;
-    --ring: 263 86% 62%;
+    --border: 43 74% 53%;
+    --input: 234 25% 16%;
+    --ring: 43 74% 53%;
   }
   
   * {
@@ -89,48 +95,33 @@
 
 /* Anpassungen für Modals und Dialoge */
 @layer components {
-  /* Dialog und Modal Anpassungen */
-  .dark .dialog-content, 
-  .dark [role="dialog"],
-  .dark [data-state="open"] {
-    @apply bg-card border-border;
+  /* Content-Box Anpassungen */
+  .content-box {
+    @apply bg-[hsl(var(--content-box))] border border-[hsl(var(--content-border))] rounded-lg p-4 shadow-sm;
   }
   
-  .light .dialog-content,
-  .light [role="dialog"],
-  .light [data-state="open"] {
-    @apply bg-card border-border shadow-md;
+  /* Dialog und Modal Anpassungen */
+  .dialog-content, 
+  [role="dialog"],
+  [data-state="open"] {
+    @apply bg-[hsl(var(--content-box))] border-[hsl(var(--content-border))];
   }
   
   /* Formular-Styling für beide Modi */
   .form-input, 
   .form-select, 
   .form-textarea {
-    @apply bg-input text-foreground border-border placeholder:text-muted-foreground focus:ring-primary;
-  }
-  
-  .dark .form-input,
-  .dark .form-select,
-  .dark .form-textarea {
-    @apply bg-input border-border text-foreground;
+    @apply bg-input text-foreground border-[hsl(var(--content-border))]/70 placeholder:text-muted-foreground focus:ring-[hsl(var(--content-border))];
   }
   
   /* Dropdown-Menüs */
   .dropdown-content {
-    @apply bg-card border-border shadow-md;
-  }
-  
-  .dark .dropdown-content {
-    @apply bg-card border-border;
+    @apply bg-[hsl(var(--content-box))] border-[hsl(var(--content-border))] shadow-md;
   }
   
   /* Karten und Listen */
   .card {
-    @apply bg-card text-card-foreground rounded-lg border border-border shadow-sm;
-  }
-  
-  .dark .card {
-    @apply bg-card text-card-foreground border-border;
+    @apply bg-[hsl(var(--content-box))] text-card-foreground rounded-lg border border-[hsl(var(--content-border))] shadow-sm;
   }
   
   /* Tabellen */
@@ -138,16 +129,70 @@
     @apply even:bg-muted/30 hover:bg-muted/50;
   }
   
-  .dark .table-row {
-    @apply even:bg-muted/20 hover:bg-muted/40;
-  }
-  
   /* Toasts und Benachrichtigungen */
   .toast {
-    @apply bg-card text-foreground border border-border shadow-md;
+    @apply bg-[hsl(var(--content-box))] text-foreground border border-[hsl(var(--content-border))] shadow-md;
   }
   
-  .dark .toast {
-    @apply bg-card text-foreground border-border;
+  /* Überschriften in Content-Boxen */
+  .content-heading {
+    @apply text-[hsl(var(--secondary))] font-['Cinzel_Decorative'] text-xl mb-2;
+  }
+  
+  /* Hervorhebungen */
+  .highlight {
+    @apply text-[hsl(var(--secondary))];
+  }
+  
+  /* Buttons mit Gold-Akzent */
+  .btn-gold {
+    @apply bg-[hsl(var(--content-box))] text-[hsl(var(--secondary))] border border-[hsl(var(--content-border))] hover:bg-[hsl(var(--secondary))]/10 px-4 py-2 rounded-md transition-colors;
+  }
+  
+  /* Runde Hintergrundbilder mit Goldrand */
+  .avatar-gold {
+    @apply rounded-full border-2 border-[hsl(var(--content-border))] p-1;
+  }
+  
+  /* Suchfeld und Inputfelder */
+  .search-input {
+    @apply bg-[hsl(var(--content-box))] text-foreground border border-[hsl(var(--content-border))]/70 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-[hsl(var(--content-border))]/50;
+  }
+  
+  /* Tabs Navigation */
+  .tab-nav {
+    @apply border-b border-[hsl(var(--content-border))]/50 mb-4;
+  }
+  
+  .tab-item {
+    @apply px-4 py-2 text-muted-foreground hover:text-[hsl(var(--secondary))] cursor-pointer;
+  }
+  
+  .tab-item.active {
+    @apply text-[hsl(var(--secondary))] border-b-2 border-[hsl(var(--content-border))];
+  }
+  
+  /* Hero-Karten */
+  .hero-card {
+    @apply bg-[hsl(var(--content-box))] border border-[hsl(var(--content-border))] rounded-lg overflow-hidden shadow-md transition-transform hover:scale-[1.01];
+  }
+  
+  /* Infoboxen */
+  .info-box {
+    @apply bg-[hsl(var(--content-box))]/70 border border-[hsl(var(--content-border))]/50 rounded-md p-3 text-sm;
+  }
+  
+  /* Statistik-Zahlen */
+  .stat-value {
+    @apply text-[hsl(var(--accent))] text-2xl font-semibold;
+  }
+  
+  /* Listen in Contentboxen */
+  .content-list {
+    @apply space-y-2 divide-y divide-[hsl(var(--content-border))]/20;
+  }
+  
+  .content-list-item {
+    @apply py-2 hover:bg-muted/20 rounded-md px-2 transition-colors;
   }
 }

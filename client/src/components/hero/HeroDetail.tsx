@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { ChevronRight, Edit, MoreHorizontal, ChevronUp, ChevronDown, Trash2, FileText, Download, ExternalLink, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { 
   DropdownMenu,
   DropdownMenuContent,
@@ -117,7 +118,7 @@ export default function HeroDetail({ heroId }: HeroDetailProps) {
   if (isLoadingHero) {
     return (
       <div className="flex flex-col items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-[#d4af37] mb-2" />
+        <Loader2 className="h-8 w-8 animate-spin text-[hsl(var(--secondary))] mb-2" />
         <p>Lade Heldendaten...</p>
       </div>
     );
@@ -135,9 +136,9 @@ export default function HeroDetail({ heroId }: HeroDetailProps) {
     }, 0);
     
     return (
-      <div className="flex flex-col items-center justify-center h-64">
-        <p className="text-red-400">Held nicht gefunden</p>
-        <p className="text-sm text-[#f5f5f5]/60 mt-2">Du wirst zur Übersicht weitergeleitet...</p>
+      <div className="flex flex-col items-center justify-center h-64 content-box">
+        <p className="text-destructive">Held nicht gefunden</p>
+        <p className="text-sm text-muted-foreground mt-2">Du wirst zur Übersicht weitergeleitet...</p>
       </div>
     );
   }
@@ -146,9 +147,9 @@ export default function HeroDetail({ heroId }: HeroDetailProps) {
     <div className="space-y-6">
       
       {/* Hero Card */}
-      <div className="flex flex-col md:flex-row md:items-end gap-6 bg-gradient-to-br from-[#1e1e2f] via-[#1e1e2f] to-[#7f5af0]/10 rounded-xl p-6 border border-[#d4af37]/20">
+      <div className="flex flex-col md:flex-row md:items-end gap-6 content-box bg-gradient-to-br from-[hsl(var(--content-box))] via-[hsl(var(--content-box))] to-[hsl(var(--primary))]/10 p-6">
         <div className="flex-shrink-0">
-          <div className="h-28 w-28 md:h-32 md:w-32 rounded-full overflow-hidden border-4 border-[#d4af37]/60 shadow-[0_0_10px_rgba(212,175,55,0.3)]">
+          <div className="h-28 w-28 md:h-32 md:w-32 rounded-full overflow-hidden avatar-gold">
             {hero.portrait ? (
               <img 
                 src={hero.portrait} 
@@ -156,8 +157,8 @@ export default function HeroDetail({ heroId }: HeroDetailProps) {
                 className="h-full w-full object-cover" 
               />
             ) : (
-              <div className="h-full w-full bg-[#7f5af0]/20 flex items-center justify-center">
-                <span className="text-[#f5f5f5]/40 text-xl">?</span>
+              <div className="h-full w-full bg-primary/20 flex items-center justify-center">
+                <span className="text-muted-foreground text-xl">?</span>
               </div>
             )}
           </div>
@@ -165,28 +166,28 @@ export default function HeroDetail({ heroId }: HeroDetailProps) {
         <div className="flex-grow">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-3">
             <div>
-              <h2 className="font-['Cinzel_Decorative'] text-3xl md:text-4xl text-[#d4af37]">{hero.name}</h2>
+              <h2 className="content-heading text-3xl md:text-4xl">{hero.name}</h2>
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2">
                 <span>{hero.race}</span>
-                <span className="text-[#d4af37]/60">•</span>
+                <span className="text-[hsl(var(--secondary))]/60">•</span>
                 <span>{hero.class}</span>
                 {hero.age && (
                   <>
-                    <span className="text-[#d4af37]/60">•</span>
+                    <span className="text-[hsl(var(--secondary))]/60">•</span>
                     <span>Alter: {hero.age}</span>
                   </>
                 )}
-                <span className="text-[#d4af37]/60">•</span>
-                <span className="bg-[#7f5af0]/30 text-[#f5f5f5] px-2 py-0.5 rounded-full text-sm">Lvl {hero.level}</span>
+                <span className="text-[hsl(var(--secondary))]/60">•</span>
+                <span className="bg-primary/30 text-primary-foreground px-2 py-0.5 rounded-full text-sm">Lvl {hero.level}</span>
               </div>
-              <div className="mt-1 text-sm text-[#d4af37]/80">{hero.system}</div>
+              <div className="mt-1 text-sm highlight">{hero.system}</div>
             </div>
             <div className="flex gap-2">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => navigate(`/hero/${heroId}/edit`)}
-                className="bg-[#1e1e2f]/80 hover:bg-[#1e1e2f] border border-[#d4af37]/40 text-[#f5f5f5] transition-colors"
+                className="btn-gold"
               >
                 <Edit className="h-4 w-4 mr-1" />
                 <span>Bearbeiten</span>
@@ -195,7 +196,7 @@ export default function HeroDetail({ heroId }: HeroDetailProps) {
                 variant="outline"
                 size="sm"
                 onClick={() => setIsDeleteDialogOpen(true)}
-                className="bg-[#1e1e2f]/80 hover:bg-[#1e1e2f] border border-[#7f5af0]/40 text-[#f5f5f5] transition-colors"
+                className="bg-[hsl(var(--content-box))]/80 hover:bg-[hsl(var(--content-box))] border border-destructive/40 text-destructive transition-colors"
               >
                 <Trash2 className="h-4 w-4 mr-1" />
                 <span>Löschen</span>
@@ -209,11 +210,11 @@ export default function HeroDetail({ heroId }: HeroDetailProps) {
       <div className="space-y-8">
         {/* Hero Stats / Attributes */}
         {hero.stats && Object.keys(hero.stats).length > 0 && (
-          <div className="bg-[#1e1e2f]/80 rounded-xl border border-[#d4af37]/30 p-5 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2720%27%20height%3D%2720%27%20viewBox%3D%270%200%2020%2020%27%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%3E%3Cg%20fill%3D%27%237f5af0%27%20fill-opacity%3D%270.05%27%20fill-rule%3D%27evenodd%27%3E%3Ccircle%20cx%3D%273%27%20cy%3D%273%27%20r%3D%271%27%2F%3E%3Ccircle%20cx%3D%2713%27%20cy%3D%2713%27%20r%3D%271%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E')]">
+          <div className="content-box">
             <Accordion type="single" collapsible defaultValue="stats" className="w-full">
               <AccordionItem value="stats" className="border-0">
                 <AccordionTrigger className="py-0 hover:no-underline">
-                  <h3 className="font-['Cinzel_Decorative'] text-xl text-[#d4af37] flex items-center">
+                  <h3 className="content-heading flex items-center">
                     <span>Attribute & Statistiken</span>
                   </h3>
                 </AccordionTrigger>
@@ -226,10 +227,10 @@ export default function HeroDetail({ heroId }: HeroDetailProps) {
                         .map(stat => (
                           <div 
                             key={stat.id} 
-                            className="bg-[#7f5af0]/10 border border-[#7f5af0]/20 rounded-lg p-3 text-center"
+                            className="bg-primary/10 border border-primary/20 rounded-lg p-3 text-center"
                           >
-                            <div className="text-sm text-[#f5f5f5]/70 mb-1">{stat.label}</div>
-                            <div className="text-xl font-medium text-[#43ffaf]">
+                            <div className="text-sm text-muted-foreground mb-1">{stat.label}</div>
+                            <div className="stat-value">
                               {hero.stats ? hero.stats[stat.id] : '–'}
                             </div>
                           </div>
@@ -239,10 +240,10 @@ export default function HeroDetail({ heroId }: HeroDetailProps) {
                       Object.entries(hero.stats || {}).map(([key, value]) => (
                         <div 
                           key={key} 
-                          className="bg-[#7f5af0]/10 border border-[#7f5af0]/20 rounded-lg p-3 text-center"
+                          className="bg-primary/10 border border-primary/20 rounded-lg p-3 text-center"
                         >
-                          <div className="text-sm text-[#f5f5f5]/70 mb-1">{key}</div>
-                          <div className="text-xl font-medium text-[#43ffaf]">{value}</div>
+                          <div className="text-sm text-muted-foreground mb-1">{key}</div>
+                          <div className="stat-value">{value}</div>
                         </div>
                       ))
                     )}
@@ -255,12 +256,12 @@ export default function HeroDetail({ heroId }: HeroDetailProps) {
         
         {/* Favorite NPCs Section */}
         {favoriteNpcs.length > 0 && (
-          <div className="bg-[#1e1e2f]/80 rounded-xl border border-[#7f5af0]/30 p-5">
+          <div className="content-box">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-['Cinzel_Decorative'] text-xl text-[#d4af37]">Favorisierte NPCs</h3>
+              <h3 className="content-heading">Favorisierte NPCs</h3>
               <Button 
                 variant="link" 
-                className="text-[#d4af37] hover:text-[#43ffaf] flex items-center text-sm p-0"
+                className="text-[hsl(var(--secondary))] hover:text-[hsl(var(--accent))] flex items-center text-sm p-0"
                 onClick={() => navigate(`/hero/${hero.id}/npcs`)}
               >
                 <span>Alle NPCs anzeigen</span>
@@ -271,7 +272,7 @@ export default function HeroDetail({ heroId }: HeroDetailProps) {
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
               {favoriteNpcs.map((npc) => (
                 <div key={npc.id} className="flex flex-col items-center text-center">
-                  <div className="h-16 w-16 rounded-full overflow-hidden border-2 border-[#d4af37]/40 mb-2">
+                  <div className="h-16 w-16 rounded-full overflow-hidden avatar-gold mb-2">
                     {npc.image ? (
                       <img 
                         src={npc.image} 
@@ -279,15 +280,15 @@ export default function HeroDetail({ heroId }: HeroDetailProps) {
                         className="h-full w-full object-cover"
                       />
                     ) : (
-                      <div className="h-full w-full flex items-center justify-center bg-[#7f5af0]/20 text-[#f5f5f5]/60">
+                      <div className="h-full w-full flex items-center justify-center bg-primary/20 text-muted-foreground">
                         ?
                       </div>
                     )}
                   </div>
-                  <div className="text-sm font-medium text-[#f5f5f5] truncate max-w-full px-1">
+                  <div className="text-sm font-medium text-foreground truncate max-w-full px-1">
                     {npc.name}
                   </div>
-                  <div className="text-xs text-[#d4af37]/70 truncate max-w-full px-1">
+                  <div className="text-xs highlight truncate max-w-full px-1">
                     {npc.relationship}
                   </div>
                 </div>
@@ -297,11 +298,11 @@ export default function HeroDetail({ heroId }: HeroDetailProps) {
         )}
         
         {/* Hero Backstory */}
-        <div className="bg-[#1e1e2f]/80 rounded-xl border border-[#d4af37]/30 p-5 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2720%27%20height%3D%2720%27%20viewBox%3D%270%200%2020%2020%27%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%3E%3Cg%20fill%3D%27%237f5af0%27%20fill-opacity%3D%270.05%27%20fill-rule%3D%27evenodd%27%3E%3Ccircle%20cx%3D%273%27%20cy%3D%273%27%20r%3D%271%27%2F%3E%3Ccircle%20cx%3D%2713%27%20cy%3D%2713%27%20r%3D%271%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E')]">
+        <div className="content-box">
           <div className="w-full">
-            <h3 className="font-['Cinzel_Decorative'] text-xl text-[#d4af37] mb-3">Hintergrundgeschichte</h3>
+            <h3 className="content-heading mb-3">Hintergrundgeschichte</h3>
             
-            <div className="prose prose-sm prose-invert max-w-none">
+            <div className="prose prose-sm max-w-none">
               {/* Text-Hintergrundgeschichte */}
               {hero.backstory ? (
                 <>
@@ -309,7 +310,7 @@ export default function HeroDetail({ heroId }: HeroDetailProps) {
                     {/* Zeige die ersten zwei Sätze immer an */}
                     {hero.backstory.split(/(?<=\.)\s+/).slice(0, 2).join(' ')}
                     {hero.backstory.split(/(?<=\.)\s+/).length > 2 && (
-                      <span className="text-[#f5f5f5]/60">...</span>
+                      <span className="text-muted-foreground">...</span>
                     )}
                   </div>
                   
@@ -318,7 +319,7 @@ export default function HeroDetail({ heroId }: HeroDetailProps) {
                     <Accordion type="single" collapsible className="mt-2">
                       <AccordionItem value="backstory-full" className="border-0">
                         <AccordionTrigger className="py-0 hover:no-underline">
-                          <span className="text-[#d4af37] text-sm">Mehr anzeigen</span>
+                          <span className="highlight text-sm">Mehr anzeigen</span>
                         </AccordionTrigger>
                         <AccordionContent>
                           <div className="whitespace-pre-line mt-2">
@@ -335,10 +336,10 @@ export default function HeroDetail({ heroId }: HeroDetailProps) {
               
               {/* PDF-Hintergrundgeschichte */}
               {hero.backstoryPdf && hero.backstoryPdfName && (
-                <div className="mt-4 p-3 border border-[#7f5af0]/30 rounded-lg bg-[#7f5af0]/10">
+                <div className="mt-4 p-3 border border-primary/30 rounded-lg bg-primary/10">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <FileText className="h-5 w-5 text-[#d4af37]" />
+                      <FileText className="h-5 w-5 text-[hsl(var(--secondary))]" />
                       <span className="text-sm">{hero.backstoryPdfName}</span>
                     </div>
                     <div className="flex items-center gap-2">
@@ -346,7 +347,7 @@ export default function HeroDetail({ heroId }: HeroDetailProps) {
                         href={hero.backstoryPdf} 
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-1 text-[#7f5af0] hover:text-[#7f5af0]/80 transition-colors text-sm"
+                        className="flex items-center gap-1 text-primary hover:text-primary/80 transition-colors text-sm"
                       >
                         <ExternalLink className="h-4 w-4" />
                         <span>Öffnen</span>
@@ -354,7 +355,7 @@ export default function HeroDetail({ heroId }: HeroDetailProps) {
                       <a 
                         href={hero.backstoryPdf} 
                         download={hero.backstoryPdfName}
-                        className="flex items-center gap-1 text-[#43ffaf] hover:text-[#43ffaf]/80 transition-colors text-sm"
+                        className="flex items-center gap-1 text-accent hover:text-accent/80 transition-colors text-sm"
                       >
                         <Download className="h-4 w-4" />
                         <span>Herunterladen</span>
@@ -370,11 +371,12 @@ export default function HeroDetail({ heroId }: HeroDetailProps) {
                 {(typeof hero.tags === 'string' ? [hero.tags] : Array.isArray(hero.tags) ? hero.tags : []).map((tag, index) => (
                   <span 
                     key={index}
-                    className={`text-xs rounded-full px-2 py-0.5 ${
-                      index % 3 === 0 ? "bg-[#7f5af0]/20 border border-[#7f5af0]/40" :
-                      index % 3 === 1 ? "bg-[#d4af37]/20 border border-[#d4af37]/40" :
-                      "bg-[#43ffaf]/20 border border-[#43ffaf]/40"
-                    }`}
+                    className={cn(
+                      "text-xs rounded-full px-2 py-0.5",
+                      index % 3 === 0 ? "bg-primary/20 border border-primary/40" :
+                      index % 3 === 1 ? "bg-secondary/20 border border-secondary/40" :
+                      "bg-accent/20 border border-accent/40"
+                    )}
                   >
                     {tag}
                   </span>
@@ -386,20 +388,20 @@ export default function HeroDetail({ heroId }: HeroDetailProps) {
         
         {/* Current Session Summary */}
         {latestSession && (
-          <div className="bg-[#1e1e2f]/80 rounded-xl border border-[#d4af37]/30 p-5 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2720%27%20height%3D%2720%27%20viewBox%3D%270%200%2020%2020%27%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%3E%3Cg%20fill%3D%27%237f5af0%27%20fill-opacity%3D%270.05%27%20fill-rule%3D%27evenodd%27%3E%3Ccircle%20cx%3D%273%27%20cy%3D%273%27%20r%3D%271%27%2F%3E%3Ccircle%20cx%3D%2713%27%20cy%3D%2713%27%20r%3D%271%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E')]">
+          <div className="content-box">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-['Cinzel_Decorative'] text-xl text-[#d4af37]">Aktuelle Session</h3>
-              <span className="text-sm text-[#f5f5f5]/60">
+              <h3 className="content-heading">Aktuelle Session</h3>
+              <span className="text-sm text-muted-foreground">
                 {format(new Date(latestSession.date), "dd.MM.yyyy", { locale: de })}
               </span>
             </div>
-            <h4 className="font-medium text-[#43ffaf] mb-2">{latestSession.title}</h4>
+            <h4 className="font-medium text-accent mb-2">{latestSession.title}</h4>
             <p className="text-sm line-clamp-4 whitespace-pre-line">{latestSession.content}</p>
             
             <div className="mt-3">
               <Button 
                 variant="link" 
-                className="text-[#d4af37] hover:text-[#43ffaf] flex items-center text-sm p-0"
+                className="text-[hsl(var(--secondary))] hover:text-[hsl(var(--accent))] flex items-center text-sm p-0"
                 onClick={() => navigate(`/hero/${hero.id}/sessions`)}
               >
                 <span>Vollständige Session anzeigen</span>
@@ -411,12 +413,12 @@ export default function HeroDetail({ heroId }: HeroDetailProps) {
         
         {/* Recent NPCs Grid */}
         {recentNpcs.length > 0 && (
-          <div>
+          <div className="content-box">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-['Cinzel_Decorative'] text-xl text-[#d4af37]">Wichtige NPCs</h3>
+              <h3 className="content-heading">Wichtige NPCs</h3>
               <Button 
                 variant="link" 
-                className="text-[#d4af37] hover:text-[#43ffaf] flex items-center text-sm p-0"
+                className="text-[hsl(var(--secondary))] hover:text-[hsl(var(--accent))] flex items-center text-sm p-0"
                 onClick={() => navigate(`/hero/${hero.id}/npcs`)}
               >
                 <span>Alle anzeigen</span>
@@ -434,12 +436,12 @@ export default function HeroDetail({ heroId }: HeroDetailProps) {
         
         {/* Active Quests */}
         {activeQuests.length > 0 && (
-          <div>
+          <div className="content-box">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-['Cinzel_Decorative'] text-xl text-[#d4af37]">Aktive Aufträge</h3>
+              <h3 className="content-heading">Aktive Aufträge</h3>
               <Button 
                 variant="link" 
-                className="text-[#d4af37] hover:text-[#43ffaf] flex items-center text-sm p-0"
+                className="text-[hsl(var(--secondary))] hover:text-[hsl(var(--accent))] flex items-center text-sm p-0"
                 onClick={() => navigate(`/hero/${hero.id}/quests`)}
               >
                 <span>Alle anzeigen</span>

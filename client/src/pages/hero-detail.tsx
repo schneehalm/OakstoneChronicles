@@ -9,7 +9,7 @@ export default function HeroDetailPage() {
   return (
     <div>
       {/* Hero Subnav - immer oben */}
-      <div className="mb-6 sticky top-0 z-10 bg-[#1e1e2f]/95 backdrop-blur-sm pt-4 pb-1">
+      <div className="mb-6 sticky top-0 z-10 bg-background/95 backdrop-blur-sm pt-4 pb-1">
         <HeroSubnav heroId={heroId} activeTab="overview" />
       </div>
       
