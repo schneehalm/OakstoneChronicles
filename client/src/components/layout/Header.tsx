@@ -1,10 +1,53 @@
 import { Link, useLocation } from "wouter";
-import { Plus } from "lucide-react";
+import { LogOut, Plus, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
+// import { useAuth } from "@/hooks/use-auth";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useEffect, useState } from "react";
 
 export default function Header() {
   const [location] = useLocation();
   const isCreatingHero = location === "/hero/create";
+  
+  // Mock-Auth-State für Entwicklung
+  const [user, setUser] = useState<{ username: string } | null>(null);
+  
+  // API-Anfrage für Benutzerauthentifizierung
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/user', { credentials: 'include' });
+        if (response.ok) {
+          const userData = await response.json();
+          setUser(userData);
+        }
+      } catch (error) {
+        console.error('Fehler beim Abrufen der Benutzerdaten:', error);
+      }
+    };
+    
+    checkAuth();
+  }, []);
+  
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/logout', { 
+        method: 'POST',
+        credentials: 'include'
+      });
+      setUser(null);
+    } catch (error) {
+      console.error('Fehler beim Abmelden:', error);
+    }
+  };
   
   return (
     <header className="sticky top-0 z-50 bg-[#1e1e2f]/95 border-b border-[#d4af37]/20 backdrop-blur-sm">
@@ -17,7 +60,7 @@ export default function Header() {
             </h1>
           </div>
         </Link>
-        <div>
+        <div className="flex items-center gap-3">
           {!isCreatingHero && (
             <Link href="/hero/create">
               <Button
@@ -28,6 +71,33 @@ export default function Header() {
                 <span className="hidden sm:inline">Neuer Held</span>
               </Button>
             </Link>
+          )}
+          
+          {user && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="relative h-9 w-9 rounded-full border border-primary/20">
+                  <Avatar className="h-9 w-9">
+                    <AvatarFallback className="bg-primary/10 text-primary">
+                      {user.username.substring(0, 1).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56" align="end" forceMount>
+                <DropdownMenuLabel>
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none">{user.username}</p>
+                    <p className="text-xs leading-none text-muted-foreground">Angemeldet</p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Abmelden</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
         </div>
       </div>
