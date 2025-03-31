@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { ChevronRight, Edit, MoreHorizontal, ChevronUp, ChevronDown, Trash2, FileText, Download, ExternalLink } from "lucide-react";
+import { ChevronRight, Edit, MoreHorizontal, ChevronUp, ChevronDown, Trash2, FileText, Download, ExternalLink, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { 
   DropdownMenu,
@@ -18,19 +18,19 @@ import { format } from "date-fns";
 import { de } from "date-fns/locale";
 import { Hero, Npc, Session, Quest } from "@/lib/types";
 import { 
-  getHeroById, 
-  getNpcsByHeroId,
-  getFavoriteNpcsByHeroId,
-  getLatestSessionByHeroId, 
-  getActiveQuestsByHeroId, 
-  deleteHero 
-} from "@/lib/storage";
+  deleteHero, 
+  fetchHeroById, 
+  fetchNpcsByHeroId, 
+  fetchQuestsByHeroId, 
+  fetchSessionsByHeroId 
+} from "@/lib/api";
 import { STATS_DEFINITIONS } from "@/lib/theme";
 import NpcCard from "@/components/npc/NpcCard";
 import QuestItem from "@/components/quest/QuestItem";
 import { useToast } from "@/hooks/use-toast";
 import HeroSubnav from "@/components/hero/HeroSubnav";
 import DeleteHeroDialog from "@/components/hero/DeleteHeroDialog";
+import { useQuery } from "@tanstack/react-query";
 
 interface HeroDetailProps {
   heroId: string;
@@ -39,65 +39,105 @@ interface HeroDetailProps {
 export default function HeroDetail({ heroId }: HeroDetailProps) {
   const [, navigate] = useLocation();
   const { toast } = useToast();
-  const [hero, setHero] = useState<Hero | null>(null);
-  const [recentNpcs, setRecentNpcs] = useState<Npc[]>([]);
-  const [favoriteNpcs, setFavoriteNpcs] = useState<Npc[]>([]);
-  const [latestSession, setLatestSession] = useState<Session | null>(null);
-  const [activeQuests, setActiveQuests] = useState<Quest[]>([]);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   
-  useEffect(() => {
-    // Load hero and related data
-    const loadHero = () => {
-      const heroData = getHeroById(heroId);
-      
-      if (heroData) {
-        setHero(heroData);
-        
-        // Load recent NPCs (maximum 3)
-        const npcData = getNpcsByHeroId(heroId);
-        setRecentNpcs(npcData.slice(0, 3));
-        
-        // Load favorite NPCs (maximum 6)
-        const favoriteNpcs = getFavoriteNpcsByHeroId(heroId, 6);
-        setFavoriteNpcs(favoriteNpcs);
-        
-        // Load latest session
-        const sessionData = getLatestSessionByHeroId(heroId);
-        setLatestSession(sessionData || null);
-        
-        // Load active quests (maximum 3)
-        const questData = getActiveQuestsByHeroId(heroId);
-        setActiveQuests(questData.slice(0, 3));
-      } else {
-        // Hero not found, redirect to dashboard
+  // Lade Heldendaten mit React Query
+  const { 
+    data: hero, 
+    isLoading: isLoadingHero, 
+    error: heroError
+  } = useQuery({
+    queryKey: ['/api/heroes', heroId],
+    queryFn: () => fetchHeroById(heroId),
+    retry: 2,  // Versuche 2 Mal erneut, wenn der Abruf fehlschlägt
+    staleTime: 5000 // Daten gelten 5 Sekunden lang als "frisch"
+  });
+  
+  // Lade NPCs, nutze heroId als Abhängigkeit
+  const { 
+    data: npcs = [], 
+    isLoading: isLoadingNpcs 
+  } = useQuery({
+    queryKey: ['/api/heroes', heroId, 'npcs'],
+    queryFn: () => fetchNpcsByHeroId(heroId),
+    enabled: !!hero, // Lädt nur, wenn der Held existiert
+    staleTime: 5000
+  });
+  
+  // Lade Quests
+  const { 
+    data: quests = [], 
+    isLoading: isLoadingQuests 
+  } = useQuery({
+    queryKey: ['/api/heroes', heroId, 'quests'],
+    queryFn: () => fetchQuestsByHeroId(heroId),
+    enabled: !!hero,
+    staleTime: 5000
+  });
+  
+  // Lade Sessions
+  const { 
+    data: sessions = [], 
+    isLoading: isLoadingSessions 
+  } = useQuery({
+    queryKey: ['/api/heroes', heroId, 'sessions'],
+    queryFn: () => fetchSessionsByHeroId(heroId),
+    enabled: !!hero,
+    staleTime: 5000
+  });
+  
+  // Berechne abgeleitete Daten
+  const recentNpcs = npcs.slice(0, 3);
+  const favoriteNpcs = npcs.filter(npc => npc.favorite).slice(0, 6);
+  const activeQuests = quests.filter(quest => quest.completed === false).slice(0, 3);
+  const latestSession = sessions.length > 0 
+    ? sessions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0] 
+    : null;
+  
+  const handleDeleteHero = async () => {
+    if (hero) {
+      try {
+        await deleteHero(heroId);
         navigate("/");
         toast({
-          title: "Held nicht gefunden",
-          description: "Der gesuchte Held konnte nicht gefunden werden.",
+          title: "Held gelöscht",
+          description: `${hero.name} wurde erfolgreich gelöscht.`,
+        });
+      } catch (error) {
+        console.error('Fehler beim Löschen des Helden:', error);
+        toast({
+          title: "Fehler",
+          description: "Der Held konnte nicht gelöscht werden. Bitte versuche es erneut.",
           variant: "destructive"
         });
       }
-    };
-    
-    loadHero();
-  }, [heroId, navigate, toast]);
-  
-  const handleDeleteHero = () => {
-    if (hero && window.confirm(`Bist du sicher, dass du "${hero.name}" löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden.`)) {
-      deleteHero(heroId);
-      navigate("/");
-      toast({
-        title: "Held gelöscht",
-        description: `${hero.name} wurde erfolgreich gelöscht.`,
-      });
     }
   };
   
-  if (!hero) {
+  if (isLoadingHero) {
     return (
-      <div className="flex items-center justify-center h-64">
+      <div className="flex flex-col items-center justify-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin text-[#d4af37] mb-2" />
         <p>Lade Heldendaten...</p>
+      </div>
+    );
+  }
+
+  if (heroError || !hero) {
+    // Wenn ein Fehler auftritt oder kein Held gefunden wird, zur Dashboard-Seite umleiten
+    setTimeout(() => {
+      navigate("/");
+      toast({
+        title: "Held nicht gefunden",
+        description: "Der gesuchte Held konnte nicht gefunden werden.",
+        variant: "destructive"
+      });
+    }, 0);
+    
+    return (
+      <div className="flex flex-col items-center justify-center h-64">
+        <p className="text-red-400">Held nicht gefunden</p>
+        <p className="text-sm text-[#f5f5f5]/60 mt-2">Du wirst zur Übersicht weitergeleitet...</p>
       </div>
     );
   }

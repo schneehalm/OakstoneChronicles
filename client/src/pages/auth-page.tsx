@@ -12,6 +12,7 @@ import { useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useEffect, useState } from "react";
 import logoImg from '@assets/OSC_Logo.png';
+import loginHeroImg from '@assets/Login.webp';
 
 // Formular-Validierung für Login
 const loginSchema = z.object({
@@ -319,17 +320,29 @@ export default function AuthPage() {
         </Card>
       </div>
 
-      {/* Hero-Bereich */}
-      <div className="hidden lg:flex flex-1 bg-gradient-to-br from-primary/10 to-purple-900/20">
-        <div className="flex flex-col justify-center px-12 max-w-xl">
-          <h2 className="text-3xl font-bold mb-4">Willkommen bei Oakstone Chronicles</h2>
-          <p className="text-lg mb-6">
+      {/* Hero-Bereich mit Hintergrundbild */}
+      <div className="hidden lg:flex flex-1 relative overflow-hidden">
+        {/* Hintergrundbild */}
+        <div className="absolute inset-0">
+          <img 
+            src={loginHeroImg} 
+            alt="Fantasielandschaft mit Bergen und Fluss"
+            className="h-full w-full object-cover"
+          />
+          {/* Overlay für bessere Lesbarkeit */}
+          <div className="absolute inset-0 bg-black/30"></div>
+        </div>
+        
+        {/* Inhalt */}
+        <div className="relative z-10 flex flex-col justify-center px-12 max-w-xl">
+          <h2 className="text-3xl font-['Cinzel_Decorative'] font-bold mb-4 text-[#d4af37]">Willkommen bei Oakstone Chronicles</h2>
+          <p className="text-lg mb-6 text-white">
             Der ultimative Begleiter für deine Rollenspiel-Abenteuer. Dokumentiere deine Helden, verwalte NPCs und behalte den Überblick über deine epischen Quests.
           </p>
-          <ul className="space-y-3">
+          <ul className="space-y-3 text-white">
             <li className="flex items-start">
-              <div className="mr-2 mt-1 bg-primary/20 p-1 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-primary">
+              <div className="mr-2 mt-1 bg-[#d4af37]/30 p-1 rounded-full">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[#d4af37]">
                   <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" />
                   <path d="m9 12 2 2 4-4" />
                 </svg>
@@ -337,8 +350,8 @@ export default function AuthPage() {
               <span>Erstelle detaillierte Helden-Profile</span>
             </li>
             <li className="flex items-start">
-              <div className="mr-2 mt-1 bg-primary/20 p-1 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-primary">
+              <div className="mr-2 mt-1 bg-[#d4af37]/30 p-1 rounded-full">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[#d4af37]">
                   <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" />
                   <path d="m9 12 2 2 4-4" />
                 </svg>
@@ -346,8 +359,8 @@ export default function AuthPage() {
               <span>Verwalte NPCs und deren Beziehungen</span>
             </li>
             <li className="flex items-start">
-              <div className="mr-2 mt-1 bg-primary/20 p-1 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-primary">
+              <div className="mr-2 mt-1 bg-[#d4af37]/30 p-1 rounded-full">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[#d4af37]">
                   <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" />
                   <path d="m9 12 2 2 4-4" />
                 </svg>
@@ -355,8 +368,8 @@ export default function AuthPage() {
               <span>Dokumentiere Spielsitzungen</span>
             </li>
             <li className="flex items-start">
-              <div className="mr-2 mt-1 bg-primary/20 p-1 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-primary">
+              <div className="mr-2 mt-1 bg-[#d4af37]/30 p-1 rounded-full">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[#d4af37]">
                   <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" />
                   <path d="m9 12 2 2 4-4" />
                 </svg>
