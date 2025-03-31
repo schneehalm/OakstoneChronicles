@@ -37,14 +37,6 @@ export default function HeroSubnav({ heroId, activeTab }: HeroSubnavProps) {
             Übersicht
           </button>
           <button 
-            className={`py-2 px-1 font-medium ${activeTab === 'stats' 
-              ? 'text-[#d4af37] border-b-2 border-[#d4af37]' 
-              : 'text-[#f5f5f5]/70 hover:text-[#d4af37]'}`}
-            onClick={() => navigate(`/hero/${heroId}/stats`)}
-          >
-            Attribute
-          </button>
-          <button 
             className={`py-2 px-1 font-medium ${activeTab === 'npcs' 
               ? 'text-[#d4af37] border-b-2 border-[#d4af37]' 
               : 'text-[#f5f5f5]/70 hover:text-[#d4af37]'}`}
