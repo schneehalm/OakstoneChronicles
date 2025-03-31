@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
+import logoPath from "@assets/OSC_Logo.png";
 
 export default function Header() {
   const [location] = useLocation();
@@ -22,7 +23,7 @@ export default function Header() {
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         <Link href="/">
           <div className="flex items-center cursor-pointer">
-            <img src="/OSC_Logo.png" alt="Oakstone Chronicles Logo" className="h-10 w-auto" />
+            <img src={logoPath} alt="Oakstone Chronicles Logo" className="h-10 w-auto" />
             <h1 className="ml-3 font-['Cinzel_Decorative'] text-xl md:text-2xl text-[#d4af37]">
               Oakstone Chronicles
             </h1>
