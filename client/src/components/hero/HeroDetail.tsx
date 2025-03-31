@@ -19,7 +19,8 @@ import { de } from "date-fns/locale";
 import { Hero, Npc, Session, Quest } from "@/lib/types";
 import { 
   getHeroById, 
-  getNpcsByHeroId, 
+  getNpcsByHeroId,
+  getFavoriteNpcsByHeroId,
   getLatestSessionByHeroId, 
   getActiveQuestsByHeroId, 
   deleteHero 
@@ -40,6 +41,7 @@ export default function HeroDetail({ heroId }: HeroDetailProps) {
   const { toast } = useToast();
   const [hero, setHero] = useState<Hero | null>(null);
   const [recentNpcs, setRecentNpcs] = useState<Npc[]>([]);
+  const [favoriteNpcs, setFavoriteNpcs] = useState<Npc[]>([]);
   const [latestSession, setLatestSession] = useState<Session | null>(null);
   const [activeQuests, setActiveQuests] = useState<Quest[]>([]);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -55,6 +57,10 @@ export default function HeroDetail({ heroId }: HeroDetailProps) {
         // Load recent NPCs (maximum 3)
         const npcData = getNpcsByHeroId(heroId);
         setRecentNpcs(npcData.slice(0, 3));
+        
+        // Load favorite NPCs (maximum 6)
+        const favoriteNpcs = getFavoriteNpcsByHeroId(heroId, 6);
+        setFavoriteNpcs(favoriteNpcs);
         
         // Load latest session
         const sessionData = getLatestSessionByHeroId(heroId);
@@ -204,6 +210,49 @@ export default function HeroDetail({ heroId }: HeroDetailProps) {
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
+          </div>
+        )}
+        
+        {/* Favorite NPCs Section */}
+        {favoriteNpcs.length > 0 && (
+          <div className="bg-[#1e1e2f]/80 rounded-xl border border-[#7f5af0]/30 p-5">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-['Cinzel_Decorative'] text-xl text-[#d4af37]">Favorisierte NPCs</h3>
+              <Button 
+                variant="link" 
+                className="text-[#d4af37] hover:text-[#43ffaf] flex items-center text-sm p-0"
+                onClick={() => navigate(`/hero/${hero.id}/npcs`)}
+              >
+                <span>Alle NPCs anzeigen</span>
+                <ChevronRight className="h-4 w-4 ml-1" />
+              </Button>
+            </div>
+            
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+              {favoriteNpcs.map((npc) => (
+                <div key={npc.id} className="flex flex-col items-center text-center">
+                  <div className="h-16 w-16 rounded-full overflow-hidden border-2 border-[#d4af37]/40 mb-2">
+                    {npc.image ? (
+                      <img 
+                        src={npc.image} 
+                        alt={npc.name} 
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <div className="h-full w-full flex items-center justify-center bg-[#7f5af0]/20 text-[#f5f5f5]/60">
+                        ?
+                      </div>
+                    )}
+                  </div>
+                  <div className="text-sm font-medium text-[#f5f5f5] truncate max-w-full px-1">
+                    {npc.name}
+                  </div>
+                  <div className="text-xs text-[#d4af37]/70 truncate max-w-full px-1">
+                    {npc.relationship}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
         

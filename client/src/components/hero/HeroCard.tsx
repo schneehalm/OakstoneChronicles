@@ -120,9 +120,15 @@ export default function HeroCard({ hero }: HeroCardProps) {
               <span className="text-xs bg-[#7f5af0]/60 rounded-full px-2 py-0.5">Lvl {hero.level}</span>
             </div>
             <div className="flex items-center text-sm opacity-80 mt-1">
-              <span>{hero.race}</span>
-              <span className="mx-2">•</span>
-              <span>{hero.class}</span>
+              {hero.deceased ? (
+                <span className="text-red-400">(verstorben)</span>
+              ) : (
+                <>
+                  <span>{hero.race}</span>
+                  <span className="mx-2">•</span>
+                  <span>{hero.class}</span>
+                </>
+              )}
             </div>
           </div>
           {/* Action Menu */}

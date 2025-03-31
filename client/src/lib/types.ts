@@ -29,6 +29,7 @@ export interface Npc {
   relationship: string;
   location?: string;
   notes?: string;
+  favorite?: boolean; // Markieren, ob ein NPC zu den Favoriten gehört
   firstSessionId?: string; // ID der Session, wo der NPC zum ersten Mal getroffen wurde
   createdAt: string;
   updatedAt: string;

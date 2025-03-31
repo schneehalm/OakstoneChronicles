@@ -3,6 +3,7 @@ import { Npc, Session } from "@/lib/types";
 import { getSessionById } from "@/lib/storage";
 import { format } from "date-fns";
 import { de } from "date-fns/locale";
+import { Star } from "lucide-react";
 
 interface NpcCardProps {
   npc: Npc;
@@ -76,7 +77,12 @@ export default function NpcCard({ npc, onClick }: NpcCardProps) {
           </div>
         </div>
         <div>
-          <h4 className="font-['Cinzel_Decorative'] text-[#d4af37]">{npc.name}</h4>
+          <div className="flex items-center">
+            <h4 className="font-['Cinzel_Decorative'] text-[#d4af37]">{npc.name}</h4>
+            {npc.favorite && (
+              <Star className="ml-1 h-4 w-4 text-[#d4af37] fill-[#d4af37]" />
+            )}
+          </div>
           <div className={`text-sm ${getRelationshipStyle(npc.relationship)} mt-0.5`}>
             {getRelationshipDisplay(npc.relationship)}
           </div>

@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Upload } from "lucide-react";
+import { Upload, Star } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { 
   Select,
   SelectContent,
@@ -40,7 +41,7 @@ export default function NpcForm({ heroId, existingNpc, onSubmit }: NpcFormProps)
     setSessions(sortedSessions);
   }, [heroId]);
   
-  const { register, handleSubmit, setValue, formState: { errors } } = useForm<Npc>({
+  const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<Npc>({
     defaultValues: {
       id: existingNpc?.id || '',
       heroId: heroId,
@@ -49,6 +50,7 @@ export default function NpcForm({ heroId, existingNpc, onSubmit }: NpcFormProps)
       relationship: existingNpc?.relationship || 'neutral',
       location: existingNpc?.location || '',
       notes: existingNpc?.notes || '',
+      favorite: existingNpc?.favorite || false,
       firstSessionId: existingNpc?.firstSessionId || 'none',
       createdAt: existingNpc?.createdAt || '',
       updatedAt: existingNpc?.updatedAt || ''
@@ -310,6 +312,23 @@ export default function NpcForm({ heroId, existingNpc, onSubmit }: NpcFormProps)
           rows={4}
           {...register('notes')}
         />
+      </div>
+      
+      {/* Favorite NPC */}
+      <div className="flex items-center space-x-2">
+        <Checkbox 
+          id="favorite" 
+          className="border-[#7f5af0]/40 data-[state=checked]:bg-[#d4af37] data-[state=checked]:border-[#d4af37]"
+          checked={watch('favorite')}
+          onCheckedChange={(checked) => setValue('favorite', checked === true)}
+        />
+        <Label 
+          htmlFor="favorite" 
+          className="font-normal cursor-pointer text-sm flex items-center"
+        >
+          Als Favorit markieren <Star className="h-3 w-3 ml-1 text-[#d4af37] fill-[#d4af37]" />
+          <span className="ml-1 text-[#f5f5f5]/60">(erscheint auf der Übersichtsseite, max. 6)</span>
+        </Label>
       </div>
       
       {/* First Session */}
