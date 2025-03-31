@@ -187,7 +187,7 @@ export default function HeroDetail({ heroId }: HeroDetailProps) {
                 variant="outline"
                 size="sm"
                 onClick={() => navigate(`/hero/${heroId}/edit`)}
-                className="btn-gold"
+                className="bg-[hsl(var(--content-box))]/80 hover:bg-[hsl(var(--content-box))] border border-[hsl(var(--secondary))]/40 text-[hsl(var(--secondary))] transition-colors"
               >
                 <Edit className="h-4 w-4 mr-1" />
                 <span>Bearbeiten</span>
