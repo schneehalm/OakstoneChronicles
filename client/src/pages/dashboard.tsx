@@ -209,27 +209,15 @@ export default function Dashboard() {
       {heroes.length === 0 && !searchTerm && (
         <>
           <div className="text-center py-16 bg-[#1e1e2f]/50 rounded-xl border border-[#7f5af0]/20">
-            <h3 className="font-['Cinzel_Decorative'] text-[#d4af37] text-xl mb-3">Willkommen bei Oakstone Chronicles</h3>
+            <h3 className="font-['Cinzel_Decorative'] text-[#d4af37] text-xl mb-3">Willkommen bei Oakstone RPG Journal</h3>
             <p className="text-[#f5f5f5]/70 mb-6">
               Erstelle deinen ersten Helden, um deine Abenteuer zu dokumentieren.
             </p>
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Link href="/hero/create">
-                <Button className="bg-[#7f5af0] hover:bg-[#7f5af0]/90">
-                  Neuen Helden erstellen
-                </Button>
-              </Link>
-              
-              <Link href="/auth">
-                <Button className="bg-[#d4af37] hover:bg-[#d4af37]/90 text-black">
-                  Anmelden / Registrieren
-                </Button>
-              </Link>
-            </div>
-            
-            <div className="mt-6 border-t border-[#7f5af0]/20 pt-6 text-[#f5f5f5]/50 text-sm">
-              Registrieren Sie sich, um Ihre Helden in der Cloud zu speichern und auf allen Geräten darauf zuzugreifen.
-            </div>
+            <Link href="/hero/create">
+              <Button className="bg-[#7f5af0] hover:bg-[#7f5af0]/90">
+                Neuen Helden erstellen
+              </Button>
+            </Link>
           </div>
           
           {/* Demo Data Initializer */}

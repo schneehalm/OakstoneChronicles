@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import { Npc } from "@/lib/types";
 
 interface NpcCardProps {
@@ -7,12 +6,6 @@ interface NpcCardProps {
 }
 
 export default function NpcCard({ npc, onClick }: NpcCardProps) {
-  const [imageError, setImageError] = useState(false);
-  
-  // Zurücksetzen des Bildfehlerstatus, wenn sich der NPC ändert
-  useEffect(() => {
-    setImageError(false);
-  }, [npc.id]);
   // Relationship styling based on the relationship type
   const getRelationshipStyle = (relationship: string) => {
     switch (relationship) {
@@ -53,16 +46,15 @@ export default function NpcCard({ npc, onClick }: NpcCardProps) {
       <div className="flex p-3">
         <div className="flex-shrink-0 mr-3">
           <div className="h-14 w-14 rounded-full overflow-hidden border border-[#7f5af0]/40">
-            {npc.image && !imageError ? (
+            {npc.image ? (
               <img 
                 src={npc.image} 
                 alt={npc.name} 
                 className="h-full w-full object-cover"
-                onError={() => setImageError(true)}
               />
             ) : (
               <div className="h-full w-full bg-[#7f5af0]/20 flex items-center justify-center">
-                <span className="text-[#f5f5f5]/60 text-lg font-semibold">{npc.name.charAt(0)}</span>
+                <span className="text-[#f5f5f5]/60">{npc.name.charAt(0)}</span>
               </div>
             )}
           </div>

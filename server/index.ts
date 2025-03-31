@@ -1,18 +1,11 @@
 import express, { type Request, Response, NextFunction } from "express";
-import path from "path";
-import { fileURLToPath } from "url";
 import { registerRoutes } from "./routes";
-
-// Logging
-function log(message: string) {
-  console.log(`[SERVER] ${message}`);
-}
+import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Timing + Logging Middleware
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
@@ -31,9 +24,11 @@ app.use((req, res, next) => {
       if (capturedJsonResponse) {
         logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
       }
+
       if (logLine.length > 80) {
         logLine = logLine.slice(0, 79) + "…";
       }
+
       log(logLine);
     }
   });
@@ -41,29 +36,29 @@ app.use((req, res, next) => {
   next();
 });
 
-// __dirname für ESModules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 (async () => {
   const server = await registerRoutes(app);
 
-  // Fehler-Handler
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
+
     res.status(status).json({ message });
     throw err;
   });
 
-  // 📦 Frontend ausliefern (client/dist)
-  app.use(express.static(path.join(__dirname, "../client/dist")));
+  // importantly only setup vite in development and after
+  // setting up all the other routes so the catch-all route
+  // doesn't interfere with the other routes
+  if (app.get("env") === "development") {
+    await setupVite(app, server);
+  } else {
+    serveStatic(app);
+  }
 
-  app.get("*", (_, res) => {
-    res.sendFile(path.join(__dirname, "../client/dist/index.html"));
-  });
-
-  // ✅ Server starten
+  // ALWAYS serve the app on port 5000
+  // this serves both the API and the client.
+  // It is the only port that is not firewalled.
   const port = 5000;
   server.listen({
     port,

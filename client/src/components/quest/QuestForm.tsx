@@ -84,10 +84,11 @@ export default function QuestForm({ heroId, existingQuest, onSubmit }: QuestForm
         >
           <SelectTrigger 
             id="type"
+            className="bg-[#1e1e2f] border border-[#7f5af0]/40"
           >
             <SelectValue placeholder="Auftragstyp wählen" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-[#1e1e2f] border border-[#7f5af0]/40">
             {QUEST_TYPES.map((type) => (
               <SelectItem key={type.value} value={type.value}>
                 {type.label}

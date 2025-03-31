@@ -44,86 +44,20 @@ export default function NpcForm({ heroId, existingNpc, onSubmit }: NpcFormProps)
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Größenbeschränkung (2MB)
-      if (file.size > 2 * 1024 * 1024) {
-        toast({
-          title: "Fehler beim Hochladen",
-          description: "Das Bild darf maximal 2MB groß sein.",
-          variant: "destructive"
-        });
-        return;
-      }
-      
-      // Nur bestimmte Bildformate akzeptieren
-      const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-      if (!validTypes.includes(file.type)) {
-        toast({
-          title: "Ungültiges Dateiformat",
-          description: "Bitte verwende JPG, PNG, GIF oder WebP Formate.",
-          variant: "destructive"
-        });
-        return;
-      }
-      
       const reader = new FileReader();
       reader.onload = (event) => {
-        try {
-          const result = event.target?.result as string;
-          // Prüfen, ob ein gültiges Base64-Bild erstellt werden konnte
-          if (result && result.startsWith('data:image/')) {
-            setImagePreview(result);
-            setValue('image', result);
-          } else {
-            throw new Error("Ungültiges Bildformat");
-          }
-        } catch (error) {
-          console.error("Fehler beim Verarbeiten des Bildes:", error);
-          toast({
-            title: "Fehler beim Verarbeiten",
-            description: "Das Bild konnte nicht verarbeitet werden.",
-            variant: "destructive"
-          });
-        }
+        const result = event.target?.result as string;
+        setImagePreview(result);
+        setValue('image', result);
       };
-      
-      reader.onerror = () => {
-        toast({
-          title: "Fehler beim Lesen",
-          description: "Das Bild konnte nicht gelesen werden.",
-          variant: "destructive"
-        });
-      };
-      
       reader.readAsDataURL(file);
     }
   };
   
   const handleImageUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const url = e.target.value;
-    // Wenn die URL leer ist, setze das Vorschaubild zurück
-    if (!url) {
-      setImagePreview(null);
-      setValue('image', '');
-      return;
-    }
-    // Prüfe ob es eine gültige URL ist
-    try {
-      new URL(url);
-      setImagePreview(url);
-      setValue('image', url);
-    } catch (error) {
-      // Wenn keine gültige URL, aber möglicherweise ein Base64-String ist
-      if (url.startsWith('data:image/')) {
-        setImagePreview(url);
-        setValue('image', url);
-      } else {
-        toast({
-          title: "Ungültige URL",
-          description: "Bitte gib eine gültige Bild-URL ein.",
-          variant: "destructive"
-        });
-      }
-    }
+    setImagePreview(url);
+    setValue('image', url);
   };
   
   const handleFormSubmit = (data: Npc) => {
@@ -205,10 +139,11 @@ export default function NpcForm({ heroId, existingNpc, onSubmit }: NpcFormProps)
         >
           <SelectTrigger 
             id="relationship"
+            className="bg-[#1e1e2f] border border-[#7f5af0]/40"
           >
             <SelectValue placeholder="Beziehung wählen" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-[#1e1e2f] border border-[#7f5af0]/40">
             {RELATIONSHIP_TYPES.map((type) => (
               <SelectItem key={type.value} value={type.value}>
                 {type.label}

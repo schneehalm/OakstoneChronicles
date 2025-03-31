@@ -381,13 +381,9 @@ export const exportHeroData = (heroId: string): ExportedHero | null => {
   const sessions = getSessionsByHeroId(heroId);
   const quests = getQuestsByHeroId(heroId);
   
-  // Sicherstellen, dass alle Bild-Daten korrekt exportiert werden
-  const heroWithImages = { ...hero };
-  const npcsWithImages = npcs.map(npc => ({ ...npc }));
-  
   return {
-    hero: heroWithImages,
-    npcs: npcsWithImages,
+    hero,
+    npcs,
     sessions,
     quests
   };
@@ -413,122 +409,29 @@ export const exportAllHeroes = (): ExportedHeroCollection => {
 
 export const importHeroData = (data: ExportedHero, replaceIfExists: boolean = false): boolean => {
   try {
-    console.log("Importiere Held mit ID:", data.hero.id, "Name:", data.hero.name);
-    console.log("NPCs:", data.npcs.length, "Sessions:", data.sessions.length, "Quests:", data.quests.length);
-    
     // Prüfe, ob ein Held mit der selben ID bereits existiert
     const existingHero = getHeroById(data.hero.id);
     
     if (existingHero && !replaceIfExists) {
-      console.log("Held existiert bereits und soll nicht ersetzt werden.");
       return false; // Abbrechen, wenn der Held existiert und nicht ersetzt werden soll
     }
     
-    // Bestehende Daten für diesen Helden löschen, wenn wir ersetzen
-    if (existingHero && replaceIfExists) {
-      console.log("Entferne bestehende Daten für Held ID:", data.hero.id);
-      
-      // Bestehende NPCs, Sessions und Quests dieses Helden entfernen
-      const npcs = getNpcs().filter(npc => npc.heroId !== data.hero.id);
-      const sessions = getSessions().filter(session => session.heroId !== data.hero.id);
-      const quests = getQuests().filter(quest => quest.heroId !== data.hero.id);
-      
-      saveToStorage(STORAGE_KEYS.NPCS, npcs);
-      saveToStorage(STORAGE_KEYS.SESSIONS, sessions);
-      saveToStorage(STORAGE_KEYS.QUESTS, quests);
+    // Held speichern (oder ersetzen)
+    saveHero(data.hero);
+    
+    // Zugehörige NPCs speichern
+    for (const npc of data.npcs) {
+      saveNpc(npc);
     }
     
-    // Held speichern (oder ersetzen) mit allen Bildinformationen
-    const heroToSave = {
-      ...data.hero,
-      // Sicherstellen, dass das Porträt und PDF korrekt importiert werden
-      portrait: data.hero.portrait || existingHero?.portrait,
-      backstoryPdf: data.hero.backstoryPdf || existingHero?.backstoryPdf,
-      backstoryPdfName: data.hero.backstoryPdfName || existingHero?.backstoryPdfName
-    };
-    
-    // Held speichern
-    saveHero(heroToSave);
-    console.log("Held gespeichert:", heroToSave.name);
-    
-    // Alle aktuellen Daten laden
-    const currentNpcs = getNpcs();
-    const currentSessions = getSessions();
-    const currentQuests = getQuests();
-    
-    // NPCs importieren
-    if (data.npcs && data.npcs.length > 0) {
-      console.log(`Importiere ${data.npcs.length} NPCs...`);
-      
-      for (const npc of data.npcs) {
-        // Sicherstellen, dass die heroId korrekt ist
-        const npcToSave = { 
-          ...npc,
-          heroId: data.hero.id 
-        };
-        
-        // Prüfen, ob dieser NPC bereits existiert
-        const existingNpcIndex = currentNpcs.findIndex(n => n.id === npc.id);
-        if (existingNpcIndex >= 0) {
-          // Ersetzen
-          currentNpcs[existingNpcIndex] = npcToSave;
-        } else {
-          // Hinzufügen
-          currentNpcs.push(npcToSave);
-        }
-      }
-      
-      saveToStorage(STORAGE_KEYS.NPCS, currentNpcs);
+    // Zugehörige Sessions speichern
+    for (const session of data.sessions) {
+      saveSession(session);
     }
     
-    // Sessions importieren
-    if (data.sessions && data.sessions.length > 0) {
-      console.log(`Importiere ${data.sessions.length} Sessions...`);
-      
-      for (const session of data.sessions) {
-        // Sicherstellen, dass die heroId korrekt ist
-        const sessionToSave = {
-          ...session,
-          heroId: data.hero.id
-        };
-        
-        // Prüfen, ob diese Session bereits existiert
-        const existingSessionIndex = currentSessions.findIndex(s => s.id === session.id);
-        if (existingSessionIndex >= 0) {
-          // Ersetzen
-          currentSessions[existingSessionIndex] = sessionToSave;
-        } else {
-          // Hinzufügen
-          currentSessions.push(sessionToSave);
-        }
-      }
-      
-      saveToStorage(STORAGE_KEYS.SESSIONS, currentSessions);
-    }
-    
-    // Quests importieren
-    if (data.quests && data.quests.length > 0) {
-      console.log(`Importiere ${data.quests.length} Quests...`);
-      
-      for (const quest of data.quests) {
-        // Sicherstellen, dass die heroId korrekt ist
-        const questToSave = {
-          ...quest,
-          heroId: data.hero.id
-        };
-        
-        // Prüfen, ob dieser Quest bereits existiert
-        const existingQuestIndex = currentQuests.findIndex(q => q.id === quest.id);
-        if (existingQuestIndex >= 0) {
-          // Ersetzen
-          currentQuests[existingQuestIndex] = questToSave;
-        } else {
-          // Hinzufügen
-          currentQuests.push(questToSave);
-        }
-      }
-      
-      saveToStorage(STORAGE_KEYS.QUESTS, currentQuests);
+    // Zugehörige Quests speichern
+    for (const quest of data.quests) {
+      saveQuest(quest);
     }
     
     // Aktivität hinzufügen
@@ -539,7 +442,6 @@ export const importHeroData = (data: ExportedHero, replaceIfExists: boolean = fa
       date: new Date().toISOString()
     });
     
-    console.log("Import erfolgreich abgeschlossen für Held:", data.hero.name);
     return true;
   } catch (error) {
     console.error('Fehler beim Importieren der Heldendaten:', error);

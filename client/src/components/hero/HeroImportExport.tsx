@@ -94,61 +94,33 @@ export default function HeroImportExport({ heroes, onImportSuccess }: HeroImport
         const content = e.target?.result as string;
         const parsedData = JSON.parse(content);
 
-        // Konsolenausgaben für Debugging
-        console.log("Parsed data structure:", Object.keys(parsedData));
-        
         // Versuche zuerst, die Daten als Sammlung zu verarbeiten
         if (parsedData.version && Array.isArray(parsedData.heroes)) {
-          console.log("Erkenne Daten als Heldensammlung. Anzahl Helden:", parsedData.heroes.length);
+          const data = parsedData as ExportedHeroCollection;
+          const result = importHeroCollection(data, replaceExisting);
           
-          try {
-            const data = parsedData as ExportedHeroCollection;
-            const result = importHeroCollection(data, replaceExisting);
-            
-            if (result.success) {
-              setImportSuccess({ imported: result.imported, total: result.total });
-              onImportSuccess();
-              console.log(`${result.imported} von ${result.total} Helden erfolgreich importiert.`);
-            } else {
-              setImportError("Beim Importieren der Helden ist ein Fehler aufgetreten.");
-              console.error("Import fehlgeschlagen.");
-            }
-          } catch (error) {
-            console.error("Fehler beim Importieren der Heldensammlung:", error);
-            setImportError("Beim Importieren der Heldensammlung ist ein Fehler aufgetreten. Das Format könnte ungültig sein.");
+          if (result.success) {
+            setImportSuccess({ imported: result.imported, total: result.total });
+            onImportSuccess();
+          } else {
+            setImportError("Beim Importieren der Helden ist ein Fehler aufgetreten.");
           }
           return;
         }
         
         // Versuche als einzelner Held zu verarbeiten
-        if (parsedData.hero && parsedData.npcs !== undefined && parsedData.sessions !== undefined) {
-          console.log("Erkenne Daten als einzelnen Helden:", parsedData.hero.name);
-          
+        if (parsedData.hero && Array.isArray(parsedData.npcs) && Array.isArray(parsedData.sessions) && Array.isArray(parsedData.quests)) {
           try {
-            // Stelle sicher, dass die Arrays existieren, selbst wenn sie leer sind
-            const singleHeroData: ExportedHero = {
-              hero: parsedData.hero,
-              npcs: Array.isArray(parsedData.npcs) ? parsedData.npcs : [],
-              sessions: Array.isArray(parsedData.sessions) ? parsedData.sessions : [],
-              quests: Array.isArray(parsedData.quests) ? parsedData.quests : []
-            };
-            
-            console.log("Verarbeite Held mit", 
-                        singleHeroData.npcs.length, "NPCs,",
-                        singleHeroData.sessions.length, "Sessions und",
-                        singleHeroData.quests.length, "Quests");
-            
+            const singleHeroData = parsedData as ExportedHero;
             const success = importHeroData(singleHeroData, replaceExisting);
             
             if (success) {
               setImportSuccess({ imported: 1, total: 1 });
               onImportSuccess();
-              console.log("Einzelner Held erfolgreich importiert.");
             } else {
               setImportError(
                 `Der Held existiert bereits. ${!replaceExisting ? 'Aktiviere die Option "Vorhandene Helden ersetzen" und versuche es erneut.' : 'Es ist ein Fehler beim Überschreiben aufgetreten.'}`
               );
-              console.error("Import fehlgeschlagen. Held existiert bereits oder konnte nicht importiert werden.");
             }
           } catch (error) {
             console.error("Fehler beim Importieren eines einzelnen Helden:", error);
@@ -226,30 +198,28 @@ export default function HeroImportExport({ heroes, onImportSuccess }: HeroImport
         setIsImportOpen(open);
         if (!open) resetImportDialog();
       }}>
-        <DialogContent className="sm:max-w-md bg-[#1e1e2f] border-2 border-[#7f5af0]/60 shadow-lg shadow-[#7f5af0]/20">
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-[#d4af37] font-['Cinzel_Decorative'] text-xl">
-              Helden importieren
-            </DialogTitle>
-            <DialogDescription className="text-[#f5f5f5] mt-2">
+            <DialogTitle>Helden importieren</DialogTitle>
+            <DialogDescription>
               Wähle eine JSON-Datei mit Heldendaten aus, um sie zu importieren.
             </DialogDescription>
           </DialogHeader>
           
           <div className="py-4">
             {importError && (
-              <Alert variant="destructive" className="mb-4 border-2 border-red-700 bg-red-900/30">
-                <AlertCircle className="h-5 w-5" />
-                <AlertTitle className="text-white font-semibold">Fehler</AlertTitle>
-                <AlertDescription className="text-white">{importError}</AlertDescription>
+              <Alert variant="destructive" className="mb-4">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Fehler</AlertTitle>
+                <AlertDescription>{importError}</AlertDescription>
               </Alert>
             )}
             
             {importSuccess && (
-              <Alert className="mb-4 bg-[#43ffaf]/10 border-2 border-[#43ffaf]/50">
-                <Check className="h-5 w-5 text-[#43ffaf]" />
-                <AlertTitle className="text-[#43ffaf] font-semibold">Import erfolgreich</AlertTitle>
-                <AlertDescription className="text-[#f5f5f5]">
+              <Alert className="mb-4 bg-[#43ffaf]/10 border-[#43ffaf]/30">
+                <Check className="h-4 w-4 text-[#43ffaf]" />
+                <AlertTitle>Import erfolgreich</AlertTitle>
+                <AlertDescription>
                   {importSuccess.imported} von {importSuccess.total} Helden wurden erfolgreich importiert.
                 </AlertDescription>
               </Alert>
@@ -264,43 +234,41 @@ export default function HeroImportExport({ heroes, onImportSuccess }: HeroImport
                   className="absolute inset-0 opacity-0 cursor-pointer z-10"
                   onChange={handleFileChange}
                 />
-                <div className="w-full bg-[#1e1e2f] border-2 border-[#7f5af0]/60 rounded-lg px-4 py-3 text-sm flex items-center justify-between hover:border-[#7f5af0] transition-colors">
-                  <span className="text-[#f5f5f5]">
+                <div className="w-full bg-[#1e1e2f] border border-[#7f5af0]/40 rounded-lg px-4 py-3 text-sm flex items-center justify-between">
+                  <span className="text-[#f5f5f5]/80">
                     Datei auswählen...
                   </span>
-                  <Upload className="h-5 w-5 text-[#7f5af0]" />
+                  <Upload className="h-4 w-4 text-[#7f5af0]" />
                 </div>
               </div>
               
-              <div className="w-full flex items-center space-x-3 py-2">
+              <div className="w-full flex items-center space-x-2 py-2">
                 <Checkbox 
                   id="replaceExisting" 
                   checked={replaceExisting}
                   onCheckedChange={(checked) => setReplaceExisting(checked === true)}
-                  className="h-5 w-5 bg-[#1e1e2f] border-2 border-[#7f5af0]/60 text-[#7f5af0] data-[state=checked]:bg-[#7f5af0]"
+                  className="bg-[#1e1e2f] border-[#7f5af0]/40 text-[#7f5af0] data-[state=checked]:bg-[#7f5af0]"
                 />
                 <label
                   htmlFor="replaceExisting"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-[#f5f5f5]"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-[#f5f5f5]/90"
                 >
                   Vorhandene Helden ersetzen
                 </label>
               </div>
               
-              <div className="w-full bg-[#1e1e2f]/90 border border-[#7f5af0]/30 p-3 rounded-md">
-                <p className="text-[#f5f5f5]/90 text-xs text-center">
-                  Unterstützt sowohl einzelne Helden als auch Helden-Sammlungen im JSON-Format, die mit Oakstone Chronicles exportiert wurden.
-                </p>
-              </div>
+              <p className="text-[#f5f5f5]/60 text-xs text-center">
+                Unterstützt sowohl einzelne Helden als auch Helden-Sammlungen im JSON-Format, die mit Oakstone Chronicles exportiert wurden.
+              </p>
             </div>
           </div>
           
-          <DialogFooter className="flex justify-between sm:justify-between gap-3 mt-4">
+          <DialogFooter className="flex justify-between sm:justify-between">
             <DialogClose asChild>
               <Button 
                 type="button" 
                 variant="secondary"
-                className="bg-[#1e1e2f] hover:bg-[#1e1e2f]/80 border-2 border-[#7f5af0]/60 text-[#f5f5f5] hover:border-[#7f5af0]"
+                className="bg-[#1e1e2f] hover:bg-[#1e1e2f]/80 border border-[#f5f5f5]/30"
               >
                 Schließen
               </Button>
@@ -310,7 +278,7 @@ export default function HeroImportExport({ heroes, onImportSuccess }: HeroImport
               type="button"
               variant="ghost"
               onClick={resetImportDialog}
-              className="text-[#f5f5f5] hover:text-[#f5f5f5] hover:bg-[#1e1e2f]/80 border border-[#f5f5f5]/30"
+              className="text-[#f5f5f5]/70 hover:text-[#f5f5f5]"
             >
               <X className="h-4 w-4 mr-2" />
               Zurücksetzen
