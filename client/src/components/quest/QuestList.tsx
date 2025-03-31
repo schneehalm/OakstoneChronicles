@@ -120,6 +120,7 @@ export default function QuestList({ heroId }: QuestListProps) {
           </div>
           <Button
             onClick={handleAddQuest}
+            variant="outline"
             className="SecondaryButtonOutlined"
           >
             <Plus className="h-5 w-5 mr-1" />

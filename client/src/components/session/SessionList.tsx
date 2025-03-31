@@ -127,6 +127,7 @@ export default function SessionList({ heroId }: SessionListProps) {
           </div>
           <Button
             onClick={handleAddSession}
+            variant="outline"
             className="SecondaryButtonOutlined"
           >
             <Plus className="h-5 w-5 mr-1" />
