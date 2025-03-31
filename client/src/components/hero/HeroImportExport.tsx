@@ -174,10 +174,10 @@ export default function HeroImportExport({ heroes, onImportSuccess }: HeroImport
           <TooltipTrigger asChild>
             <Button 
               variant="outline" 
-              className="btn-gold"
+              className="SecondaryButtonOutlined"
               onClick={handleExportAll}
             >
-              <Download className="h-4 w-4 text-[hsl(var(--secondary))]" />
+              <Download className="h-4 w-4 mr-2" />
               <span>Helden exportieren</span>
             </Button>
           </TooltipTrigger>
@@ -192,10 +192,10 @@ export default function HeroImportExport({ heroes, onImportSuccess }: HeroImport
           <TooltipTrigger asChild>
             <Button 
               variant="outline" 
-              className="bg-[hsl(var(--content-box))] text-primary border border-primary/40 hover:bg-primary/10"
+              className="SecondaryButtonOutlined"
               onClick={() => setIsImportOpen(true)}
             >
-              <Upload className="h-4 w-4 text-primary" />
+              <Upload className="h-4 w-4 mr-2" />
               <span>Helden importieren</span>
             </Button>
           </TooltipTrigger>
