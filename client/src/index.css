@@ -268,7 +268,7 @@
   .light .form-label,
   .light label:not(.checkbox-label),
   .light [data-shadcn-label] {
-    @apply text-[#7f5af0] font-medium;
+    @apply text-[#d4af37] font-medium;
   }
   
   /* Statistik-Labels */
