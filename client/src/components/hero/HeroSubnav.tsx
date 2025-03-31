@@ -18,7 +18,7 @@ export default function HeroSubnav({ heroId, activeTab }: HeroSubnavProps) {
           variant="ghost"
           size="sm"
           onClick={() => navigate("/")}
-          className="text-foreground dark:text-foreground hover:text-[#d4af37] dark:hover:text-[#d4af37] -ml-2 transition-colors"
+          className="text-[#d4af37] hover:text-[#7f5af0] -ml-2 transition-colors"
         >
           <ArrowLeft className="h-4 w-4 mr-1" />
           <span>Zurück zur Übersicht</span>
