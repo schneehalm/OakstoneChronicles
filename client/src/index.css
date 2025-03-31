@@ -277,8 +277,57 @@
   }
   
   /* Dropdown-Menüs */
-  .dropdown-content {
-    @apply bg-[hsl(var(--content-box))] border-[hsl(var(--content-border))] shadow-md;
+  .dropdown-content,
+  [data-shadcn-select-content],
+  [role="listbox"],
+  [data-shadcn-popover-content],
+  [data-state="open"],
+  .select-dropdown {
+    @apply bg-[hsl(var(--content-box))] border border-[hsl(var(--content-border))] rounded-md shadow-md py-1 px-0;
+  }
+  
+  /* Dropdown-Menüs im Dark Mode */
+  .dark .dropdown-content,
+  .dark [data-shadcn-select-content],
+  .dark [role="listbox"],
+  .dark [data-shadcn-popover-content],
+  .dark [data-state="open"],
+  .dark .select-dropdown {
+    @apply bg-[#1e1e2f] border-[#d4af37]/50 text-[#f5f5f5];
+  }
+  
+  /* Dropdown-Menüs im Light Mode */
+  .light .dropdown-content,
+  .light [data-shadcn-select-content],
+  .light [role="listbox"],
+  .light [data-shadcn-popover-content],
+  .light [data-state="open"],
+  .light .select-dropdown {
+    @apply bg-white border-[#7f5af0]/40 text-[#121212];
+  }
+  
+  /* Dropdown-Menü Elemente */
+  .dropdown-item,
+  [role="option"],
+  [data-shadcn-command-item],
+  .select-item {
+    @apply px-3 py-2 text-sm cursor-pointer transition-colors hover:bg-muted;
+  }
+  
+  /* Dropdown-Menü Elemente im Dark Mode */
+  .dark .dropdown-item,
+  .dark [role="option"],
+  .dark [data-shadcn-command-item],
+  .dark .select-item {
+    @apply hover:bg-[#2a2a45] hover:text-[#f5f5f5];
+  }
+  
+  /* Dropdown-Menü Elemente im Light Mode */
+  .light .dropdown-item,
+  .light [role="option"],
+  .light [data-shadcn-command-item],
+  .light .select-item {
+    @apply hover:bg-[#f4f1ff] hover:text-[#121212];
   }
   
   /* Karten und Listen - Allgemein */
@@ -411,12 +460,29 @@
   }
   
   /* Select-Menus */
-  .select-trigger {
-    @apply bg-[hsl(var(--content-box))] border-[hsl(var(--content-border))]/70 text-foreground focus:ring-[hsl(var(--content-border))];
+  .select-trigger,
+  [data-shadcn-select-trigger],
+  [role="combobox"] {
+    @apply bg-[hsl(var(--content-box))] border border-[hsl(var(--content-border))]/70 text-foreground rounded-md px-3 py-2 focus:ring-[hsl(var(--content-border))];
   }
   
-  .select-content {
-    @apply bg-[hsl(var(--content-box))] border-[hsl(var(--content-border))]/70 text-foreground max-h-[300px];
+  /* Select-Trigger im Dark Mode */
+  .dark .select-trigger,
+  .dark [data-shadcn-select-trigger],
+  .dark [role="combobox"] {
+    @apply bg-[#1e1e2f] border-[#7f5af0]/40 text-[#f5f5f5];
+  }
+  
+  /* Select-Trigger im Light Mode */
+  .light .select-trigger,
+  .light [data-shadcn-select-trigger],
+  .light [role="combobox"] {
+    @apply bg-white border-[#7f5af0]/40 text-[#121212];
+  }
+  
+  .select-content,
+  [data-shadcn-select-content] {
+    @apply max-h-[300px] overflow-y-auto;
   }
   
   /* Tags */
