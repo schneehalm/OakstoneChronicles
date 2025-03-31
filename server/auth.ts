@@ -3,7 +3,7 @@ import { Strategy as LocalStrategy } from 'passport-local';
 import { Express, Request, Response, NextFunction } from 'express';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
-import { storage } from './storage';
+import { storage } from './storage_fix';
 import { User, InsertUser } from '@shared/schema';
 
 // TypeScript-Deklaration für Express-Session mit Benutzerdaten
