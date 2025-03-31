@@ -462,7 +462,7 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
                               e.target.value;
                             handleStatChange(stat.id, value);
                           }}
-                          className="w-full form-input"
+                          className="w-full bg-primary/5 rounded-md px-3 py-2 outline-none focus:bg-primary/10 transition-colors border-0"
                         />
                       </div>
                     ))}
