@@ -9,6 +9,7 @@ export default function MobileNavigation() {
   const isHome = location === "/";
   const isNpcs = location.includes("/npcs");
   const isSessions = location.includes("/sessions");
+  const isSettings = location === "/settings";
   
   return (
     <nav className="md:hidden bg-[#1e1e2f]/95 border-t border-[#d4af37]/20 sticky bottom-0 backdrop-blur-sm z-40">
@@ -48,10 +49,12 @@ export default function MobileNavigation() {
           </div>
         )}
         
-        <div className="flex flex-col items-center justify-center py-3 text-[#f5f5f5]/70">
-          <Settings className="h-6 w-6" />
-          <span className="text-xs mt-1">Einstellungen</span>
-        </div>
+        <Link href="/settings">
+          <div className={`flex flex-col items-center justify-center py-3 ${isSettings ? 'text-[#d4af37]' : 'text-[#f5f5f5]/70'}`}>
+            <Settings className="h-6 w-6" />
+            <span className="text-xs mt-1">Einstellungen</span>
+          </div>
+        </Link>
       </div>
     </nav>
   );

@@ -60,6 +60,13 @@ export default function Header() {
                   <span>{user.username}</span>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                <Link href="/settings">
+                  <DropdownMenuItem className="cursor-pointer">
+                    <UserCircle className="mr-2 h-4 w-4" />
+                    <span>Einstellungen</span>
+                  </DropdownMenuItem>
+                </Link>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem 
                   className="cursor-pointer text-red-500 focus:text-red-500"
                   onClick={() => logoutMutation.mutate()}

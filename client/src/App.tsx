@@ -12,6 +12,7 @@ import Sessions from "@/pages/sessions";
 import Quests from "@/pages/quests";
 import Stats from "@/pages/stats";
 import AuthPage from "@/pages/auth-page";
+import SettingsPage from "@/pages/settings-page";
 import Header from "@/components/layout/Header";
 import MobileNavigation from "@/components/layout/MobileNavigation";
 import { ProtectedRoute } from "@/lib/protected-route";
@@ -28,6 +29,7 @@ function Router() {
       <ProtectedRoute path="/hero/:id/quests" component={Quests} />
       <ProtectedRoute path="/hero/:id/stats" component={Stats} />
       <ProtectedRoute path="/hero/:id" component={HeroDetail} />
+      <ProtectedRoute path="/settings" component={SettingsPage} />
       <Route path="/auth" component={AuthPage} />
       <Route component={NotFound} />
     </Switch>
