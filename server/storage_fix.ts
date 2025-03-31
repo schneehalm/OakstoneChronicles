@@ -76,8 +76,7 @@ export class DatabaseStorage implements IStorage {
     // PostgreSQL für die Sitzungsverwaltung
     this.sessionStore = new PostgresStore({
       pool,
-      tableName: 'session',
-      createTableIfMissing: true
+      tableName: 'session'
     });
   }
 
