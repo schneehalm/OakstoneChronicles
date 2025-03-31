@@ -18,7 +18,7 @@ export default function HeroSubnav({ heroId, activeTab }: HeroSubnavProps) {
           variant="ghost"
           size="sm"
           onClick={() => navigate("/")}
-          className="text-foreground dark:text-foreground hover:text-primary dark:hover:text-primary -ml-2"
+          className="text-foreground dark:text-foreground hover:text-[#d4af37] dark:hover:text-[#d4af37] -ml-2 transition-colors"
         >
           <ArrowLeft className="h-4 w-4 mr-1" />
           <span>Zurück zur Übersicht</span>
@@ -30,32 +30,32 @@ export default function HeroSubnav({ heroId, activeTab }: HeroSubnavProps) {
         <nav className="flex overflow-x-auto hide-scrollbar space-x-6 px-2">
           <button 
             className={`py-2 px-1 font-medium subnav-item ${activeTab === 'overview' 
-              ? 'text-primary border-b-2 border-primary' 
-              : 'text-foreground hover:text-primary'}`}
+              ? 'text-[#7f5af0] border-b-2 border-[#7f5af0]' 
+              : 'text-[#d4af37] hover:text-[#7f5af0]'}`}
             onClick={() => navigate(`/hero/${heroId}`)}
           >
             Übersicht
           </button>
           <button 
             className={`py-2 px-1 font-medium subnav-item ${activeTab === 'npcs' 
-              ? 'text-primary border-b-2 border-primary' 
-              : 'text-foreground hover:text-primary'}`}
+              ? 'text-[#7f5af0] border-b-2 border-[#7f5af0]' 
+              : 'text-[#d4af37] hover:text-[#7f5af0]'}`}
             onClick={() => navigate(`/hero/${heroId}/npcs`)}
           >
             NPCs
           </button>
           <button 
             className={`py-2 px-1 font-medium subnav-item ${activeTab === 'sessions' 
-              ? 'text-primary border-b-2 border-primary' 
-              : 'text-foreground hover:text-primary'}`}
+              ? 'text-[#7f5af0] border-b-2 border-[#7f5af0]' 
+              : 'text-[#d4af37] hover:text-[#7f5af0]'}`}
             onClick={() => navigate(`/hero/${heroId}/sessions`)}
           >
             Sessions
           </button>
           <button 
             className={`py-2 px-1 font-medium subnav-item ${activeTab === 'quests' 
-              ? 'text-primary border-b-2 border-primary' 
-              : 'text-foreground hover:text-primary'}`}
+              ? 'text-[#7f5af0] border-b-2 border-[#7f5af0]' 
+              : 'text-[#d4af37] hover:text-[#7f5af0]'}`}
             onClick={() => navigate(`/hero/${heroId}/quests`)}
           >
             Aufträge
