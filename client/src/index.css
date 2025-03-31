@@ -11,3 +11,63 @@
     @apply font-sans antialiased bg-background text-foreground;
   }
 }
+
+/* Fix für Dropdown-Menüs und Kalender-Komponente */
+.select-content,
+.popover-content,
+.dropdown-content,
+.calendar {
+  @apply bg-[#1e1e2f] border-2 border-[#7f5af0]/40 shadow-lg shadow-[#7f5af0]/10 text-[#f5f5f5];
+  z-index: 50 !important;
+}
+
+.calendar {
+  @apply rounded-lg p-3;
+}
+
+.calendar-day {
+  @apply text-[#f5f5f5] hover:bg-[#7f5af0]/20 focus:bg-[#7f5af0]/40;
+}
+
+.calendar-day[data-selected="true"] {
+  @apply bg-[#7f5af0] hover:bg-[#7f5af0]/90 text-white;
+}
+
+.calendar-cell {
+  @apply text-[#f5f5f5];
+}
+
+.calendar-nav {
+  @apply text-[#d4af37];
+}
+
+.calendar-head-cell {
+  @apply text-[#d4af37];
+}
+
+/* Anpassungen für Select-Komponente */
+.select-trigger {
+  @apply bg-[#1e1e2f] border-[#7f5af0]/40 text-[#f5f5f5] hover:border-[#7f5af0]/60;
+}
+
+.select-item {
+  @apply text-[#f5f5f5] hover:bg-[#7f5af0]/20 focus:bg-[#7f5af0]/30;
+}
+
+.select-item[data-highlighted="true"] {
+  @apply bg-[#7f5af0]/30 text-[#f5f5f5];
+}
+
+/* Setze hohe z-Indizes für alle Portal-basierten Komponenten */
+[data-radix-popper-content-wrapper] {
+  z-index: 50 !important;
+}
+
+[role="dialog"] {
+  z-index: 50 !important;
+}
+
+/* Verschiedene Content-Typen überschreiben */
+[role="listbox"] {
+  @apply bg-[#1e1e2f] border-2 border-[#7f5af0]/40 text-[#f5f5f5] !important;
+}
