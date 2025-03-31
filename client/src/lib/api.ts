@@ -107,10 +107,14 @@ export const fetchNpcById = async (id: string): Promise<Npc> => {
 };
 
 export const createNpc = async (heroId: string, npc: Omit<Npc, 'id' | 'heroId' | 'createdAt' | 'updatedAt'>): Promise<Npc> => {
-  // Erstelle eine Kopie der Daten und entferne Timestamps, um Validierungsfehler zu vermeiden
-  const formattedNpc = { ...npc, heroId };
-  delete (formattedNpc as any).createdAt;
-  delete (formattedNpc as any).updatedAt;
+  // Erstelle eine Kopie der Daten
+  const now = new Date().toISOString();
+  const formattedNpc = { 
+    ...npc, 
+    heroId: parseInt(heroId), // Konvertiere heroId zu einer Zahl
+    createdAt: now,
+    updatedAt: now
+  };
   
   const response = await apiRequest('POST', `/api/heroes/${heroId}/npcs`, formattedNpc);
   // Ungültig machen der NPC-Liste für diesen Helden

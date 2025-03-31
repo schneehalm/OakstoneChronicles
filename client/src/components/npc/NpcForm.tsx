@@ -50,7 +50,7 @@ export default function NpcForm({ heroId, existingNpc, onSubmit }: NpcFormProps)
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<Npc>({
     defaultValues: {
       id: existingNpc?.id || '',
-      heroId: heroId,
+      heroId: heroId, // Im Formular bleibt heroId ein String
       name: existingNpc?.name || '',
       image: existingNpc?.image || '',
       relationship: existingNpc?.relationship || 'neutral',
@@ -58,8 +58,8 @@ export default function NpcForm({ heroId, existingNpc, onSubmit }: NpcFormProps)
       notes: existingNpc?.notes || '',
       favorite: existingNpc?.favorite || false,
       firstSessionId: existingNpc?.firstSessionId || 'none',
-      createdAt: existingNpc?.createdAt || '',
-      updatedAt: existingNpc?.updatedAt || ''
+      createdAt: existingNpc?.createdAt || new Date().toISOString(), // Setze aktuelle Zeit als Default
+      updatedAt: existingNpc?.updatedAt || new Date().toISOString() // Setze aktuelle Zeit als Default
     }
   });
   
