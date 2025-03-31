@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { CalendarIcon, Plus, X, Users, UserPlus } from "lucide-react";
+import { CalendarIcon, Plus, X, Users, UserPlus, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -20,11 +20,12 @@ import {
 } from "@/components/ui/popover";
 import { format } from "date-fns";
 import { de } from "date-fns/locale";
-import { Session, Npc } from "@/lib/types";
-import { saveSession, getNpcsByHeroId, saveNpc } from "@/lib/storage";
+import { Session, Npc } from "@shared/schema";
+import { createSession, updateSession, fetchNpcsByHeroId, updateNpc } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import NpcForm from "@/components/npc/NpcForm";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface SessionFormProps {
   heroId: string;
@@ -34,53 +35,125 @@ interface SessionFormProps {
 
 export default function SessionForm({ heroId, existingSession, onSubmit }: SessionFormProps) {
   const { toast } = useToast();
-  const [tags, setTags] = useState<string[]>(existingSession?.tags || []);
+  const queryClient = useQueryClient();
+  
+  // Vorbereitete Tags, basierend auf dem existierenden Session-Objekt
+  const existingTags = existingSession?.tags 
+    ? (Array.isArray(existingSession.tags) 
+        ? existingSession.tags 
+        : typeof existingSession.tags === 'string' && existingSession.tags
+          ? existingSession.tags.split(',')
+          : [])
+    : [];
+  
+  const [tags, setTags] = useState<string[]>(existingTags);
   const [newTag, setNewTag] = useState("");
   const [date, setDate] = useState<Date>(
     existingSession ? new Date(existingSession.date) : new Date()
   );
   
   // NPC-bezogene States
-  const [npcs, setNpcs] = useState<Npc[]>([]);
   const [selectedNpcs, setSelectedNpcs] = useState<string[]>([]);
   const [isNpcFormOpen, setIsNpcFormOpen] = useState(false);
   
+  // Lade NPCs für diesen Helden über die API
+  const { 
+    data: npcs = [], 
+    isLoading: isLoadingNpcs,
+    error: npcsError
+  } = useQuery({
+    queryKey: ['/api/heroes', heroId, 'npcs'],
+    queryFn: () => fetchNpcsByHeroId(heroId)
+  });
+  
+  // Mutation für Session-Erstellung/Aktualisierung
+  const sessionMutation = useMutation({
+    mutationFn: async (data: Partial<Session>) => {
+      if (existingSession) {
+        return updateSession(existingSession.id.toString(), data);
+      } else {
+        return createSession(heroId, data as Omit<Session, 'id' | 'heroId' | 'createdAt' | 'updatedAt'>);
+      }
+    },
+    onSuccess: async (savedSession) => {
+      // Aktualisiere die NPCs, wenn sie dieser Session zugeordnet werden sollen
+      for (const npc of npcs) {
+        const isSelected = selectedNpcs.includes(npc.id.toString());
+        const wasAlreadyAssigned = existingSession && npc.firstSessionId === existingSession.id;
+        
+        if (isSelected && !wasAlreadyAssigned) {
+          // Ordne NPC dieser Session zu
+          await updateNpc(npc.id.toString(), {
+            ...npc,
+            firstSessionId: savedSession.id
+          });
+        } else if (!isSelected && wasAlreadyAssigned) {
+          // Entferne Zuordnung
+          await updateNpc(npc.id.toString(), {
+            ...npc,
+            firstSessionId: null
+          });
+        }
+      }
+      
+      // Invalidiere Caches
+      queryClient.invalidateQueries({ queryKey: ['/api/heroes', heroId, 'sessions'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/heroes', heroId, 'npcs'] });
+      
+      toast({
+        title: existingSession ? "Session aktualisiert" : "Session erstellt",
+        description: `"${savedSession.title}" wurde erfolgreich ${existingSession ? 'aktualisiert' : 'erstellt'}.`,
+      });
+      
+      // Callback aufrufen
+      onSubmit();
+    },
+    onError: (error) => {
+      console.error("Fehler beim Speichern der Session:", error);
+      toast({
+        title: "Fehler",
+        description: "Ein Fehler ist aufgetreten. Bitte versuche es erneut.",
+        variant: "destructive"
+      });
+    }
+  });
+  
   const { register, handleSubmit, setValue, formState: { errors } } = useForm<Session>({
     defaultValues: {
-      id: existingSession?.id || '',
-      heroId: heroId,
+      // Wir konvertieren heroId zu number, da das Backend eine Zahl erwartet
+      id: existingSession?.id || undefined,
+      heroId: existingSession?.heroId || parseInt(heroId),
       title: existingSession?.title || '',
       date: existingSession?.date || new Date().toISOString(),
       content: existingSession?.content || '',
-      tags: existingSession?.tags || [],
-      createdAt: existingSession?.createdAt || '',
-      updatedAt: existingSession?.updatedAt || ''
+      tags: existingTags,
+      createdAt: existingSession?.createdAt || new Date().toISOString(),
+      updatedAt: existingSession?.updatedAt || new Date().toISOString()
     }
   });
   
   useEffect(() => {
-    // Ensure the tags field is updated when tags change
+    // Stellt sicher, dass das Tags-Feld aktualisiert wird, wenn sich die Tags ändern
     setValue('tags', tags);
   }, [tags, setValue]);
   
   useEffect(() => {
-    // Ensure the date field is updated when date changes
+    // Stellt sicher, dass das Datum-Feld aktualisiert wird, wenn sich das Datum ändert
     setValue('date', date.toISOString());
   }, [date, setValue]);
   
-  // Lade NPCs für diesen Helden
+  // Wähle NPCs vor, die dieser Session zugeordnet sind
   useEffect(() => {
-    if (heroId) {
-      const heroNpcs = getNpcsByHeroId(heroId);
-      setNpcs(heroNpcs);
+    if (existingSession && npcs.length > 0) {
+      const sessionNpcs = npcs.filter(npc => 
+        npc.firstSessionId !== undefined && 
+        npc.firstSessionId !== null && 
+        npc.firstSessionId.toString() === existingSession.id.toString()
+      );
       
-      // Wenn eine Session bearbeitet wird, wähle alle NPCs vor, die diese Session als erste Begegnung haben
-      if (existingSession) {
-        const associatedNpcs = heroNpcs.filter(npc => npc.firstSessionId === existingSession.id);
-        setSelectedNpcs(associatedNpcs.map(npc => npc.id));
-      }
+      setSelectedNpcs(sessionNpcs.map(npc => npc.id.toString()));
     }
-  }, [heroId, existingSession]);
+  }, [existingSession, npcs]);
   
   const addTag = () => {
     if (newTag.trim() && !tags.includes(newTag.trim())) {
@@ -102,82 +175,29 @@ export default function SessionForm({ heroId, existingSession, onSubmit }: Sessi
   };
   
   const handleNpcFormSubmitted = () => {
-    // Aktualisiere die NPC-Liste
-    const updatedNpcs = getNpcsByHeroId(heroId);
+    // Invalidiere den Cache, um die NPCs neu zu laden
+    queryClient.invalidateQueries({ queryKey: ['/api/heroes', heroId, 'npcs'] });
     
-    // Finde den zuletzt erstellten NPC (der mit dem neuesten Zeitstempel)
-    const sortedNpcs = [...updatedNpcs].sort((a, b) => 
-      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
-    const newestNpc = sortedNpcs[0];
-    
-    // Wenn ein neuer NPC erstellt wurde, wähle ihn automatisch aus
-    if (newestNpc && !npcs.some(npc => npc.id === newestNpc.id)) {
-      setSelectedNpcs(prev => [...prev, newestNpc.id]);
-    }
-    
-    // Aktualisiere die NPC-Liste und schließe das Formular
-    setNpcs(updatedNpcs);
+    // Schließe das NPC-Formular
     setIsNpcFormOpen(false);
     
-    // Zeige Toast-Nachricht
+    // Toast-Nachricht anzeigen
     toast({
       title: "NPC hinzugefügt",
-      description: `Der NPC wurde erstellt und für diese Session ausgewählt.`,
+      description: "Der NPC wurde erstellt und für diese Session ausgewählt.",
     });
   };
   
   const handleFormSubmit = (data: Session) => {
     try {
-      // Make sure tags and date are included
-      data.tags = tags;
+      // Stelle sicher, dass Tags und Datum enthalten sind
+      data.tags = tags.join(',');
       data.date = date.toISOString();
       
-      // Save session
-      const savedSession = saveSession(data);
-      
-      // Aktualisierung der NPC-Session-Zuordnungen
-      if (existingSession) {
-        // Im Bearbeitungsmodus: NPCs, die bereits dieser Session zugeordnet waren, aber nicht mehr selektiert sind
-        npcs.forEach(npc => {
-          if (npc.firstSessionId === existingSession.id && !selectedNpcs.includes(npc.id)) {
-            // NPC ist nicht mehr für diese Session ausgewählt, entferne die Zuordnung
-            saveNpc({
-              ...npc,
-              firstSessionId: 'none'
-            });
-          }
-          
-          // NPCs, die neu für diese Session ausgewählt wurden
-          if ((!npc.firstSessionId || npc.firstSessionId === 'none') && selectedNpcs.includes(npc.id)) {
-            saveNpc({
-              ...npc,
-              firstSessionId: savedSession.id
-            });
-          }
-        });
-      } else if (selectedNpcs.length > 0) {
-        // Neue Session: Setze diese Session als erste Begegnung für ausgewählte NPCs
-        selectedNpcs.forEach(npcId => {
-          const npc = npcs.find(n => n.id === npcId);
-          if (npc && (!npc.firstSessionId || npc.firstSessionId === 'none')) {
-            // Nur setzen, wenn der NPC noch keine erste Session hat
-            saveNpc({
-              ...npc,
-              firstSessionId: savedSession.id
-            });
-          }
-        });
-      }
-      
-      toast({
-        title: existingSession ? "Session aktualisiert" : "Session erstellt",
-        description: `"${data.title}" wurde erfolgreich ${existingSession ? 'aktualisiert' : 'erstellt'}.`,
-      });
-      
-      // Call onSubmit callback
-      onSubmit();
+      // Session speichern über Mutation
+      sessionMutation.mutate(data);
     } catch (error) {
+      console.error("Fehler beim Speichern der Session:", error);
       toast({
         title: "Fehler",
         description: "Ein Fehler ist aufgetreten. Bitte versuche es erneut.",
@@ -308,7 +328,11 @@ export default function SessionForm({ heroId, existingSession, onSubmit }: Sessi
           </Button>
         </div>
         
-        {npcs.length === 0 ? (
+        {isLoadingNpcs ? (
+          <div className="flex justify-center items-center py-4">
+            <Loader2 className="h-6 w-6 animate-spin text-[#7f5af0]" />
+          </div>
+        ) : npcs.length === 0 ? (
           <div className="text-sm text-muted-foreground py-2">
             Es wurden noch keine NPCs für diesen Helden erstellt. Erstelle NPCs, um sie dieser Session zuzuordnen.
           </div>
@@ -321,16 +345,21 @@ export default function SessionForm({ heroId, existingSession, onSubmit }: Sessi
               >
                 <Checkbox 
                   id={`npc-${npc.id}`}
-                  checked={selectedNpcs.includes(npc.id)}
-                  onCheckedChange={() => toggleNpcSelection(npc.id)}
+                  checked={selectedNpcs.includes(npc.id.toString())}
+                  onCheckedChange={() => toggleNpcSelection(npc.id.toString())}
                   className="border-secondary data-[state=checked]:bg-secondary data-[state=checked]:text-secondary-foreground"
                 />
                 <label 
                   htmlFor={`npc-${npc.id}`}
                   className="text-sm font-medium leading-none cursor-pointer flex-1"
                 >
-                  {npc.name} {npc.firstSessionId && npc.firstSessionId !== existingSession?.id && <span className="ml-1 text-xs text-muted-foreground">(Anderer Session zugeordnet)</span>}
-                  {npc.firstSessionId && npc.firstSessionId === existingSession?.id && <span className="ml-1 text-xs text-secondary/70">(Dieser Session zugeordnet)</span>}
+                  {npc.name} 
+                  {npc.firstSessionId && existingSession && npc.firstSessionId.toString() !== existingSession.id.toString() && 
+                    <span className="ml-1 text-xs text-muted-foreground">(Anderer Session zugeordnet)</span>
+                  }
+                  {npc.firstSessionId && existingSession && npc.firstSessionId.toString() === existingSession.id.toString() && 
+                    <span className="ml-1 text-xs text-secondary/70">(Dieser Session zugeordnet)</span>
+                  }
                 </label>
                 <span className="text-xs text-muted-foreground">{npc.relationship}</span>
               </div>
@@ -382,8 +411,19 @@ export default function SessionForm({ heroId, existingSession, onSubmit }: Sessi
       
       {/* Buttons */}
       <div className="flex justify-end gap-2 pt-2">
-        <Button type="submit" className="bg-primary hover:bg-primary/90 text-primary-foreground">
-          {existingSession ? "Aktualisieren" : "Erstellen"}
+        <Button 
+          type="submit" 
+          className="bg-primary hover:bg-primary/90 text-primary-foreground"
+          disabled={sessionMutation.isPending}
+        >
+          {sessionMutation.isPending ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              {existingSession ? "Wird aktualisiert..." : "Wird erstellt..."}
+            </>
+          ) : (
+            existingSession ? "Aktualisieren" : "Erstellen"
+          )}
         </Button>
       </div>
     </form>

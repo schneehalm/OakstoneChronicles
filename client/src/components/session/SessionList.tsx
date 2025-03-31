@@ -1,13 +1,14 @@
-import { useState, useEffect } from "react";
-import { Plus, Search } from "lucide-react";
+import { useState, useMemo } from "react";
+import { Plus, Search, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Session } from "@/lib/types";
-import { getSessionsByHeroId, deleteSession } from "@/lib/storage";
+import { Session } from "@shared/schema";
+import { fetchSessionsByHeroId, deleteSession as apiDeleteSession } from "@/lib/api";
 import SessionCard from "./SessionCard";
 import SessionForm from "./SessionForm";
 import { useToast } from "@/hooks/use-toast";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface SessionListProps {
   heroId: string;
@@ -15,38 +16,38 @@ interface SessionListProps {
 
 export default function SessionList({ heroId }: SessionListProps) {
   const { toast } = useToast();
-  const [sessions, setSessions] = useState<Session[]>([]);
-  const [filteredSessions, setFilteredSessions] = useState<Session[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const queryClient = useQueryClient();
   
-  useEffect(() => {
-    // Load sessions
-    const loadSessions = () => {
-      const sessionData = getSessionsByHeroId(heroId);
-      setSessions(sessionData);
-      setFilteredSessions(sessionData);
-    };
-    
-    loadSessions();
-  }, [heroId]);
+  // Lade Sessions über die API
+  const { 
+    data: sessions = [], 
+    isLoading, 
+    error 
+  } = useQuery({
+    queryKey: ['/api/heroes', heroId, 'sessions'],
+    queryFn: () => fetchSessionsByHeroId(heroId)
+  });
   
-  useEffect(() => {
-    // Filter sessions based on search term
+  // Gefilterte Sessions basierend auf Suchbegriff
+  const filteredSessions = useMemo(() => {
     if (searchTerm.trim() === "") {
-      setFilteredSessions(sessions);
+      return sessions;
     } else {
       const term = searchTerm.toLowerCase();
-      const filtered = sessions.filter(
-        session => 
+      return sessions.filter(
+        (session) => 
           session.title.toLowerCase().includes(term) || 
           session.content.toLowerCase().includes(term) ||
-          session.tags.some(tag => tag.toLowerCase().includes(term))
+          (Array.isArray(session.tags) 
+            ? session.tags.some((tag) => typeof tag === 'string' && tag.toLowerCase().includes(term))
+            : typeof session.tags === 'string' && session.tags.toLowerCase().includes(term)
+          )
       );
-      setFilteredSessions(filtered);
     }
-  }, [searchTerm, sessions]);
+  }, [sessions, searchTerm]);
   
   const handleAddSession = () => {
     setSelectedSession(null);
@@ -58,30 +59,54 @@ export default function SessionList({ heroId }: SessionListProps) {
     setIsFormOpen(true);
   };
   
-  const handleDeleteSession = (session: Session) => {
+  const handleDeleteSession = async (session: Session) => {
     if (window.confirm(`Bist du sicher, dass du die Session "${session.title}" löschen möchtest?`)) {
-      deleteSession(session.id);
-      
-      // Update session list
-      const updatedSessions = sessions.filter(s => s.id !== session.id);
-      setSessions(updatedSessions);
-      
-      toast({
-        title: "Session gelöscht",
-        description: `"${session.title}" wurde erfolgreich gelöscht.`,
-      });
+      try {
+        await apiDeleteSession(session.id.toString(), heroId);
+        
+        // Die Cache-Invalidierung wird vom API-Aufruf erledigt, 
+        // aber wir aktualisieren die UI optimistisch
+        
+        toast({
+          title: "Session gelöscht",
+          description: `"${session.title}" wurde erfolgreich gelöscht.`,
+        });
+      } catch (error) {
+        console.error("Fehler beim Löschen der Session:", error);
+        toast({
+          title: "Fehler",
+          description: "Die Session konnte nicht gelöscht werden.",
+          variant: "destructive",
+        });
+      }
     }
   };
   
   const handleFormSubmit = () => {
-    // Reload sessions
-    const sessionData = getSessionsByHeroId(heroId);
-    setSessions(sessionData);
-    setFilteredSessions(sessionData);
+    // Invalidiere den Cache, um die Daten neu zu laden
+    queryClient.invalidateQueries({ queryKey: ['/api/heroes', heroId, 'sessions'] });
     
-    // Close form
+    // Schließe das Formular
     setIsFormOpen(false);
   };
+  
+  // Zeige Ladestatus
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center py-20">
+        <Loader2 className="h-8 w-8 animate-spin text-[#7f5af0]" />
+      </div>
+    );
+  }
+  
+  // Zeige Fehlerfall
+  if (error) {
+    return (
+      <div className="text-center py-10 bg-red-500/10 rounded-xl border border-red-500/30">
+        <p className="text-red-500">Fehler beim Laden der Sessions: {error instanceof Error ? error.message : 'Unbekannter Fehler'}</p>
+      </div>
+    );
+  }
   
   return (
     <div className="space-y-6">

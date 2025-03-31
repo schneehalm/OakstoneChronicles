@@ -1,13 +1,14 @@
-import { useState, useEffect } from "react";
-import { Plus, Search } from "lucide-react";
+import { useState, useMemo } from "react";
+import { Plus, Search, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Quest } from "@/lib/types";
-import { getQuestsByHeroId, deleteQuest } from "@/lib/storage";
+import { Quest } from "@shared/schema";
+import { fetchQuestsByHeroId, deleteQuest as apiDeleteQuest } from "@/lib/api";
 import QuestItem from "./QuestItem";
 import QuestForm from "./QuestForm";
 import { useToast } from "@/hooks/use-toast";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface QuestListProps {
   heroId: string;
@@ -15,37 +16,34 @@ interface QuestListProps {
 
 export default function QuestList({ heroId }: QuestListProps) {
   const { toast } = useToast();
-  const [quests, setQuests] = useState<Quest[]>([]);
-  const [filteredQuests, setFilteredQuests] = useState<Quest[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedQuest, setSelectedQuest] = useState<Quest | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const queryClient = useQueryClient();
   
-  useEffect(() => {
-    // Load quests
-    const loadQuests = () => {
-      const questData = getQuestsByHeroId(heroId);
-      setQuests(questData);
-      setFilteredQuests(questData);
-    };
-    
-    loadQuests();
-  }, [heroId]);
+  // Lade Quests über die API
+  const { 
+    data: quests = [], 
+    isLoading, 
+    error 
+  } = useQuery({
+    queryKey: ['/api/heroes', heroId, 'quests'],
+    queryFn: () => fetchQuestsByHeroId(heroId)
+  });
   
-  useEffect(() => {
-    // Filter quests based on search term
+  // Gefilterte Quests basierend auf Suchbegriff
+  const filteredQuests = useMemo(() => {
     if (searchTerm.trim() === "") {
-      setFilteredQuests(quests);
+      return quests;
     } else {
       const term = searchTerm.toLowerCase();
-      const filtered = quests.filter(
-        quest => 
+      return quests.filter(
+        (quest) => 
           quest.title.toLowerCase().includes(term) || 
           quest.description.toLowerCase().includes(term)
       );
-      setFilteredQuests(filtered);
     }
-  }, [searchTerm, quests]);
+  }, [quests, searchTerm]);
   
   const handleAddQuest = () => {
     setSelectedQuest(null);
@@ -57,30 +55,51 @@ export default function QuestList({ heroId }: QuestListProps) {
     setIsFormOpen(true);
   };
   
-  const handleDeleteQuest = (quest: Quest) => {
+  const handleDeleteQuest = async (quest: Quest) => {
     if (window.confirm(`Bist du sicher, dass du den Auftrag "${quest.title}" löschen möchtest?`)) {
-      deleteQuest(quest.id);
-      
-      // Update quest list
-      const updatedQuests = quests.filter(q => q.id !== quest.id);
-      setQuests(updatedQuests);
-      
-      toast({
-        title: "Auftrag gelöscht",
-        description: `"${quest.title}" wurde erfolgreich gelöscht.`,
-      });
+      try {
+        await apiDeleteQuest(quest.id.toString(), heroId);
+        
+        toast({
+          title: "Auftrag gelöscht",
+          description: `"${quest.title}" wurde erfolgreich gelöscht.`,
+        });
+      } catch (error) {
+        console.error("Fehler beim Löschen des Auftrags:", error);
+        toast({
+          title: "Fehler",
+          description: "Der Auftrag konnte nicht gelöscht werden.",
+          variant: "destructive",
+        });
+      }
     }
   };
   
   const handleFormSubmit = () => {
-    // Reload quests
-    const questData = getQuestsByHeroId(heroId);
-    setQuests(questData);
-    setFilteredQuests(questData);
+    // Invalidiere den Cache, um die Daten neu zu laden
+    queryClient.invalidateQueries({ queryKey: ['/api/heroes', heroId, 'quests'] });
     
-    // Close form
+    // Schließe das Formular
     setIsFormOpen(false);
   };
+  
+  // Zeige Ladestatus
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center py-20">
+        <Loader2 className="h-8 w-8 animate-spin text-[#7f5af0]" />
+      </div>
+    );
+  }
+  
+  // Zeige Fehlerfall
+  if (error) {
+    return (
+      <div className="text-center py-10 bg-red-500/10 rounded-xl border border-red-500/30">
+        <p className="text-red-500">Fehler beim Laden der Aufträge: {error instanceof Error ? error.message : 'Unbekannter Fehler'}</p>
+      </div>
+    );
+  }
   
   return (
     <div className="space-y-6">
@@ -152,7 +171,7 @@ export default function QuestList({ heroId }: QuestListProps) {
       )}
       
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-        <DialogContent className="bg-[#1e1e2f] border border-[#7f5af0]/30 text-[#f5f5f5]">
+        <DialogContent className="bg-[#1e1e2f] border border-[#7f5af0]/30 text-[#f5f5f5] max-w-3xl">
           <DialogHeader>
             <DialogTitle className="font-['Cinzel_Decorative'] text-[#d4af37] text-xl">
               {selectedQuest ? "Auftrag bearbeiten" : "Neuen Auftrag erstellen"}

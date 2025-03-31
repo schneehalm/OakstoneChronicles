@@ -1,5 +1,5 @@
 import { Shield, Flag, BookOpen } from "lucide-react";
-import { Quest } from "@/lib/types";
+import { Quest } from "@shared/schema";
 
 interface QuestItemProps {
   quest: Quest;
@@ -67,9 +67,16 @@ export default function QuestItem({ quest, onClick }: QuestItemProps) {
           <h4 className="font-medium text-[#d4af37]">{quest.title}</h4>
           <p className="text-sm mt-1">{quest.description}</p>
         </div>
-        <div className="flex-shrink-0">
+        <div className="flex-shrink-0 flex flex-col items-end gap-2">
           <span className={`text-xs rounded-full px-2 py-0.5 ${typeInfo.className}`}>
             {typeInfo.label}
+          </span>
+          
+          {/* Quest Status */}
+          <span className={`text-xs rounded-full px-2 py-0.5 ${
+            quest.completed ? "bg-[#43ffaf]/20 text-[#43ffaf] border border-[#43ffaf]/40" : "bg-[#f5f5f5]/20 text-[#f5f5f5] border border-[#f5f5f5]/40"
+          }`}>
+            {quest.completed ? "Abgeschlossen" : "Offen"}
           </span>
         </div>
       </div>

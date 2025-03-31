@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,10 +13,18 @@ import {
   SelectValue
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { QUEST_TYPES } from "@/lib/theme";
-import { Quest } from "@/lib/types";
-import { saveQuest } from "@/lib/storage";
+import { Quest } from "@shared/schema";
+import { createQuest, updateQuest } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+// Quest-Typen
+const QUEST_TYPES = [
+  { value: 'main', label: 'Hauptquest' },
+  { value: 'side', label: 'Nebenquest' },
+  { value: 'personal', label: 'Persönlich' },
+  { value: 'guild', label: 'Gilde' }
+];
 
 interface QuestFormProps {
   heroId: string;
@@ -24,17 +34,50 @@ interface QuestFormProps {
 
 export default function QuestForm({ heroId, existingQuest, onSubmit }: QuestFormProps) {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+  
+  // Mutation für Quest-Erstellung/Aktualisierung
+  const questMutation = useMutation({
+    mutationFn: async (data: Partial<Quest>) => {
+      if (existingQuest) {
+        return updateQuest(existingQuest.id.toString(), data);
+      } else {
+        return createQuest(heroId, data as Omit<Quest, 'id' | 'heroId' | 'createdAt' | 'updatedAt'>);
+      }
+    },
+    onSuccess: (savedQuest) => {
+      // Invalidiere Caches
+      queryClient.invalidateQueries({ queryKey: ['/api/heroes', heroId, 'quests'] });
+      
+      toast({
+        title: existingQuest ? "Auftrag aktualisiert" : "Auftrag erstellt",
+        description: `"${savedQuest.title}" wurde erfolgreich ${existingQuest ? 'aktualisiert' : 'erstellt'}.`,
+      });
+      
+      // Callback aufrufen
+      onSubmit();
+    },
+    onError: (error) => {
+      console.error("Fehler beim Speichern des Auftrags:", error);
+      toast({
+        title: "Fehler",
+        description: "Ein Fehler ist aufgetreten. Bitte versuche es erneut.",
+        variant: "destructive"
+      });
+    }
+  });
   
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<Quest>({
     defaultValues: {
-      id: existingQuest?.id || '',
-      heroId: heroId,
+      // Wir konvertieren heroId zu number, da das Backend eine Zahl erwartet
+      id: existingQuest?.id || undefined,
+      heroId: existingQuest?.heroId || parseInt(heroId),
       title: existingQuest?.title || '',
       description: existingQuest?.description || '',
       type: existingQuest?.type || 'side',
       completed: existingQuest?.completed || false,
-      createdAt: existingQuest?.createdAt || '',
-      updatedAt: existingQuest?.updatedAt || ''
+      createdAt: existingQuest?.createdAt || new Date().toISOString(),
+      updatedAt: existingQuest?.updatedAt || new Date().toISOString()
     }
   });
   
@@ -42,17 +85,10 @@ export default function QuestForm({ heroId, existingQuest, onSubmit }: QuestForm
   
   const handleFormSubmit = (data: Quest) => {
     try {
-      // Save quest
-      saveQuest(data);
-      
-      toast({
-        title: existingQuest ? "Auftrag aktualisiert" : "Auftrag erstellt",
-        description: `"${data.title}" wurde erfolgreich ${existingQuest ? 'aktualisiert' : 'erstellt'}.`,
-      });
-      
-      // Call onSubmit callback
-      onSubmit();
+      // Quest speichern über Mutation
+      questMutation.mutate(data);
     } catch (error) {
+      console.error("Fehler beim Speichern des Auftrags:", error);
       toast({
         title: "Fehler",
         description: "Ein Fehler ist aufgetreten. Bitte versuche es erneut.",
@@ -123,8 +159,19 @@ export default function QuestForm({ heroId, existingQuest, onSubmit }: QuestForm
       
       {/* Buttons */}
       <div className="flex justify-end gap-2 pt-2">
-        <Button type="submit" className="bg-[#7f5af0] hover:bg-[#7f5af0]/90">
-          {existingQuest ? "Aktualisieren" : "Erstellen"}
+        <Button 
+          type="submit" 
+          className="bg-[#7f5af0] hover:bg-[#7f5af0]/90"
+          disabled={questMutation.isPending}
+        >
+          {questMutation.isPending ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              {existingQuest ? "Wird aktualisiert..." : "Wird erstellt..."}
+            </>
+          ) : (
+            existingQuest ? "Aktualisieren" : "Erstellen"
+          )}
         </Button>
       </div>
     </form>

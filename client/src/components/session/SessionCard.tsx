@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { Session, Npc } from "@/lib/types";
+import { Session, Npc } from "@shared/schema";
 import { format } from "date-fns";
 import { de } from "date-fns/locale";
-import { getNpcsBySessionId } from "@/lib/storage";
+import { fetchNpcsByHeroId } from "@/lib/api";
 import { Users } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 
 interface SessionCardProps {
   session: Session;
@@ -11,18 +12,28 @@ interface SessionCardProps {
 }
 
 export default function SessionCard({ session, onClick }: SessionCardProps) {
-  const [npcs, setNpcs] = useState<Npc[]>([]);
-  
   // Format the date using date-fns with German locale
   const formattedDate = format(new Date(session.date), "dd.MM.yyyy", { locale: de });
   
-  // Lade NPCs, die in dieser Session zum ersten Mal getroffen wurden
-  useEffect(() => {
-    if (session.id) {
-      const sessionNpcs = getNpcsBySessionId(session.id);
-      setNpcs(sessionNpcs);
-    }
-  }, [session.id]);
+  // Lade NPCs über die API
+  const { data: npcs = [] } = useQuery({
+    queryKey: ['/api/heroes', session.heroId.toString(), 'npcs'],
+    queryFn: () => fetchNpcsByHeroId(session.heroId.toString())
+  });
+  
+  // Filter auf NPCs, die in dieser Session zum ersten Mal getroffen wurden
+  const sessionNpcs = npcs.filter(npc => 
+    npc.firstSessionId !== undefined && 
+    npc.firstSessionId !== null && 
+    npc.firstSessionId.toString() === session.id.toString()
+  );
+  
+  // Tags richtig behandeln, je nachdem ob es ein Array oder String ist
+  const tagsArray = Array.isArray(session.tags) 
+    ? session.tags 
+    : typeof session.tags === 'string' && session.tags 
+      ? session.tags.split(',') 
+      : [];
   
   return (
     <div 
@@ -36,9 +47,9 @@ export default function SessionCard({ session, onClick }: SessionCardProps) {
         </div>
         <p className="text-sm line-clamp-3 whitespace-pre-line">{session.content}</p>
         
-        {session.tags && session.tags.length > 0 && (
+        {tagsArray.length > 0 && (
           <div className="mt-3 flex flex-wrap gap-2">
-            {session.tags.slice(0, 3).map((tag, index) => (
+            {tagsArray.slice(0, 3).map((tag, index) => (
               <span 
                 key={index}
                 className={`text-xs rounded-full px-2 py-0.5 ${
@@ -50,21 +61,21 @@ export default function SessionCard({ session, onClick }: SessionCardProps) {
                 {tag}
               </span>
             ))}
-            {session.tags.length > 3 && (
-              <span className="text-xs text-[#f5f5f5]/60">+{session.tags.length - 3} weitere</span>
+            {tagsArray.length > 3 && (
+              <span className="text-xs text-[#f5f5f5]/60">+{tagsArray.length - 3} weitere</span>
             )}
           </div>
         )}
         
         {/* NPCs getroffen in dieser Session */}
-        {npcs.length > 0 && (
+        {sessionNpcs.length > 0 && (
           <div className="mt-3 border-t border-[#d4af37]/20 pt-2">
             <div className="flex items-center text-sm text-[#d4af37]">
               <Users className="w-4 h-4 mr-1" />
               <span>NPCs in dieser Session:</span>
             </div>
             <div className="mt-1 flex flex-wrap gap-1">
-              {npcs.map((npc) => (
+              {sessionNpcs.map((npc) => (
                 <span key={npc.id} className="text-xs bg-[#7f5af0]/20 border border-[#7f5af0]/40 rounded-full px-2 py-0.5">
                   {npc.name}
                 </span>
