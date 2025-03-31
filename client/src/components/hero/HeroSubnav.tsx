@@ -15,10 +15,10 @@ export default function HeroSubnav({ heroId, activeTab }: HeroSubnavProps) {
       {/* Back button */}
       <div className="flex items-center mb-2">
         <Button
-          variant="ghost"
+          variant="link"
           size="sm"
           onClick={() => navigate("/")}
-          className="text-[#d4af37] hover:text-[#7f5af0] -ml-2 transition-colors"
+          className="text-[#d4af37] hover:text-[#7f5af0] hover:bg-transparent -ml-2 transition-colors"
         >
           <ArrowLeft className="h-4 w-4 mr-1" />
           <span>Zurück zur Übersicht</span>
