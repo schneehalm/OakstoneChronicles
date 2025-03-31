@@ -430,15 +430,15 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
         
         {/* Statistiken / Attribute */}
         <div className="mb-6">
-          <Accordion type="single" collapsible defaultValue="stats" className="w-full">
-            <AccordionItem value="stats">
+          <Accordion type="single" collapsible defaultValue="stats" className="w-full border-0">
+            <AccordionItem value="stats" className="border-0">
               <AccordionTrigger className="form-label hover:text-[#d4af37] hover:no-underline">
                 <span className="flex items-center gap-2">
                   <ArrowUpCircle className="h-5 w-5" />
                   Attribute & Statistiken
                 </span>
               </AccordionTrigger>
-              <AccordionContent>
+              <AccordionContent className="border-0">
                 {watchSystem && STATS_DEFINITIONS[watchSystem as keyof typeof STATS_DEFINITIONS] ? (
                   <div className="pt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                     {STATS_DEFINITIONS[watchSystem as keyof typeof STATS_DEFINITIONS].map((stat) => (
@@ -468,7 +468,7 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
                     ))}
                   </div>
                 ) : (
-                  <div className="flex items-center justify-center p-4">
+                  <div className="flex items-center justify-center p-4 border-0">
                     <p className="text-muted-foreground italic">
                       Bitte wähle zuerst ein Regelwerk, um die passenden Statistiken anzuzeigen.
                     </p>
