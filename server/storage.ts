@@ -139,6 +139,35 @@ export class MemStorage implements IStorage {
   async createHero(hero: InsertHero): Promise<Hero> {
     const id = this.heroId++;
     const timestamp = new Date().toISOString();
+    
+    // Korrekte Typenbehandlung
+    let parsedStats: string | Record<string, string | number> | null = null;
+    if (hero.stats) {
+      if (typeof hero.stats === 'string') {
+        // Wenn es ein JSON-String ist, parsen wir es
+        try {
+          parsedStats = JSON.parse(hero.stats);
+        } catch (e) {
+          // Wenn es kein gültiger JSON-String ist, belassen wir es so wie es ist
+          parsedStats = hero.stats;
+        }
+      } else if (typeof hero.stats === 'object') {
+        // Wenn es bereits ein Objekt ist
+        parsedStats = hero.stats as Record<string, string | number>;
+      }
+    }
+    
+    // Arrays und Strings für Tags verarbeiten
+    let parsedTags = null;
+    if (hero.tags) {
+      // Wenn tags ein String mit Kommas ist, wandeln wir es in ein Array um
+      if (typeof hero.tags === 'string' && hero.tags.includes(',')) {
+        parsedTags = hero.tags.split(',').map(t => t.trim());
+      } else {
+        parsedTags = hero.tags;
+      }
+    }
+    
     const newHero: Hero = { 
       ...hero, 
       id, 
@@ -148,11 +177,12 @@ export class MemStorage implements IStorage {
       backstory: hero.backstory || null,
       backstoryPdf: hero.backstoryPdf || null,
       backstoryPdfName: hero.backstoryPdfName || null,
-      tags: hero.tags || null,
-      stats: hero.stats || null,
+      tags: parsedTags,
+      stats: parsedStats,
       createdAt: timestamp, 
       updatedAt: timestamp 
     };
+    
     this.heroes.set(id, newHero);
     return newHero;
   }
@@ -161,11 +191,41 @@ export class MemStorage implements IStorage {
     const existingHero = this.heroes.get(id);
     if (!existingHero) return undefined;
     
+    // Aktualisierte Daten vorbereiten
+    const updatedData = { ...hero };
+    
+    // Korrekte Typenbehandlung für stats, falls vorhanden
+    if (hero.stats !== undefined) {
+      if (typeof hero.stats === 'string') {
+        try {
+          // Wenn es ein JSON-String ist, parsen wir es
+          updatedData.stats = JSON.parse(hero.stats);
+        } catch (e) {
+          // Bei Fehler behalten wir den Originalwert bei
+          updatedData.stats = hero.stats;
+        }
+      } else if (typeof hero.stats === 'object') {
+        // Wenn es bereits ein Objekt ist
+        updatedData.stats = hero.stats as Record<string, string | number>;
+      }
+    }
+    
+    // Korrekte Typenbehandlung für tags, falls vorhanden
+    if (hero.tags !== undefined) {
+      // Wenn tags ein String mit Kommas ist, wandeln wir es in ein Array um
+      if (typeof hero.tags === 'string' && hero.tags.includes(',')) {
+        updatedData.tags = hero.tags.split(',').map(t => t.trim());
+      } else {
+        updatedData.tags = hero.tags;
+      }
+    }
+    
     const updatedHero: Hero = { 
       ...existingHero, 
-      ...hero, 
+      ...updatedData, 
       updatedAt: new Date().toISOString() 
     };
+    
     this.heroes.set(id, updatedHero);
     return updatedHero;
   }
@@ -235,10 +295,22 @@ export class MemStorage implements IStorage {
   async createSession(session: InsertSession): Promise<Session> {
     const id = this.sessionId++;
     const timestamp = new Date().toISOString();
+    
+    // Tags-Verarbeitung
+    let parsedTags = null;
+    if (session.tags) {
+      // Wenn tags ein String mit Kommas ist, wandeln wir es in ein Array um
+      if (typeof session.tags === 'string' && session.tags.includes(',')) {
+        parsedTags = session.tags.split(',').map(t => t.trim());
+      } else {
+        parsedTags = session.tags;
+      }
+    }
+    
     const newSession: Session = { 
       ...session, 
       id, 
-      tags: session.tags || null,
+      tags: parsedTags,
       createdAt: timestamp, 
       updatedAt: timestamp 
     };
@@ -250,11 +322,25 @@ export class MemStorage implements IStorage {
     const existingSession = this.sessions.get(id);
     if (!existingSession) return undefined;
     
+    // Aktualisierte Daten vorbereiten
+    const updatedData = { ...session };
+    
+    // Tags-Verarbeitung, falls vorhanden
+    if (session.tags !== undefined) {
+      // Wenn tags ein String mit Kommas ist, wandeln wir es in ein Array um
+      if (typeof session.tags === 'string' && session.tags.includes(',')) {
+        updatedData.tags = session.tags.split(',').map(t => t.trim());
+      } else {
+        updatedData.tags = session.tags;
+      }
+    }
+    
     const updatedSession: Session = { 
       ...existingSession, 
-      ...session, 
+      ...updatedData, 
       updatedAt: new Date().toISOString() 
     };
+    
     this.sessions.set(id, updatedSession);
     return updatedSession;
   }

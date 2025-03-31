@@ -14,14 +14,48 @@ export const fetchHeroById = async (id: string): Promise<Hero> => {
 };
 
 export const createHero = async (hero: Omit<Hero, 'id' | 'createdAt' | 'updatedAt' | 'userId'>): Promise<Hero> => {
-  const response = await apiRequest('POST', '/api/heroes', hero);
+  // Daten für das Backend-Format vorbereiten
+  const formattedHero = {
+    ...hero,
+    // Konvertiere Array zu String für das Backend
+    tags: Array.isArray(hero.tags) ? hero.tags.join(',') : '',
+    // Konvertiere Stats-Objekt zu JSON-String für das Backend
+    stats: hero.stats ? JSON.stringify(hero.stats) : null
+    // Wir entfernen die Timestamps, da diese vom Backend gesetzt werden
+  };
+
+  // Entferne eventuell vorhandene Timestamps, um Validierungsfehler zu vermeiden
+  delete (formattedHero as any).createdAt;
+  delete (formattedHero as any).updatedAt;
+
+  const response = await apiRequest('POST', '/api/heroes', formattedHero);
   // Nach erfolgreichem Erstellen die Heldenliste ungültig machen, um ein Neuladen zu erzwingen
   queryClient.invalidateQueries({ queryKey: ['/api/heroes'] });
   return await response.json();
 };
 
 export const updateHero = async (id: string, hero: Partial<Hero>): Promise<Hero> => {
-  const response = await apiRequest('PUT', `/api/heroes/${id}`, hero);
+  // Daten für das Backend-Format vorbereiten
+  const formattedHero: any = {
+    ...hero
+    // Updatedat wird vom Backend gesetzt
+  };
+
+  // Konvertiere Tags nur wenn vorhanden
+  if (hero.tags !== undefined) {
+    formattedHero.tags = Array.isArray(hero.tags) ? hero.tags.join(',') : '';
+  }
+
+  // Konvertiere Stats nur wenn vorhanden
+  if (hero.stats !== undefined) {
+    formattedHero.stats = hero.stats ? JSON.stringify(hero.stats) : null;
+  }
+
+  // Entferne eventuell vorhandene Timestamps, um Validierungsfehler zu vermeiden
+  delete formattedHero.createdAt;
+  delete formattedHero.updatedAt;
+
+  const response = await apiRequest('PUT', `/api/heroes/${id}`, formattedHero);
   // Ungültig machen sowohl der Liste als auch des spezifischen Helden
   queryClient.invalidateQueries({ queryKey: ['/api/heroes'] });
   queryClient.invalidateQueries({ queryKey: ['/api/heroes', id] });
@@ -47,14 +81,24 @@ export const fetchNpcById = async (id: string): Promise<Npc> => {
 };
 
 export const createNpc = async (heroId: string, npc: Omit<Npc, 'id' | 'heroId' | 'createdAt' | 'updatedAt'>): Promise<Npc> => {
-  const response = await apiRequest('POST', `/api/heroes/${heroId}/npcs`, { ...npc, heroId });
+  // Erstelle eine Kopie der Daten und entferne Timestamps, um Validierungsfehler zu vermeiden
+  const formattedNpc = { ...npc, heroId };
+  delete (formattedNpc as any).createdAt;
+  delete (formattedNpc as any).updatedAt;
+  
+  const response = await apiRequest('POST', `/api/heroes/${heroId}/npcs`, formattedNpc);
   // Ungültig machen der NPC-Liste für diesen Helden
   queryClient.invalidateQueries({ queryKey: ['/api/heroes', heroId, 'npcs'] });
   return await response.json();
 };
 
 export const updateNpc = async (id: string, npc: Partial<Npc>): Promise<Npc> => {
-  const response = await apiRequest('PUT', `/api/npcs/${id}`, npc);
+  // Erstelle eine Kopie der Daten und entferne Timestamps, um Validierungsfehler zu vermeiden
+  const formattedNpc = { ...npc };
+  delete (formattedNpc as any).createdAt;
+  delete (formattedNpc as any).updatedAt;
+
+  const response = await apiRequest('PUT', `/api/npcs/${id}`, formattedNpc);
   const updatedNpc = await response.json();
   // Ungültig machen der NPC-Liste für den Helden
   queryClient.invalidateQueries({ queryKey: ['/api/heroes', updatedNpc.heroId, 'npcs'] });
@@ -80,14 +124,34 @@ export const fetchSessionById = async (id: string): Promise<Session> => {
 };
 
 export const createSession = async (heroId: string, session: Omit<Session, 'id' | 'heroId' | 'createdAt' | 'updatedAt'>): Promise<Session> => {
-  const response = await apiRequest('POST', `/api/heroes/${heroId}/sessions`, { ...session, heroId });
+  // Erstelle eine Kopie der Daten und entferne Timestamps, um Validierungsfehler zu vermeiden
+  const formattedSession = { ...session, heroId };
+  delete (formattedSession as any).createdAt;
+  delete (formattedSession as any).updatedAt;
+  
+  // Konvertiere Tags-Array zu String, falls nötig
+  if (Array.isArray(formattedSession.tags)) {
+    (formattedSession as any).tags = formattedSession.tags.join(',');
+  }
+  
+  const response = await apiRequest('POST', `/api/heroes/${heroId}/sessions`, formattedSession);
   // Ungültig machen der Sitzungsliste für diesen Helden
   queryClient.invalidateQueries({ queryKey: ['/api/heroes', heroId, 'sessions'] });
   return await response.json();
 };
 
 export const updateSession = async (id: string, session: Partial<Session>): Promise<Session> => {
-  const response = await apiRequest('PUT', `/api/sessions/${id}`, session);
+  // Erstelle eine Kopie der Daten und entferne Timestamps, um Validierungsfehler zu vermeiden
+  const formattedSession = { ...session };
+  delete (formattedSession as any).createdAt;
+  delete (formattedSession as any).updatedAt;
+  
+  // Konvertiere Tags-Array zu String, falls nötig
+  if (formattedSession.tags !== undefined && Array.isArray(formattedSession.tags)) {
+    (formattedSession as any).tags = formattedSession.tags.join(',');
+  }
+  
+  const response = await apiRequest('PUT', `/api/sessions/${id}`, formattedSession);
   const updatedSession = await response.json();
   // Ungültig machen der Sitzungsliste für den Helden
   queryClient.invalidateQueries({ queryKey: ['/api/heroes', updatedSession.heroId, 'sessions'] });
@@ -113,14 +177,24 @@ export const fetchQuestById = async (id: string): Promise<Quest> => {
 };
 
 export const createQuest = async (heroId: string, quest: Omit<Quest, 'id' | 'heroId' | 'createdAt' | 'updatedAt'>): Promise<Quest> => {
-  const response = await apiRequest('POST', `/api/heroes/${heroId}/quests`, { ...quest, heroId });
+  // Erstelle eine Kopie der Daten und entferne Timestamps, um Validierungsfehler zu vermeiden
+  const formattedQuest = { ...quest, heroId };
+  delete (formattedQuest as any).createdAt;
+  delete (formattedQuest as any).updatedAt;
+  
+  const response = await apiRequest('POST', `/api/heroes/${heroId}/quests`, formattedQuest);
   // Ungültig machen der Quest-Liste für diesen Helden
   queryClient.invalidateQueries({ queryKey: ['/api/heroes', heroId, 'quests'] });
   return await response.json();
 };
 
 export const updateQuest = async (id: string, quest: Partial<Quest>): Promise<Quest> => {
-  const response = await apiRequest('PUT', `/api/quests/${id}`, quest);
+  // Erstelle eine Kopie der Daten und entferne Timestamps, um Validierungsfehler zu vermeiden
+  const formattedQuest = { ...quest };
+  delete (formattedQuest as any).createdAt;
+  delete (formattedQuest as any).updatedAt;
+  
+  const response = await apiRequest('PUT', `/api/quests/${id}`, formattedQuest);
   const updatedQuest = await response.json();
   // Ungültig machen der Quest-Liste für den Helden
   queryClient.invalidateQueries({ queryKey: ['/api/heroes', updatedQuest.heroId, 'quests'] });

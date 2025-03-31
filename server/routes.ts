@@ -2,7 +2,10 @@ import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth } from "./auth";
-import { insertHeroSchema, insertNpcSchema, insertSessionSchema, insertQuestSchema } from "@shared/schema";
+import { 
+  insertHeroSchema, insertNpcSchema, insertSessionSchema, insertQuestSchema,
+  Hero, Npc, Session, Quest  
+} from "@shared/schema";
 import { z } from "zod";
 
 // Middleware zur Überprüfung der Authentifizierung
@@ -532,7 +535,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
     
     // Importiere zugehörige NPCs, Sessions und Quests
-    const importedObjects = {
+    const importedObjects: {
+      npcs: Npc[],
+      sessions: Session[],
+      quests: Quest[]
+    } = {
       npcs: [],
       sessions: [],
       quests: []
@@ -624,7 +631,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   app.post('/api/import/all', isAuthenticated, async (req, res) => {
     const { heroes: importedHeroesData, replaceExisting } = req.body;
-    const importResults = {
+    const importResults: {
+      success: boolean,
+      imported: number,
+      total: number,
+      heroes: Hero[]
+    } = {
       success: false,
       imported: 0,
       total: importedHeroesData.length,
@@ -649,7 +661,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (importResponse.ok) {
           const result = await importResponse.json();
           importResults.imported++;
-          importResults.heroes.push(result.hero);
+          // Explizite Typumwandlung mit Überprüfung der Struktur
+          if (result.hero && typeof result.hero === 'object' && 'id' in result.hero) {
+            importResults.heroes.push(result.hero as Hero);
+          }
         }
       } catch (error) {
         console.error('Fehler beim Importieren eines Helden:', error);
