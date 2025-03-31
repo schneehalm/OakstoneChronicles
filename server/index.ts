@@ -1,6 +1,10 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { drizzle } from "drizzle-orm/neon-serverless";
+import { neon } from "@neondatabase/serverless";
+import { migrate } from "drizzle-orm/neon-serverless/migrator";
+import * as schema from "../shared/schema";
 
 const app = express();
 // Erhöhen der maximalen Payload-Größe für große Bilder und PDFs
@@ -38,6 +42,31 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // Datenbank-Migration beim Start der Anwendung
+  if (process.env.DATABASE_URL) {
+    try {
+      log("Starten der Datenbank-Migration...");
+      const sql = neon(process.env.DATABASE_URL);
+      const db = drizzle(sql, { schema });
+      
+      // Statt migrate verwenden wir push
+      const { exec } = await import("child_process");
+      exec("npm run db:push", (error, stdout, stderr) => {
+        if (error) {
+          log(`Fehler bei der Datenbank-Migration: ${error.message}`);
+          return;
+        }
+        if (stderr) {
+          log(`Datenbank-Migration Fehlerausgabe: ${stderr}`);
+          return;
+        }
+        log(`Datenbank-Migration erfolgreich: ${stdout}`);
+      });
+    } catch (error) {
+      log(`Fehler bei der Datenbank-Migration: ${error}`);
+    }
+  }
+  
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
