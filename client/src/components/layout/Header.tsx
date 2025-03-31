@@ -1,5 +1,5 @@
-import { Link, useLocation } from "wouter";
-import { LogOut, Plus, User, Moon, Sun } from "lucide-react";
+import { Link } from "wouter";
+import { LogOut, Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeSwitch } from "@/components/ui/theme-switch";
 import { useTheme } from "@/components/ui/theme-provider";
@@ -15,8 +15,6 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useEffect, useState } from "react";
 
 export default function Header() {
-  const [location] = useLocation();
-  const isCreatingHero = location === "/hero/create";
   
   // Mock-Auth-State für Entwicklung
   const [user, setUser] = useState<{ username: string } | null>(null);
@@ -38,7 +36,7 @@ export default function Header() {
     checkAuth();
   }, []);
   
-  const [, navigate] = useLocation();
+  // Wir verwenden window.location.href für die Umleitung
   
   const handleLogout = async () => {
     try {
@@ -69,18 +67,6 @@ export default function Header() {
           </div>
         </Link>
         <div className="flex items-center gap-3">
-          {!isCreatingHero && (
-            <Link href="/hero/create">
-              <Button
-                variant="outline" 
-                className="px-3 py-1 rounded-lg bg-gradient-to-r from-primary to-primary/80 text-primary-foreground hover:shadow-[0_0_10px_rgba(127,90,240,0.3)] border-primary/40 transition-all duration-300 flex items-center"
-              >
-                <Plus className="h-5 w-5 mr-1" />
-                <span className="hidden sm:inline">Neuer Held</span>
-              </Button>
-            </Link>
-          )}
-          
           {user && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
