@@ -174,10 +174,10 @@ export default function HeroImportExport({ heroes, onImportSuccess }: HeroImport
           <TooltipTrigger asChild>
             <Button 
               variant="outline" 
-              className="flex items-center gap-2 border-[#d4af37]/40 bg-[#1e1e2f] hover:bg-[#1e1e2f]/80"
+              className="btn-gold"
               onClick={handleExportAll}
             >
-              <Download className="h-4 w-4 text-[#d4af37]" />
+              <Download className="h-4 w-4 text-[hsl(var(--secondary))]" />
               <span>Helden exportieren</span>
             </Button>
           </TooltipTrigger>
@@ -192,10 +192,10 @@ export default function HeroImportExport({ heroes, onImportSuccess }: HeroImport
           <TooltipTrigger asChild>
             <Button 
               variant="outline" 
-              className="flex items-center gap-2 border-[#7f5af0]/40 bg-[#1e1e2f] hover:bg-[#1e1e2f]/80"
+              className="bg-[hsl(var(--content-box))] text-primary border border-primary/40 hover:bg-primary/10"
               onClick={() => setIsImportOpen(true)}
             >
-              <Upload className="h-4 w-4 text-[#7f5af0]" />
+              <Upload className="h-4 w-4 text-primary" />
               <span>Helden importieren</span>
             </Button>
           </TooltipTrigger>
@@ -228,8 +228,8 @@ export default function HeroImportExport({ heroes, onImportSuccess }: HeroImport
             )}
             
             {importSuccess && (
-              <Alert className="mb-4 bg-[#43ffaf]/10 border-[#43ffaf]/30">
-                <Check className="h-4 w-4 text-[#43ffaf]" />
+              <Alert className="mb-4 success-alert">
+                <Check className="h-4 w-4 text-[hsl(var(--accent))]" />
                 <AlertTitle>Import erfolgreich</AlertTitle>
                 <AlertDescription>
                   {importSuccess.imported} von {importSuccess.total} Helden wurden erfolgreich importiert.
@@ -246,11 +246,11 @@ export default function HeroImportExport({ heroes, onImportSuccess }: HeroImport
                   className="absolute inset-0 opacity-0 cursor-pointer z-10"
                   onChange={handleFileChange}
                 />
-                <div className="w-full bg-[#1e1e2f] border border-[#7f5af0]/40 rounded-lg px-4 py-3 text-sm flex items-center justify-between">
-                  <span className="text-[#f5f5f5]/80">
+                <div className="w-full bg-[hsl(var(--content-box))] border border-input rounded-lg px-4 py-3 text-sm flex items-center justify-between">
+                  <span className="text-muted-foreground">
                     Datei auswählen...
                   </span>
-                  <Upload className="h-4 w-4 text-[#7f5af0]" />
+                  <Upload className="h-4 w-4 text-primary" />
                 </div>
               </div>
               
@@ -259,17 +259,16 @@ export default function HeroImportExport({ heroes, onImportSuccess }: HeroImport
                   id="replaceExisting" 
                   checked={replaceExisting}
                   onCheckedChange={(checked) => setReplaceExisting(checked === true)}
-                  className="bg-[#1e1e2f] border-[#7f5af0]/40 text-[#7f5af0] data-[state=checked]:bg-[#7f5af0]"
                 />
                 <label
                   htmlFor="replaceExisting"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-[#f5f5f5]/90"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
                   Vorhandene Helden ersetzen
                 </label>
               </div>
               
-              <p className="text-[#f5f5f5]/60 text-xs text-center">
+              <p className="text-muted-foreground text-xs text-center">
                 Unterstützt sowohl einzelne Helden als auch Helden-Sammlungen im JSON-Format, die mit Oakstone Chronicles exportiert wurden.
               </p>
             </div>
@@ -280,7 +279,6 @@ export default function HeroImportExport({ heroes, onImportSuccess }: HeroImport
               <Button 
                 type="button" 
                 variant="secondary"
-                className="bg-[#1e1e2f] hover:bg-[#1e1e2f]/80 border border-[#f5f5f5]/30"
               >
                 Schließen
               </Button>
@@ -290,7 +288,6 @@ export default function HeroImportExport({ heroes, onImportSuccess }: HeroImport
               type="button"
               variant="ghost"
               onClick={resetImportDialog}
-              className="text-[#f5f5f5]/70 hover:text-[#f5f5f5]"
             >
               <X className="h-4 w-4 mr-2" />
               Zurücksetzen

@@ -194,7 +194,7 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between mb-2">
-        <h2 className="font-['Cinzel_Decorative'] text-2xl text-[#d4af37]">
+        <h2 className="content-heading text-2xl">
           {existingHero ? "Held bearbeiten" : "Neuen Helden erstellen"}
         </h2>
         <Button 
@@ -209,7 +209,7 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
       
       <form 
         onSubmit={handleSubmit(onSubmit)}
-        className="bg-[#1e1e2f]/90 border border-[#d4af37]/30 rounded-xl p-6 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2720%27%20height%3D%2720%27%20viewBox%3D%270%200%2020%2020%27%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%3E%3Cg%20fill%3D%27%237f5af0%27%20fill-opacity%3D%270.05%27%20fill-rule%3D%27evenodd%27%3E%3Ccircle%20cx%3D%273%27%20cy%3D%273%27%20r%3D%271%27%2F%3E%3Ccircle%20cx%3D%2713%27%20cy%3D%2713%27%20r%3D%271%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E')]"
+        className="content-box p-6 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2720%27%20height%3D%2720%27%20viewBox%3D%270%200%2020%2020%27%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%3E%3Cg%20fill%3D%27%237f5af0%27%20fill-opacity%3D%270.05%27%20fill-rule%3D%27evenodd%27%3E%3Ccircle%20cx%3D%273%27%20cy%3D%273%27%20r%3D%271%27%2F%3E%3Ccircle%20cx%3D%2713%27%20cy%3D%2713%27%20r%3D%271%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E')]"
       >
         {/* Portrait Upload Section */}
         <div className="mb-6 flex flex-col sm:flex-row gap-6 items-center">
@@ -237,7 +237,7 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
             </div>
           </div>
           <div className="flex-grow space-y-1 text-center sm:text-left">
-            <h3 className="font-['Cinzel_Decorative'] text-[#d4af37] text-xl">Heldenportrait</h3>
+            <h3 className="content-heading text-xl">Heldenportrait</h3>
             <p className="text-sm text-[#f5f5f5]/70">Lade ein Bild hoch oder füge eine URL ein</p>
             <div className="mt-3">
               <Input
@@ -253,7 +253,7 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
         {/* Basic Information */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 mb-6">
           <div>
-            <Label htmlFor="heroName" className="block text-[#d4af37] mb-1">Name *</Label>
+            <Label htmlFor="heroName" className="block form-label mb-1">Name *</Label>
             <Input
               id="heroName"
               placeholder="Name deines Helden"
@@ -264,7 +264,7 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
           </div>
           
           <div>
-            <Label htmlFor="heroSystem" className="block text-[#d4af37] mb-1">Regelwerk *</Label>
+            <Label htmlFor="heroSystem" className="block form-label mb-1">Regelwerk *</Label>
             <Select 
               defaultValue={existingHero?.system || ''} 
               onValueChange={(value) => setValue('system', value)}
@@ -287,7 +287,7 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
           </div>
           
           <div>
-            <Label htmlFor="heroRace" className="block text-[#d4af37] mb-1">Volk / Spezies</Label>
+            <Label htmlFor="heroRace" className="block form-label mb-1">Volk / Spezies</Label>
             <Input
               id="heroRace"
               placeholder="z.B. Mensch, Elf, Zwerg..."
@@ -297,7 +297,7 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
           </div>
           
           <div>
-            <Label htmlFor="heroClass" className="block text-[#d4af37] mb-1">Klasse / Beruf</Label>
+            <Label htmlFor="heroClass" className="block form-label mb-1">Klasse / Beruf</Label>
             <Input
               id="heroClass"
               placeholder="z.B. Krieger, Magier, Händler..."
@@ -307,7 +307,7 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
           </div>
           
           <div>
-            <Label htmlFor="heroAge" className="block text-[#d4af37] mb-1">Alter</Label>
+            <Label htmlFor="heroAge" className="block form-label mb-1">Alter</Label>
             <Input
               id="heroAge"
               type="number"
@@ -319,7 +319,7 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
           </div>
           
           <div>
-            <Label htmlFor="heroLevel" className="block text-[#d4af37] mb-1">Stufe / Level</Label>
+            <Label htmlFor="heroLevel" className="block form-label mb-1">Stufe / Level</Label>
             <Input
               id="heroLevel"
               type="number"
@@ -356,7 +356,7 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
         {/* Backstory */}
         <div className="mb-6">
           <div className="flex justify-between items-center mb-1">
-            <Label htmlFor="heroBackstory" className="block text-[#d4af37]">Hintergrundgeschichte</Label>
+            <Label htmlFor="heroBackstory" className="block form-label">Hintergrundgeschichte</Label>
             <span className="text-xs text-[#f5f5f5]/70">
               {watch('backstory')?.length || 0}/250 Zeichen
             </span>
@@ -371,7 +371,7 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
           />
           
           <div className="mt-3">
-            <Label className="block text-[#d4af37] mb-1 text-sm">PDF-Hintergrundgeschichte (optional)</Label>
+            <Label className="block form-label mb-1 text-sm">PDF-Hintergrundgeschichte (optional)</Label>
             <div className="flex items-center gap-3">
               <div className="relative flex-grow">
                 <Input
@@ -432,7 +432,7 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
         <div className="mb-6">
           <Accordion type="single" collapsible defaultValue="stats" className="w-full">
             <AccordionItem value="stats">
-              <AccordionTrigger className="text-[#d4af37] hover:text-[#d4af37] hover:no-underline">
+              <AccordionTrigger className="form-label hover:text-[#d4af37] hover:no-underline">
                 <span className="flex items-center gap-2">
                   <ArrowUpCircle className="h-5 w-5" />
                   Attribute & Statistiken
@@ -445,7 +445,7 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
                       <div key={stat.id} className="relative group">
                         <Label
                           htmlFor={`stat-${stat.id}`}
-                          className="block text-[#f5f5f5] text-sm mb-1"
+                          className="block stat-label text-sm mb-1"
                         >
                           {stat.label}
                         </Label>
@@ -481,7 +481,7 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
         
         {/* Tags */}
         <div className="mb-6">
-          <Label className="block text-[#d4af37] mb-1">Tags</Label>
+          <Label className="block form-label mb-1">Tags</Label>
           <div className="flex flex-wrap gap-2 mb-2">
             {tags.map((tag, index) => (
               <div 

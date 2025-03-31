@@ -114,6 +114,16 @@
     @apply bg-input text-foreground border-[hsl(var(--content-border))]/70 placeholder:text-muted-foreground focus:ring-[hsl(var(--content-border))];
   }
   
+  /* Formular-Labels */
+  .form-label {
+    @apply text-[hsl(var(--secondary))] font-medium;
+  }
+  
+  /* Statistik-Labels */
+  .stat-label {
+    @apply text-foreground font-medium;
+  }
+  
   /* Dropdown-Menüs */
   .dropdown-content {
     @apply bg-[hsl(var(--content-box))] border-[hsl(var(--content-border))] shadow-md;
