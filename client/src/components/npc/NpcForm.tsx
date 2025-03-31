@@ -22,7 +22,7 @@ import { de } from "date-fns/locale";
 import { useQuery } from "@tanstack/react-query";
 
 interface NpcFormProps {
-  heroId: string;
+  heroId: number;
   existingNpc?: Npc | null;
   onSubmit: () => void;
 }
@@ -49,8 +49,8 @@ export default function NpcForm({ heroId, existingNpc, onSubmit }: NpcFormProps)
   
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<Npc>({
     defaultValues: {
-      id: existingNpc?.id || '',
-      heroId: heroId, // Im Formular bleibt heroId ein String
+      id: existingNpc?.id || undefined,
+      heroId: existingNpc?.heroId || heroId,
       name: existingNpc?.name || '',
       image: existingNpc?.image || '',
       relationship: existingNpc?.relationship || 'neutral',

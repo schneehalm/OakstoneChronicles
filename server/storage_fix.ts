@@ -73,10 +73,9 @@ export class DatabaseStorage implements IStorage {
     // Wir verwenden das "db"-Objekt, das bereits am Anfang der Datei importiert wurde
     this.db = db;
 
-    // PostgreSQL für die Sitzungsverwaltung
-    this.sessionStore = new PostgresStore({
-      pool,
-      tableName: 'session'
+    // Wir verwenden MemoryStore für Sitzungen, um Probleme mit PostgreSQL zu vermeiden
+    this.sessionStore = new MemoryStore({
+      checkPeriod: 86400000 // Prüfe abgelaufene Einträge alle 24h
     });
   }
 

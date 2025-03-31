@@ -4,10 +4,11 @@ import HeroLayout from "@/components/layouts/HeroLayout";
 
 export default function NpcsPage() {
   const [, params] = useRoute("/hero/:id/npcs");
-  const heroId = params?.id || "";
+  const heroIdString = params?.id || "";
+  const heroId = parseInt(heroIdString, 10);
   
   return (
-    <HeroLayout heroId={heroId} activeTab="npcs">
+    <HeroLayout heroId={heroIdString} activeTab="npcs">
       <NpcList heroId={heroId} />
     </HeroLayout>
   );

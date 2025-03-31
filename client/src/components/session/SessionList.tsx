@@ -12,7 +12,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { EmptyState } from "@/components/ui/empty-state";
 
 interface SessionListProps {
-  heroId: string;
+  heroId: number;
 }
 
 export default function SessionList({ heroId }: SessionListProps) {
@@ -63,7 +63,7 @@ export default function SessionList({ heroId }: SessionListProps) {
   const handleDeleteSession = async (session: Session) => {
     if (window.confirm(`Bist du sicher, dass du die Session "${session.title}" löschen möchtest?`)) {
       try {
-        await apiDeleteSession(session.id.toString(), heroId);
+        await apiDeleteSession(session.id, heroId);
         
         // Die Cache-Invalidierung wird vom API-Aufruf erledigt, 
         // aber wir aktualisieren die UI optimistisch

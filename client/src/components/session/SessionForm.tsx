@@ -28,7 +28,7 @@ import NpcForm from "@/components/npc/NpcForm";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface SessionFormProps {
-  heroId: string;
+  heroId: number;
   existingSession?: Session | null;
   onSubmit: () => void;
 }
@@ -70,7 +70,7 @@ export default function SessionForm({ heroId, existingSession, onSubmit }: Sessi
   const sessionMutation = useMutation({
     mutationFn: async (data: Partial<Session>) => {
       if (existingSession) {
-        return updateSession(existingSession.id.toString(), data);
+        return updateSession(existingSession.id, data);
       } else {
         return createSession(heroId, data as Omit<Session, 'id' | 'heroId' | 'createdAt' | 'updatedAt'>);
       }
@@ -120,9 +120,9 @@ export default function SessionForm({ heroId, existingSession, onSubmit }: Sessi
   
   const { register, handleSubmit, setValue, formState: { errors } } = useForm<Session>({
     defaultValues: {
-      // Wir konvertieren heroId zu number, da das Backend eine Zahl erwartet
+      // heroId ist bereits eine Zahl
       id: existingSession?.id || undefined,
-      heroId: existingSession?.heroId || parseInt(heroId),
+      heroId: existingSession?.heroId || heroId,
       title: existingSession?.title || '',
       date: existingSession?.date || new Date().toISOString(),
       content: existingSession?.content || '',

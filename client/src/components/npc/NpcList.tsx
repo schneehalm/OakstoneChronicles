@@ -27,7 +27,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { EmptyState } from "@/components/ui/empty-state";
 
 interface NpcListProps {
-  heroId: string;
+  heroId: number;
 }
 
 export default function NpcList({ heroId }: NpcListProps) {

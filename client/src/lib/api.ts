@@ -96,22 +96,22 @@ export const deleteHero = async (id: string): Promise<void> => {
 
 // NPC API
 
-export const fetchNpcsByHeroId = async (heroId: string): Promise<Npc[]> => {
+export const fetchNpcsByHeroId = async (heroId: number): Promise<Npc[]> => {
   const response = await apiRequest('GET', `/api/heroes/${heroId}/npcs`);
   return await response.json();
 };
 
-export const fetchNpcById = async (id: string): Promise<Npc> => {
+export const fetchNpcById = async (id: number): Promise<Npc> => {
   const response = await apiRequest('GET', `/api/npcs/${id}`);
   return await response.json();
 };
 
-export const createNpc = async (heroId: string, npc: Omit<Npc, 'id' | 'heroId' | 'createdAt' | 'updatedAt'>): Promise<Npc> => {
+export const createNpc = async (heroId: number, npc: Omit<Npc, 'id' | 'heroId' | 'createdAt' | 'updatedAt'>): Promise<Npc> => {
   // Erstelle eine Kopie der Daten
   const now = new Date().toISOString();
   const formattedNpc = { 
     ...npc, 
-    heroId: parseInt(heroId), // Konvertiere heroId zu einer Zahl
+    heroId, // heroId ist bereits eine Zahl
     createdAt: now,
     updatedAt: now
   };
@@ -122,7 +122,7 @@ export const createNpc = async (heroId: string, npc: Omit<Npc, 'id' | 'heroId' |
   return await response.json();
 };
 
-export const updateNpc = async (id: string, npc: Partial<Npc>): Promise<Npc> => {
+export const updateNpc = async (id: number, npc: Partial<Npc>): Promise<Npc> => {
   // Erstelle eine Kopie der Daten und entferne Timestamps, um Validierungsfehler zu vermeiden
   const formattedNpc = { ...npc };
   delete (formattedNpc as any).createdAt;
@@ -135,7 +135,7 @@ export const updateNpc = async (id: string, npc: Partial<Npc>): Promise<Npc> => 
   return updatedNpc;
 };
 
-export const deleteNpc = async (id: string, heroId: string): Promise<void> => {
+export const deleteNpc = async (id: number, heroId: number): Promise<void> => {
   await apiRequest('DELETE', `/api/npcs/${id}`);
   // Ungültig machen der NPC-Liste für den Helden
   queryClient.invalidateQueries({ queryKey: ['/api/heroes', heroId, 'npcs'] });
@@ -143,22 +143,22 @@ export const deleteNpc = async (id: string, heroId: string): Promise<void> => {
 
 // Session API
 
-export const fetchSessionsByHeroId = async (heroId: string): Promise<Session[]> => {
+export const fetchSessionsByHeroId = async (heroId: number): Promise<Session[]> => {
   const response = await apiRequest('GET', `/api/heroes/${heroId}/sessions`);
   return await response.json();
 };
 
-export const fetchSessionById = async (id: string): Promise<Session> => {
+export const fetchSessionById = async (id: number): Promise<Session> => {
   const response = await apiRequest('GET', `/api/sessions/${id}`);
   return await response.json();
 };
 
-export const createSession = async (heroId: string, session: Omit<Session, 'id' | 'heroId' | 'createdAt' | 'updatedAt'>): Promise<Session> => {
+export const createSession = async (heroId: number, session: Omit<Session, 'id' | 'heroId' | 'createdAt' | 'updatedAt'>): Promise<Session> => {
   // Erstelle eine Kopie der Daten mit Timestamps
   const now = new Date().toISOString();
   const formattedSession = { 
     ...session, 
-    heroId: parseInt(heroId), // Konvertiere heroId zu einer Zahl
+    heroId, // heroId ist bereits eine Zahl
     createdAt: now,
     updatedAt: now
   };
@@ -174,7 +174,7 @@ export const createSession = async (heroId: string, session: Omit<Session, 'id' 
   return await response.json();
 };
 
-export const updateSession = async (id: string, session: Partial<Session>): Promise<Session> => {
+export const updateSession = async (id: number, session: Partial<Session>): Promise<Session> => {
   // Erstelle eine Kopie der Daten und entferne Timestamps, um Validierungsfehler zu vermeiden
   const formattedSession = { ...session };
   delete (formattedSession as any).createdAt;
@@ -192,7 +192,7 @@ export const updateSession = async (id: string, session: Partial<Session>): Prom
   return updatedSession;
 };
 
-export const deleteSession = async (id: string, heroId: string): Promise<void> => {
+export const deleteSession = async (id: number, heroId: number): Promise<void> => {
   await apiRequest('DELETE', `/api/sessions/${id}`);
   // Ungültig machen der Sitzungsliste für den Helden
   queryClient.invalidateQueries({ queryKey: ['/api/heroes', heroId, 'sessions'] });
@@ -200,22 +200,22 @@ export const deleteSession = async (id: string, heroId: string): Promise<void> =
 
 // Quest API
 
-export const fetchQuestsByHeroId = async (heroId: string): Promise<Quest[]> => {
+export const fetchQuestsByHeroId = async (heroId: number): Promise<Quest[]> => {
   const response = await apiRequest('GET', `/api/heroes/${heroId}/quests`);
   return await response.json();
 };
 
-export const fetchQuestById = async (id: string): Promise<Quest> => {
+export const fetchQuestById = async (id: number): Promise<Quest> => {
   const response = await apiRequest('GET', `/api/quests/${id}`);
   return await response.json();
 };
 
-export const createQuest = async (heroId: string, quest: Omit<Quest, 'id' | 'heroId' | 'createdAt' | 'updatedAt'>): Promise<Quest> => {
+export const createQuest = async (heroId: number, quest: Omit<Quest, 'id' | 'heroId' | 'createdAt' | 'updatedAt'>): Promise<Quest> => {
   // Erstelle eine Kopie der Daten mit Timestamps
   const now = new Date().toISOString();
   const formattedQuest = { 
     ...quest, 
-    heroId: parseInt(heroId), // Konvertiere heroId zu einer Zahl
+    heroId, // heroId ist bereits eine Zahl
     createdAt: now,
     updatedAt: now
   };
@@ -226,7 +226,7 @@ export const createQuest = async (heroId: string, quest: Omit<Quest, 'id' | 'her
   return await response.json();
 };
 
-export const updateQuest = async (id: string, quest: Partial<Quest>): Promise<Quest> => {
+export const updateQuest = async (id: number, quest: Partial<Quest>): Promise<Quest> => {
   // Erstelle eine Kopie der Daten und entferne Timestamps, um Validierungsfehler zu vermeiden
   const formattedQuest = { ...quest };
   delete (formattedQuest as any).createdAt;
@@ -239,7 +239,7 @@ export const updateQuest = async (id: string, quest: Partial<Quest>): Promise<Qu
   return updatedQuest;
 };
 
-export const deleteQuest = async (id: string, heroId: string): Promise<void> => {
+export const deleteQuest = async (id: number, heroId: number): Promise<void> => {
   await apiRequest('DELETE', `/api/quests/${id}`);
   // Ungültig machen der Quest-Liste für den Helden
   queryClient.invalidateQueries({ queryKey: ['/api/heroes', heroId, 'quests'] });
@@ -247,7 +247,7 @@ export const deleteQuest = async (id: string, heroId: string): Promise<void> => 
 
 // Activity API
 
-export const fetchActivitiesByHeroId = async (heroId: string, limit?: number): Promise<Activity[]> => {
+export const fetchActivitiesByHeroId = async (heroId: number, limit?: number): Promise<Activity[]> => {
   const url = limit 
     ? `/api/heroes/${heroId}/activities?limit=${limit}`
     : `/api/heroes/${heroId}/activities`;
@@ -270,9 +270,9 @@ export interface ExportedHeroCollection {
   exportDate: string;
 }
 
-export const exportHeroData = async (heroId: string): Promise<ExportedHero | null> => {
+export const exportHeroData = async (heroId: number): Promise<ExportedHero | null> => {
   try {
-    const hero = await fetchHeroById(heroId);
+    const hero = await fetchHeroById(heroId.toString());
     const npcs = await fetchNpcsByHeroId(heroId);
     const sessions = await fetchSessionsByHeroId(heroId);
     const quests = await fetchQuestsByHeroId(heroId);
@@ -295,7 +295,7 @@ export const exportAllHeroes = async (): Promise<ExportedHeroCollection> => {
     const exportedHeroes: ExportedHero[] = [];
     
     for (const hero of heroes) {
-      const exportedHero = await exportHeroData(hero.id.toString());
+      const exportedHero = await exportHeroData(hero.id);
       if (exportedHero) {
         exportedHeroes.push(exportedHero);
       }
