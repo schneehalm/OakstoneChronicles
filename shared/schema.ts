@@ -94,10 +94,18 @@ export const insertHeroSchema = createInsertSchema(heroes).omit({
   tags: tagsSchema.optional(),
   // Erlaube sowohl String als auch Record<string, string|number> für stats
   stats: statsSchema.optional(),
+  // Mache userId optional, da sie aus der Session stammt
+  userId: z.number().optional(),
+  // Timestamps sollten optional sein, da sie automatisch gesetzt werden
+  createdAt: z.string().optional(),
+  updatedAt: z.string().optional(),
 });
 
 export const insertNpcSchema = createInsertSchema(npcs).omit({
   id: true,
+}).extend({
+  createdAt: z.string().optional(),
+  updatedAt: z.string().optional(),
 });
 
 export const insertSessionSchema = createInsertSchema(sessions).omit({
@@ -105,10 +113,15 @@ export const insertSessionSchema = createInsertSchema(sessions).omit({
 }).extend({
   // Erlaube sowohl String als auch String-Array für tags
   tags: tagsSchema.optional(),
+  createdAt: z.string().optional(),
+  updatedAt: z.string().optional(),
 });
 
 export const insertQuestSchema = createInsertSchema(quests).omit({
   id: true,
+}).extend({
+  createdAt: z.string().optional(),
+  updatedAt: z.string().optional(),
 });
 
 export const insertActivitySchema = createInsertSchema(activities).omit({
@@ -122,7 +135,9 @@ export type User = typeof users.$inferSelect;
 type BaseHero = typeof heroes.$inferSelect;
 
 // Erweiterter Typ mit erweiterten Feldtypen
-export type Hero = Omit<BaseHero, 'tags' | 'stats'> & {
+// Wir machen userId auch optional im Hero-Typ, damit es mit dem Schema übereinstimmt
+export type Hero = Omit<BaseHero, 'tags' | 'stats' | 'userId'> & {
+  userId: number;
   tags: string | string[] | null;
   stats: string | Record<string, string | number> | null;
 };

@@ -168,9 +168,13 @@ export class MemStorage implements IStorage {
       }
     }
     
+    // Wir stellen sicher, dass alle erforderlichen Felder vorhanden sind
     const newHero: Hero = { 
-      ...hero, 
-      id, 
+      // Kopiere alle Eigenschaften, außer die, die wir überschreiben
+      ...hero as any, 
+      // Gewährleiste, dass userId immer einen Wert hat
+      userId: hero.userId || 0, // Sollte von routes.ts gesetzt werden
+      id,
       age: hero.age || null,
       deceased: hero.deceased || false,
       portrait: hero.portrait || null,
