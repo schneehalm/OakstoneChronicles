@@ -116,14 +116,14 @@ export default function SessionList({ heroId }: SessionListProps) {
           Sessions
         </h2>
         <div className="flex gap-4 w-full md:w-auto">
-          <div className="relative flex-grow md:w-64">
+          <div className="search-field md:w-64">
             <Input
               placeholder="Suche nach Sessions..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 form-input"
+              className={`search-field-input ${searchTerm ? 'search-field-input-active' : 'search-field-input-default'}`}
             />
-            <Search className="absolute left-3 top-2.5 h-5 w-5 text-[#7f5af0]/60" />
+            <Search className={`search-field-icon ${searchTerm ? 'search-field-icon-active' : 'search-field-icon-default'}`} />
           </div>
           <Button
             onClick={handleAddSession}
@@ -178,9 +178,9 @@ export default function SessionList({ heroId }: SessionListProps) {
       )}
       
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-        <DialogContent className="bg-[#1e1e2f] border border-[#7f5af0]/30 text-[#f5f5f5] max-w-3xl">
+        <DialogContent className="dialog-content max-w-3xl">
           <DialogHeader>
-            <DialogTitle className="font-['Cinzel_Decorative'] text-[#d4af37] text-xl">
+            <DialogTitle className="content-heading">
               {selectedSession ? "Session bearbeiten" : "Neue Session erstellen"}
             </DialogTitle>
           </DialogHeader>
