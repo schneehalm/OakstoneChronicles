@@ -14,7 +14,7 @@ export default function NpcCard({ npc, onClick }: NpcCardProps) {
   
   // Lade die Session-Informationen, wenn ein firstSessionId existiert
   useEffect(() => {
-    if (npc.firstSessionId) {
+    if (npc.firstSessionId && npc.firstSessionId !== 'none') {
       const session = getSessionById(npc.firstSessionId);
       if (session) {
         setFirstSession(session);

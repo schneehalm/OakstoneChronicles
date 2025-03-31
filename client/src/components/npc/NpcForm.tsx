@@ -49,7 +49,7 @@ export default function NpcForm({ heroId, existingNpc, onSubmit }: NpcFormProps)
       relationship: existingNpc?.relationship || 'neutral',
       location: existingNpc?.location || '',
       notes: existingNpc?.notes || '',
-      firstSessionId: existingNpc?.firstSessionId || '',
+      firstSessionId: existingNpc?.firstSessionId || 'none',
       createdAt: existingNpc?.createdAt || '',
       updatedAt: existingNpc?.updatedAt || ''
     }
@@ -204,7 +204,7 @@ export default function NpcForm({ heroId, existingNpc, onSubmit }: NpcFormProps)
       <div>
         <Label htmlFor="firstSessionId">Erste Begegnung</Label>
         <Select 
-          defaultValue={existingNpc?.firstSessionId || ''} 
+          defaultValue={existingNpc?.firstSessionId || 'none'} 
           onValueChange={(value) => setValue('firstSessionId', value)}
         >
           <SelectTrigger 
@@ -214,7 +214,7 @@ export default function NpcForm({ heroId, existingNpc, onSubmit }: NpcFormProps)
             <SelectValue placeholder="In welcher Session wurde dieser NPC getroffen?" />
           </SelectTrigger>
           <SelectContent className="bg-[#1e1e2f] border border-[#7f5af0]/40 max-h-[300px]">
-            <SelectItem value="">Keine Angabe</SelectItem>
+            <SelectItem value="none">Keine Angabe</SelectItem>
             {sessions.map((session) => (
               <SelectItem key={session.id} value={session.id}>
                 {session.title} ({format(new Date(session.date), "dd.MM.yyyy", { locale: de })})
