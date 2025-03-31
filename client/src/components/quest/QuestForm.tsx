@@ -36,18 +36,24 @@ export default function QuestForm({ heroId, existingQuest, onSubmit }: QuestForm
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
+  // Konvertiere heroId zu number
+  const heroIdAsNumber = typeof heroId === 'string' ? parseInt(heroId) : heroId;
+  
   // Mutation für Quest-Erstellung/Aktualisierung
   const questMutation = useMutation({
     mutationFn: async (data: Partial<Quest>) => {
       if (existingQuest) {
-        return updateQuest(existingQuest.id.toString(), data);
+        // Stelle sicher, dass existingQuest.id als Zahl übergeben wird
+        const questId = typeof existingQuest.id === 'string' ? 
+          parseInt(existingQuest.id) : existingQuest.id;
+        return updateQuest(questId, data);
       } else {
-        return createQuest(heroId, data as Omit<Quest, 'id' | 'heroId' | 'createdAt' | 'updatedAt'>);
+        return createQuest(heroIdAsNumber, data as Omit<Quest, 'id' | 'heroId' | 'createdAt' | 'updatedAt'>);
       }
     },
     onSuccess: (savedQuest) => {
       // Invalidiere Caches
-      queryClient.invalidateQueries({ queryKey: ['/api/heroes', heroId, 'quests'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/heroes', heroIdAsNumber, 'quests'] });
       
       toast({
         title: existingQuest ? "Auftrag aktualisiert" : "Auftrag erstellt",
@@ -71,7 +77,7 @@ export default function QuestForm({ heroId, existingQuest, onSubmit }: QuestForm
     defaultValues: {
       // Wir konvertieren heroId zu number, da das Backend eine Zahl erwartet
       id: existingQuest?.id || undefined,
-      heroId: existingQuest?.heroId || parseInt(heroId),
+      heroId: existingQuest?.heroId || heroIdAsNumber,
       title: existingQuest?.title || '',
       description: existingQuest?.description || '',
       type: existingQuest?.type || 'side',
@@ -99,66 +105,69 @@ export default function QuestForm({ heroId, existingQuest, onSubmit }: QuestForm
   
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
-      {/* Quest Title */}
-      <div>
-        <Label htmlFor="title" className="form-label">Titel *</Label>
-        <Input
-          id="title"
-          placeholder="Titel des Auftrags"
-          className="form-input"
-          {...register('title', { required: true })}
-        />
-        {errors.title && <p className="text-red-500 text-xs mt-1">Titel ist erforderlich</p>}
-      </div>
-      
-      {/* Quest Type */}
-      <div>
-        <Label htmlFor="type" className="form-label">Typ</Label>
-        <Select 
-          defaultValue={existingQuest?.type || 'side'} 
-          onValueChange={(value) => setValue('type', value)}
-        >
-          <SelectTrigger 
-            id="type"
+      {/* Formularfelder */}
+      <div className="space-y-4">
+        {/* Quest Title */}
+        <div>
+          <Label htmlFor="title" className="form-label">Titel *</Label>
+          <Input
+            id="title"
+            placeholder="Titel des Auftrags"
             className="form-input"
+            {...register('title', { required: true })}
+          />
+          {errors.title && <p className="text-red-500 text-xs mt-1">Titel ist erforderlich</p>}
+        </div>
+        
+        {/* Quest Type */}
+        <div>
+          <Label htmlFor="type" className="form-label">Typ</Label>
+          <Select 
+            defaultValue={existingQuest?.type || 'side'} 
+            onValueChange={(value) => setValue('type', value)}
           >
-            <SelectValue placeholder="Auftragstyp wählen" />
-          </SelectTrigger>
-          <SelectContent className="dropdown-content">
-            {QUEST_TYPES.map((type) => (
-              <SelectItem key={type.value} value={type.value}>
-                {type.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+            <SelectTrigger 
+              id="type"
+              className="form-input"
+            >
+              <SelectValue placeholder="Auftragstyp wählen" />
+            </SelectTrigger>
+            <SelectContent className="dropdown-content">
+              {QUEST_TYPES.map((type) => (
+                <SelectItem key={type.value} value={type.value}>
+                  {type.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        
+        {/* Quest Description */}
+        <div>
+          <Label htmlFor="description" className="form-label">Beschreibung *</Label>
+          <Textarea
+            id="description"
+            placeholder="Beschreibung des Auftrags"
+            className="form-textarea"
+            rows={5}
+            {...register('description', { required: true })}
+          />
+          {errors.description && <p className="text-red-500 text-xs mt-1">Beschreibung ist erforderlich</p>}
+        </div>
+        
+        {/* Completed Status */}
+        <div className="flex items-center space-x-2">
+          <Switch 
+            id="completed" 
+            checked={completed}
+            onCheckedChange={(checked) => setValue('completed', checked)}
+          />
+          <Label htmlFor="completed" className="form-label">Auftrag abgeschlossen</Label>
+        </div>
       </div>
       
-      {/* Quest Description */}
-      <div>
-        <Label htmlFor="description" className="form-label">Beschreibung *</Label>
-        <Textarea
-          id="description"
-          placeholder="Beschreibung des Auftrags"
-          className="form-textarea"
-          rows={5}
-          {...register('description', { required: true })}
-        />
-        {errors.description && <p className="text-red-500 text-xs mt-1">Beschreibung ist erforderlich</p>}
-      </div>
-      
-      {/* Completed Status */}
-      <div className="flex items-center space-x-2">
-        <Switch 
-          id="completed" 
-          checked={completed}
-          onCheckedChange={(checked) => setValue('completed', checked)}
-        />
-        <Label htmlFor="completed" className="form-label">Auftrag abgeschlossen</Label>
-      </div>
-      
-      {/* Buttons */}
-      <div className="flex justify-end gap-2 pt-2">
+      {/* Buttons - fest am unteren Rand */}
+      <div className="flex justify-end gap-2 pt-4 sticky bottom-0 bg-[#1e1e2f] border-t border-[#7f5af0]/20 mt-6 -mx-6 px-6 py-4">
         <Button 
           type="submit" 
           className="PrimaryButton"

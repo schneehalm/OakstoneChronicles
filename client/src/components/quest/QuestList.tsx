@@ -22,14 +22,17 @@ export default function QuestList({ heroId }: QuestListProps) {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const queryClient = useQueryClient();
   
+  // Konvertiere heroId zu number
+  const heroIdAsNumber = typeof heroId === 'string' ? parseInt(heroId) : heroId;
+  
   // Lade Quests über die API
   const { 
     data: quests = [], 
     isLoading, 
     error 
   } = useQuery({
-    queryKey: ['/api/heroes', heroId, 'quests'],
-    queryFn: () => fetchQuestsByHeroId(heroId)
+    queryKey: ['/api/heroes', heroIdAsNumber, 'quests'],
+    queryFn: () => fetchQuestsByHeroId(heroIdAsNumber)
   });
   
   // Gefilterte Quests basierend auf Suchbegriff
@@ -59,7 +62,8 @@ export default function QuestList({ heroId }: QuestListProps) {
   const handleDeleteQuest = async (quest: Quest) => {
     if (window.confirm(`Bist du sicher, dass du den Auftrag "${quest.title}" löschen möchtest?`)) {
       try {
-        await apiDeleteQuest(quest.id.toString(), heroId);
+        const questId = typeof quest.id === 'string' ? parseInt(quest.id) : quest.id;
+        await apiDeleteQuest(questId, heroIdAsNumber);
         
         toast({
           title: "Auftrag gelöscht",
@@ -78,7 +82,7 @@ export default function QuestList({ heroId }: QuestListProps) {
   
   const handleFormSubmit = () => {
     // Invalidiere den Cache, um die Daten neu zu laden
-    queryClient.invalidateQueries({ queryKey: ['/api/heroes', heroId, 'quests'] });
+    queryClient.invalidateQueries({ queryKey: ['/api/heroes', heroIdAsNumber, 'quests'] });
     
     // Schließe das Formular
     setIsFormOpen(false);
@@ -172,17 +176,19 @@ export default function QuestList({ heroId }: QuestListProps) {
       )}
       
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-        <DialogContent className="bg-[#1e1e2f] border border-[#7f5af0]/30 text-[#f5f5f5] max-w-3xl">
-          <DialogHeader>
+        <DialogContent className="bg-[#1e1e2f] border border-[#7f5af0]/30 text-[#f5f5f5] max-w-3xl max-h-[90vh] flex flex-col p-0">
+          <DialogHeader className="px-6 pt-6 pb-2 border-b border-[#7f5af0]/20 sticky top-0 bg-[#1e1e2f] z-10">
             <DialogTitle className="font-['Cinzel_Decorative'] text-[#d4af37] text-xl">
               {selectedQuest ? "Auftrag bearbeiten" : "Neuen Auftrag erstellen"}
             </DialogTitle>
           </DialogHeader>
-          <QuestForm 
-            heroId={heroId} 
-            existingQuest={selectedQuest} 
-            onSubmit={handleFormSubmit}
-          />
+          <div className="flex-grow overflow-y-auto px-6 py-4">
+            <QuestForm 
+              heroId={heroId} 
+              existingQuest={selectedQuest} 
+              onSubmit={handleFormSubmit}
+            />
+          </div>
         </DialogContent>
       </Dialog>
     </div>
