@@ -276,6 +276,21 @@
     @apply text-foreground font-medium;
   }
   
+  /* Accordion-Styles */
+  [data-state="open"] {
+    @apply focus:outline-none;
+  }
+  
+  [data-radix-accordion-trigger] {
+    @apply focus:outline-none;
+  }
+  
+  [data-radix-accordion-content] input,
+  [data-radix-accordion-content] textarea,
+  [data-radix-accordion-content] select {
+    @apply focus:outline-none focus:ring-0 focus:border-[#d4af37] focus-visible:ring-0 focus-visible:outline-none;
+  }
+  
   /* Dropdown-Menüs */
   .dropdown-content,
   [data-shadcn-select-content],
