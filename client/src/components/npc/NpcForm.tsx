@@ -246,7 +246,7 @@ export default function NpcForm({ heroId, existingNpc, onSubmit }: NpcFormProps)
           </div>
         </div>
         <div className="flex-grow">
-          <Label htmlFor="imageUrl">Bild-URL</Label>
+          <Label htmlFor="imageUrl" className="form-label">Bild-URL</Label>
           <Input
             id="imageUrl"
             placeholder="URL zum Bild (optional)"
@@ -259,7 +259,7 @@ export default function NpcForm({ heroId, existingNpc, onSubmit }: NpcFormProps)
       
       {/* NPC Name */}
       <div>
-        <Label htmlFor="name">Name *</Label>
+        <Label htmlFor="name" className="form-label">Name *</Label>
         <Input
           id="name"
           className="bg-[#1e1e2f] border border-[#7f5af0]/40"
@@ -270,7 +270,7 @@ export default function NpcForm({ heroId, existingNpc, onSubmit }: NpcFormProps)
       
       {/* Relationship */}
       <div>
-        <Label htmlFor="relationship">Beziehung</Label>
+        <Label htmlFor="relationship" className="form-label">Beziehung</Label>
         <Select 
           defaultValue={existingNpc?.relationship || 'neutral'} 
           onValueChange={(value) => setValue('relationship', value)}
@@ -293,7 +293,7 @@ export default function NpcForm({ heroId, existingNpc, onSubmit }: NpcFormProps)
       
       {/* Location */}
       <div>
-        <Label htmlFor="location">Ort des Treffens</Label>
+        <Label htmlFor="location" className="form-label">Ort des Treffens</Label>
         <Input
           id="location"
           placeholder="Wo habt ihr euch getroffen?"
@@ -304,7 +304,7 @@ export default function NpcForm({ heroId, existingNpc, onSubmit }: NpcFormProps)
       
       {/* Notes */}
       <div>
-        <Label htmlFor="notes">Notizen</Label>
+        <Label htmlFor="notes" className="form-label">Notizen</Label>
         <Textarea
           id="notes"
           placeholder="Notizen über diesen NPC..."
@@ -333,7 +333,7 @@ export default function NpcForm({ heroId, existingNpc, onSubmit }: NpcFormProps)
       
       {/* First Session */}
       <div>
-        <Label htmlFor="firstSessionId">Erste Begegnung</Label>
+        <Label htmlFor="firstSessionId" className="form-label">Erste Begegnung</Label>
         <Select 
           defaultValue={existingNpc?.firstSessionId || 'none'} 
           onValueChange={(value) => setValue('firstSessionId', value)}

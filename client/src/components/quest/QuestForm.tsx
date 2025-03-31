@@ -65,7 +65,7 @@ export default function QuestForm({ heroId, existingQuest, onSubmit }: QuestForm
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
       {/* Quest Title */}
       <div>
-        <Label htmlFor="title">Titel *</Label>
+        <Label htmlFor="title" className="form-label">Titel *</Label>
         <Input
           id="title"
           placeholder="Titel des Auftrags"
@@ -77,7 +77,7 @@ export default function QuestForm({ heroId, existingQuest, onSubmit }: QuestForm
       
       {/* Quest Type */}
       <div>
-        <Label htmlFor="type">Typ</Label>
+        <Label htmlFor="type" className="form-label">Typ</Label>
         <Select 
           defaultValue={existingQuest?.type || 'side'} 
           onValueChange={(value) => setValue('type', value)}
@@ -100,7 +100,7 @@ export default function QuestForm({ heroId, existingQuest, onSubmit }: QuestForm
       
       {/* Quest Description */}
       <div>
-        <Label htmlFor="description">Beschreibung *</Label>
+        <Label htmlFor="description" className="form-label">Beschreibung *</Label>
         <Textarea
           id="description"
           placeholder="Beschreibung des Auftrags"
@@ -118,7 +118,7 @@ export default function QuestForm({ heroId, existingQuest, onSubmit }: QuestForm
           checked={completed}
           onCheckedChange={(checked) => setValue('completed', checked)}
         />
-        <Label htmlFor="completed">Auftrag abgeschlossen</Label>
+        <Label htmlFor="completed" className="form-label">Auftrag abgeschlossen</Label>
       </div>
       
       {/* Buttons */}

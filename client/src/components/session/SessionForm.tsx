@@ -190,7 +190,7 @@ export default function SessionForm({ heroId, existingSession, onSubmit }: Sessi
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
       {/* Session Title */}
       <div>
-        <Label htmlFor="title">Titel *</Label>
+        <Label htmlFor="title" className="form-label">Titel *</Label>
         <Input
           id="title"
           placeholder="Titel der Session"
@@ -202,7 +202,7 @@ export default function SessionForm({ heroId, existingSession, onSubmit }: Sessi
       
       {/* Session Date */}
       <div>
-        <Label htmlFor="date">Datum</Label>
+        <Label htmlFor="date" className="form-label">Datum</Label>
         <Popover>
           <PopoverTrigger asChild>
             <Button
@@ -230,7 +230,7 @@ export default function SessionForm({ heroId, existingSession, onSubmit }: Sessi
       
       {/* Session Content */}
       <div>
-        <Label htmlFor="content">Inhalt *</Label>
+        <Label htmlFor="content" className="form-label">Inhalt *</Label>
         <Textarea
           id="content"
           placeholder="Was ist in dieser Session passiert?"
@@ -243,7 +243,7 @@ export default function SessionForm({ heroId, existingSession, onSubmit }: Sessi
       
       {/* Tags */}
       <div>
-        <Label className="block mb-2">Tags</Label>
+        <Label className="block mb-2 form-label">Tags</Label>
         <div className="flex flex-wrap gap-2 mb-2">
           {tags.map((tag, index) => (
             <div 
@@ -296,7 +296,7 @@ export default function SessionForm({ heroId, existingSession, onSubmit }: Sessi
       {/* NPCs Section */}
       <div className="space-y-2">
         <div className="flex justify-between items-center">
-          <Label className="block">NPCs in dieser Session</Label>
+          <Label className="block form-label">NPCs in dieser Session</Label>
           <Button 
             type="button" 
             variant="outline"

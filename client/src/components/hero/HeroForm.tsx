@@ -342,7 +342,7 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
               />
               <Label 
                 htmlFor="heroDeceased" 
-                className="text-red-400 cursor-pointer select-none flex items-center"
+                className="text-red-400 cursor-pointer select-none flex items-center form-label"
               >
                 <span className="mr-2">⚰️</span> Held ist verstorben
               </Label>
@@ -445,7 +445,7 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
                       <div key={stat.id} className="relative group">
                         <Label
                           htmlFor={`stat-${stat.id}`}
-                          className="block stat-label text-sm mb-1"
+                          className="block stat-label text-sm mb-1 form-label"
                         >
                           {stat.label}
                         </Label>
