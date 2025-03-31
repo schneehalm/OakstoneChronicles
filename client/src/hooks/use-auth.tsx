@@ -1,140 +1,160 @@
-import { createContext, ReactNode, useContext } from "react";
-import {
-  useQuery,
-  useMutation,
-  UseMutationResult,
-} from "@tanstack/react-query";
-import { queryClient, getQueryFn, apiRequest } from "../lib/queryClient";
-import { useToast } from "../hooks/use-toast";
+import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { User } from "@shared/schema";
+import { apiRequest } from "../lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
-// Login-Formular-Daten
+// Define the basic types we need
 type LoginData = {
   username: string;
   password: string;
-}
+};
 
-// Registrierungsformular-Daten
-type RegisterData = {
-  username: string;
-  password: string;
-}
-
-// Auth-Kontext-Typ
+// Define what our auth context will provide
 type AuthContextType = {
   user: User | null;
   isLoading: boolean;
-  error: Error | null;
-  loginMutation: UseMutationResult<User, Error, LoginData>;
-  registerMutation: UseMutationResult<User, Error, RegisterData>;
-  logoutMutation: UseMutationResult<void, Error, void>;
+  error: string | null;
+  login: (data: LoginData) => Promise<void>;
+  logout: () => Promise<void>;
+  register: (data: LoginData) => Promise<void>;
 };
 
-// Erstellen des Auth-Kontexts
-export const AuthContext = createContext<AuthContextType | null>(null);
+// Create the context with a default value
+const AuthContext = createContext<AuthContextType | null>(null);
 
-// Auth-Provider-Komponente
+// Auth provider component that wraps the application
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
-  // Benutzerdaten abfragen
-  const {
-    data: user,
-    error,
-    isLoading,
-  } = useQuery<User | null>({
-    queryKey: ["/api/user"],
-    queryFn: getQueryFn({ on401: "returnNull" }),
-    staleTime: 1000 * 60, // 1 Minute Cache-Zeit
-    retry: 1, // Bei Fehler maximal 1 Wiederholung
-  });
+  // Check if user is logged in on mount
+  useEffect(() => {
+    const checkUser = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch("/api/user", {
+          credentials: "include"
+        });
+        
+        if (response.ok) {
+          const userData = await response.json();
+          setUser(userData);
+        }
+      } catch (err) {
+        console.error("Failed to fetch user:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    checkUser();
+  }, []);
 
-  // Login-Mutation
-  const loginMutation = useMutation({
-    mutationFn: async (credentials: LoginData) => {
-      const res = await apiRequest("POST", "/api/login", credentials);
-      return await res.json();
-    },
-    onSuccess: (userData: User) => {
-      queryClient.setQueryData(["/api/user"], userData);
+  // Login function
+  const login = async (credentials: LoginData) => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      
+      const response = await apiRequest("POST", "/api/login", credentials);
+      const userData = await response.json();
+      
+      setUser(userData);
       toast({
-        title: "Anmeldung erfolgreich",
+        title: "Login erfolgreich",
         description: `Willkommen zurück, ${userData.username}!`,
       });
-    },
-    onError: (error: Error) => {
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Login fehlgeschlagen");
       toast({
-        title: "Anmeldung fehlgeschlagen",
-        description: error.message,
+        title: "Login fehlgeschlagen",
+        description: err instanceof Error ? err.message : "Unbekannter Fehler",
         variant: "destructive",
       });
-    },
-  });
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-  // Registrierungs-Mutation
-  const registerMutation = useMutation({
-    mutationFn: async (data: RegisterData) => {
-      const res = await apiRequest("POST", "/api/register", data);
-      return await res.json();
-    },
-    onSuccess: (userData: User) => {
-      queryClient.setQueryData(["/api/user"], userData);
+  // Register function
+  const register = async (credentials: LoginData) => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      
+      const response = await apiRequest("POST", "/api/register", credentials);
+      const userData = await response.json();
+      
+      setUser(userData);
       toast({
         title: "Registrierung erfolgreich",
         description: `Willkommen, ${userData.username}!`,
       });
-    },
-    onError: (error: Error) => {
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Registrierung fehlgeschlagen");
       toast({
         title: "Registrierung fehlgeschlagen",
-        description: error.message,
+        description: err instanceof Error ? err.message : "Unbekannter Fehler",
         variant: "destructive",
       });
-    },
-  });
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-  // Logout-Mutation
-  const logoutMutation = useMutation({
-    mutationFn: async () => {
+  // Logout function
+  const logout = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      
       await apiRequest("POST", "/api/logout");
-    },
-    onSuccess: () => {
-      queryClient.setQueryData(["/api/user"], null);
+      
+      setUser(null);
       toast({
         title: "Abmeldung erfolgreich",
         description: "Du wurdest erfolgreich abgemeldet.",
       });
-    },
-    onError: (error: Error) => {
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Abmeldung fehlgeschlagen");
       toast({
         title: "Abmeldung fehlgeschlagen",
-        description: error.message,
+        description: err instanceof Error ? err.message : "Unbekannter Fehler",
         variant: "destructive",
       });
-    },
-  });
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  // Create the context value object
+  const value = {
+    user,
+    isLoading,
+    error,
+    login,
+    logout,
+    register
+  };
+
+  // Provide the context to children
   return (
-    <AuthContext.Provider
-      value={{
-        user: user || null,
-        isLoading,
-        error,
-        loginMutation,
-        registerMutation,
-        logoutMutation,
-      }}
-    >
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
 }
 
-// Auth-Hook
+// Custom hook to use the auth context
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error("useAuth muss innerhalb eines AuthProviders verwendet werden");
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 }

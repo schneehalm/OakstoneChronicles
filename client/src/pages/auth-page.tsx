@@ -1,11 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/hooks/use-auth";
-import { Redirect, useLocation } from "wouter";
+import { useLocation } from "wouter";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -31,9 +29,10 @@ const registerSchema = z.object({
 });
 
 export default function AuthPage() {
-  const { user, loginMutation, registerMutation, isLoading } = useAuth();
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState<string>("login");
+  const [isLoading, setIsLoading] = useState(false);
 
   // Formular für Login
   const loginForm = useForm<z.infer<typeof loginSchema>>({
@@ -54,15 +53,79 @@ export default function AuthPage() {
     },
   });
 
+  // Login direkt mit Fetch API
+  const loginUser = async (credentials: z.infer<typeof loginSchema>) => {
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(credentials),
+        credentials: 'include'
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.text();
+        throw new Error(errorData || 'Anmeldung fehlgeschlagen');
+      }
+      
+      // Successful login, refresh the app state
+      window.location.href = '/';
+    } catch (error) {
+      console.error('Login error:', error);
+      toast({
+        title: "Anmeldung fehlgeschlagen",
+        description: error instanceof Error ? error.message : "Bitte überprüfe deine Zugangsdaten.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  // Registrierung direkt mit Fetch API
+  const registerUser = async (data: z.infer<typeof registerSchema>) => {
+    setIsLoading(true);
+    try {
+      const { username, password } = data;
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username, password }),
+        credentials: 'include'
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.text();
+        throw new Error(errorData || 'Registrierung fehlgeschlagen');
+      }
+      
+      // Successful registration, refresh the app state
+      window.location.href = '/';
+    } catch (error) {
+      console.error('Registration error:', error);
+      toast({
+        title: "Registrierung fehlgeschlagen",
+        description: error instanceof Error ? error.message : "Benutzername existiert möglicherweise bereits.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Login-Formular absenden
   const onLoginSubmit = (data: z.infer<typeof loginSchema>) => {
-    loginMutation.mutate(data);
+    loginUser(data);
   };
 
   // Registrierungs-Formular absenden
   const onRegisterSubmit = (data: z.infer<typeof registerSchema>) => {
-    const { username, password } = data;
-    registerMutation.mutate({ username, password });
+    registerUser(data);
   };
 
   // Zurücksetzen der Formulare, wenn der Tab wechselt
@@ -73,11 +136,6 @@ export default function AuthPage() {
       loginForm.reset();
     }
   }, [activeTab, loginForm, registerForm]);
-
-  // Wenn der Benutzer bereits angemeldet ist, zur Hauptseite umleiten
-  if (user) {
-    return <Redirect to="/" />;
-  }
 
   return (
     <div className="flex min-h-screen">
@@ -155,9 +213,9 @@ export default function AuthPage() {
                     <Button 
                       type="submit" 
                       className="w-full bg-gradient-to-br from-[#7f5af0] to-[#d4af37]/80 hover:from-[#d4af37] hover:to-[#7f5af0]/80 text-[#1e1e2f] font-medium border-none" 
-                      disabled={loginMutation.isPending}
+                      disabled={isLoading}
                     >
-                      {loginMutation.isPending ? "Anmeldung..." : "Anmelden"}
+                      {isLoading ? "Anmeldung..." : "Anmelden"}
                     </Button>
                   </form>
                 </Form>
@@ -226,9 +284,9 @@ export default function AuthPage() {
                     <Button 
                       type="submit" 
                       className="w-full bg-gradient-to-br from-[#7f5af0] to-[#d4af37]/80 hover:from-[#d4af37] hover:to-[#7f5af0]/80 text-[#1e1e2f] font-medium border-none" 
-                      disabled={registerMutation.isPending}
+                      disabled={isLoading}
                     >
-                      {registerMutation.isPending ? "Registrierung..." : "Registrieren"}
+                      {isLoading ? "Registrierung..." : "Registrieren"}
                     </Button>
                   </form>
                 </Form>
