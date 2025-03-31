@@ -102,10 +102,29 @@ export default function SessionForm({ heroId, existingSession, onSubmit }: Sessi
   };
   
   const handleNpcFormSubmitted = () => {
-    // Aktualisiere die NPC-Liste und schließe das Formular
-    setIsNpcFormOpen(false);
+    // Aktualisiere die NPC-Liste
     const updatedNpcs = getNpcsByHeroId(heroId);
+    
+    // Finde den zuletzt erstellten NPC (der mit dem neuesten Zeitstempel)
+    const sortedNpcs = [...updatedNpcs].sort((a, b) => 
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+    const newestNpc = sortedNpcs[0];
+    
+    // Wenn ein neuer NPC erstellt wurde, wähle ihn automatisch aus
+    if (newestNpc && !npcs.some(npc => npc.id === newestNpc.id)) {
+      setSelectedNpcs(prev => [...prev, newestNpc.id]);
+    }
+    
+    // Aktualisiere die NPC-Liste und schließe das Formular
     setNpcs(updatedNpcs);
+    setIsNpcFormOpen(false);
+    
+    // Zeige Toast-Nachricht
+    toast({
+      title: "NPC hinzugefügt",
+      description: `Der NPC wurde erstellt und für diese Session ausgewählt.`,
+    });
   };
   
   const handleFormSubmit = (data: Session) => {
@@ -336,7 +355,15 @@ export default function SessionForm({ heroId, existingSession, onSubmit }: Sessi
         )}
         
         {/* NPC Form Dialog */}
-        <Dialog open={isNpcFormOpen} onOpenChange={setIsNpcFormOpen}>
+        <Dialog 
+          open={isNpcFormOpen} 
+          onOpenChange={(open) => {
+            // Wenn der Dialog geschlossen wird, ohne dass der NPC erstellt wurde
+            if (!open) {
+              setIsNpcFormOpen(false);
+            }
+          }}
+        >
           <DialogContent className="bg-[#1e1e2f] border border-[#7f5af0]/40 text-white max-w-xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="text-[#d4af37]">Neuen NPC erstellen</DialogTitle>
