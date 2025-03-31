@@ -62,7 +62,11 @@ export default function NpcForm({ heroId, existingNpc, onSubmit }: NpcFormProps)
       reader.onload = (event) => {
         const result = event.target?.result as string;
         setImagePreview(result);
+        // Setze das Bild im Formular
         setValue('image', result);
+        // Leere das URL-Feld, da wir jetzt ein hochgeladenes Bild haben
+        const urlInput = document.getElementById('imageUrl') as HTMLInputElement;
+        if (urlInput) urlInput.value = '';
       };
       reader.readAsDataURL(file);
     }
@@ -70,22 +74,36 @@ export default function NpcForm({ heroId, existingNpc, onSubmit }: NpcFormProps)
   
   const handleImageUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const url = e.target.value;
-    if (url) {
+    if (url && url.trim()) {
+      // Wenn eine URL eingegeben wurde
       setImagePreview(url);
       setValue('image', url);
     } else {
-      // Wenn URL leer ist, behalten wir das hochgeladene Bild bei, falls vorhanden
-      if (imagePreview && imagePreview.startsWith('data:image')) {
-        // Tue nichts, behalte das hochgeladene Bild bei
-      } else {
-        setImagePreview(null);
-        setValue('image', '');
-      }
+      // Wenn die URL-Eingabe leer ist
+      setImagePreview(null);
+      setValue('image', '');
     }
   };
   
   const handleFormSubmit = (data: Npc) => {
     try {
+      // Stelle sicher, dass das Bild korrekt gesetzt ist
+      if (imagePreview) {
+        data.image = imagePreview;
+      }
+      
+      // Stelle sicher, dass firstSessionId korrekt gesetzt ist
+      if (!data.firstSessionId) {
+        data.firstSessionId = 'none';
+      }
+      
+      // Aktualisiere die Zeitstempel
+      const now = new Date().toISOString();
+      if (!data.createdAt) {
+        data.createdAt = now;
+      }
+      data.updatedAt = now;
+      
       // Save NPC
       saveNpc(data);
       
@@ -97,6 +115,7 @@ export default function NpcForm({ heroId, existingNpc, onSubmit }: NpcFormProps)
       // Call onSubmit callback
       onSubmit();
     } catch (error) {
+      console.error("Fehler beim Speichern des NPC:", error);
       toast({
         title: "Fehler",
         description: "Ein Fehler ist aufgetreten. Bitte versuche es erneut.",
@@ -137,7 +156,7 @@ export default function NpcForm({ heroId, existingNpc, onSubmit }: NpcFormProps)
             id="imageUrl"
             placeholder="URL zum Bild (optional)"
             className="bg-[#1e1e2f] border border-[#7f5af0]/40"
-            value={typeof imagePreview === 'string' ? imagePreview : ''}
+            value={imagePreview && !imagePreview.startsWith('data:') ? imagePreview : ''}
             onChange={handleImageUrlChange}
           />
         </div>
