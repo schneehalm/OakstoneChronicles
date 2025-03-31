@@ -6,6 +6,7 @@ export interface Hero {
   class: string;
   level: number;
   age?: number;
+  deceased?: boolean; // Feld um zu markieren, ob ein Held verstorben ist
   portrait?: string;
   backstory?: string;
   backstoryPdf?: string; // Base64 encoded PDF

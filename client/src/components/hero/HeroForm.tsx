@@ -55,6 +55,7 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
       class: existingHero?.class || '',
       level: existingHero?.level || 1,
       age: existingHero?.age || undefined,
+      deceased: existingHero?.deceased || false,
       portrait: existingHero?.portrait || '',
       backstory: existingHero?.backstory || '',
       tags: existingHero?.tags || [],
@@ -313,6 +314,27 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
               {...register('level', { required: true, valueAsNumber: true, min: 1 })}
             />
             {errors.level && <p className="text-red-500 text-sm mt-1">Level ist erforderlich</p>}
+          </div>
+          
+          {/* Verstorben-Status */}
+          <div className="md:col-span-2 mt-2">
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="heroDeceased"
+                className="rounded-sm bg-[#1e1e2f] border border-[#7f5af0]/40 focus:border-[#7f5af0] focus:ring-1 focus:ring-[#7f5af0] text-[#7f5af0] w-5 h-5"
+                {...register('deceased')}
+              />
+              <Label 
+                htmlFor="heroDeceased" 
+                className="text-red-400 cursor-pointer select-none flex items-center"
+              >
+                <span className="mr-2">⚰️</span> Held ist verstorben
+              </Label>
+            </div>
+            <p className="text-xs text-[#f5f5f5]/60 mt-1 ml-7">
+              Verstorbene Helden werden in der Übersicht entsprechend markiert.
+            </p>
           </div>
         </div>
         

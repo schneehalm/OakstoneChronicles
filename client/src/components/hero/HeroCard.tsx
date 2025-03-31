@@ -92,7 +92,13 @@ export default function HeroCard({ hero }: HeroCardProps) {
     <>
       <div 
         onClick={handleCardClick}
-        className="bg-[#1e1e2f]/95 border border-[#d4af37]/30 rounded-xl overflow-hidden transition-all hover:shadow-[0_0_10px_rgba(212,175,55,0.3)] cursor-pointer transform hover:scale-[1.02] bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2720%27%20height%3D%2720%27%20viewBox%3D%270%200%2020%2020%27%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%3E%3Cg%20fill%3D%27%237f5af0%27%20fill-opacity%3D%270.05%27%20fill-rule%3D%27evenodd%27%3E%3Ccircle%20cx%3D%273%27%20cy%3D%273%27%20r%3D%271%27%2F%3E%3Ccircle%20cx%3D%2713%27%20cy%3D%2713%27%20r%3D%271%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E')]">
+        className={cn(
+          "bg-[#1e1e2f]/95 border border-[#d4af37]/30 rounded-xl overflow-hidden transition-all cursor-pointer transform hover:scale-[1.02] bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2720%27%20height%3D%2720%27%20viewBox%3D%270%200%2020%2020%27%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%3E%3Cg%20fill%3D%27%237f5af0%27%20fill-opacity%3D%270.05%27%20fill-rule%3D%27evenodd%27%3E%3Ccircle%20cx%3D%273%27%20cy%3D%273%27%20r%3D%271%27%2F%3E%3Ccircle%20cx%3D%2713%27%20cy%3D%2713%27%20r%3D%271%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E')]",
+          hero.deceased 
+            ? "opacity-70 grayscale hover:opacity-90" 
+            : "hover:shadow-[0_0_10px_rgba(212,175,55,0.3)]"
+        )}
+      >
         <div className="relative h-40 overflow-hidden bg-gradient-to-br from-[#7f5af0]/30 to-[#1e1e2f]">
           {hero.portrait ? (
             <img 
@@ -107,7 +113,10 @@ export default function HeroCard({ hero }: HeroCardProps) {
           )}
           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#1e1e2f] to-transparent p-3">
             <div className="flex items-end justify-between">
-              <h3 className="font-['Cinzel_Decorative'] text-xl text-[#d4af37]">{hero.name}</h3>
+              <h3 className="font-['Cinzel_Decorative'] text-xl text-[#d4af37] flex items-center">
+                {hero.deceased && <span className="mr-2" title="Verstorben">⚰️</span>}
+                {hero.name}
+              </h3>
               <span className="text-xs bg-[#7f5af0]/60 rounded-full px-2 py-0.5">Lvl {hero.level}</span>
             </div>
             <div className="flex items-center text-sm opacity-80 mt-1">
