@@ -306,7 +306,7 @@ export default function SessionForm({ heroId, existingSession, onSubmit }: Sessi
             type="button" 
             variant="outline"
             onClick={addTag}
-            className="px-4 py-2 bg-[#7f5af0]/20 hover:bg-[#7f5af0]/30 border border-[#7f5af0]/40 rounded-lg transition-colors flex items-center"
+            className="SecondaryButtonOutlined px-4 py-2 flex items-center"
           >
             <Plus className="h-5 w-5" />
           </Button>
@@ -321,7 +321,7 @@ export default function SessionForm({ heroId, existingSession, onSubmit }: Sessi
             type="button" 
             variant="outline"
             onClick={() => setIsNpcFormOpen(true)}
-            className="px-3 py-1 h-8 bg-[#d4af37]/20 hover:bg-[#d4af37]/30 border border-[#d4af37]/40 rounded-lg transition-colors text-xs flex items-center"
+            className="PrimaryButtonOutlined px-3 py-1 h-8 text-xs flex items-center"
           >
             <UserPlus className="h-3.5 w-3.5 mr-1" />
             Neuer NPC
@@ -413,7 +413,7 @@ export default function SessionForm({ heroId, existingSession, onSubmit }: Sessi
       <div className="flex justify-end gap-2 pt-2">
         <Button 
           type="submit" 
-          className="bg-primary hover:bg-primary/90 text-primary-foreground"
+          className="PrimaryButton"
           disabled={sessionMutation.isPending}
         >
           {sessionMutation.isPending ? (

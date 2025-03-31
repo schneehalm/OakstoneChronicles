@@ -121,13 +121,13 @@ export default function SessionList({ heroId }: SessionListProps) {
               placeholder="Suche nach Sessions..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-[#1e1e2f] border border-[#7f5af0]/40 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:border-[#7f5af0] focus:ring-1 focus:ring-[#7f5af0]"
+              className="w-full pl-10 pr-4 py-2 form-input"
             />
             <Search className="absolute left-3 top-2.5 h-5 w-5 text-[#7f5af0]/60" />
           </div>
           <Button
             onClick={handleAddSession}
-            className="bg-[#7f5af0] hover:bg-[#7f5af0]/90 text-white"
+            className="SecondaryButtonOutlined"
           >
             <Plus className="h-5 w-5 mr-1" />
             Session

@@ -105,7 +105,7 @@ export default function QuestForm({ heroId, existingQuest, onSubmit }: QuestForm
         <Input
           id="title"
           placeholder="Titel des Auftrags"
-          className="bg-[#1e1e2f] border border-[#7f5af0]/40"
+          className="form-input"
           {...register('title', { required: true })}
         />
         {errors.title && <p className="text-red-500 text-xs mt-1">Titel ist erforderlich</p>}
@@ -120,11 +120,11 @@ export default function QuestForm({ heroId, existingQuest, onSubmit }: QuestForm
         >
           <SelectTrigger 
             id="type"
-            className="bg-[#1e1e2f] border border-[#7f5af0]/40"
+            className="form-input"
           >
             <SelectValue placeholder="Auftragstyp wählen" />
           </SelectTrigger>
-          <SelectContent className="bg-[#1e1e2f] border border-[#7f5af0]/40">
+          <SelectContent className="dropdown-content">
             {QUEST_TYPES.map((type) => (
               <SelectItem key={type.value} value={type.value}>
                 {type.label}
@@ -140,7 +140,7 @@ export default function QuestForm({ heroId, existingQuest, onSubmit }: QuestForm
         <Textarea
           id="description"
           placeholder="Beschreibung des Auftrags"
-          className="bg-[#1e1e2f] border border-[#7f5af0]/40"
+          className="form-textarea"
           rows={5}
           {...register('description', { required: true })}
         />
@@ -161,7 +161,7 @@ export default function QuestForm({ heroId, existingQuest, onSubmit }: QuestForm
       <div className="flex justify-end gap-2 pt-2">
         <Button 
           type="submit" 
-          className="bg-[#7f5af0] hover:bg-[#7f5af0]/90"
+          className="PrimaryButton"
           disabled={questMutation.isPending}
         >
           {questMutation.isPending ? (

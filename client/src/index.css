@@ -682,4 +682,55 @@
   .filter-chip:not(.active) {
     @apply bg-muted/40 text-muted-foreground hover:bg-muted/60;
   }
+
+  /* Global Button Styles */
+  .PrimaryButton {
+    @apply bg-[hsl(var(--primary))] text-primary-foreground hover:bg-[hsl(var(--primary))]/90 transition-colors;
+  }
+
+  .PrimaryButtonOutlined {
+    @apply border border-[hsl(var(--primary))] text-[hsl(var(--primary))] bg-transparent hover:bg-[hsl(var(--primary))]/10 transition-colors;
+  }
+
+  .SecondaryButton {
+    @apply bg-[hsl(var(--secondary))] text-secondary-foreground hover:bg-[hsl(var(--secondary))]/90 transition-colors;
+  }
+
+  .SecondaryButtonOutlined {
+    @apply border border-[hsl(var(--secondary))] text-[hsl(var(--secondary))] bg-transparent hover:bg-[hsl(var(--secondary))]/10 transition-colors;
+  }
+
+  /* Dark mode specific colors */
+  .dark .PrimaryButton {
+    @apply bg-[#d4af37] text-[#1e1e2f] hover:bg-[#d4af37]/90;
+  }
+
+  .dark .PrimaryButtonOutlined {
+    @apply border-[#d4af37] text-[#d4af37] hover:bg-[#d4af37]/10;
+  }
+
+  .dark .SecondaryButton {
+    @apply bg-[#7f5af0] text-white hover:bg-[#7f5af0]/90;
+  }
+
+  .dark .SecondaryButtonOutlined {
+    @apply border-[#7f5af0] text-[#7f5af0] hover:bg-[#7f5af0]/10;
+  }
+
+  /* Light mode specific colors */
+  .light .PrimaryButton {
+    @apply bg-[#7f5af0] text-white hover:bg-[#7f5af0]/90;
+  }
+
+  .light .PrimaryButtonOutlined {
+    @apply border-[#7f5af0] text-[#7f5af0] hover:bg-[#7f5af0]/10;
+  }
+
+  .light .SecondaryButton {
+    @apply bg-[#d4af37] text-[#1e1e2f] hover:bg-[#d4af37]/90;
+  }
+
+  .light .SecondaryButtonOutlined {
+    @apply border-[#d4af37] text-[#d4af37] hover:bg-[#d4af37]/10;
+  }
 }

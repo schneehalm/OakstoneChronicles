@@ -50,7 +50,7 @@ export function EmptyState({
           {actionLabel && onAction && (
             <Button
               onClick={onAction}
-              className="btn-accent mt-2"
+              className="SecondaryButtonOutlined mt-2"
             >
               {actionLabel}
             </Button>
