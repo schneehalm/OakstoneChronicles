@@ -69,36 +69,56 @@ export default function SessionForm({ heroId, existingSession, onSubmit }: Sessi
   // Mutation für Session-Erstellung/Aktualisierung
   const sessionMutation = useMutation({
     mutationFn: async (data: Partial<Session>) => {
+      // Stellen Sie sicher, dass heroId als Zahl verwendet wird
+      const heroIdAsNumber = typeof heroId === 'string' ? parseInt(heroId) : heroId;
+      
       if (existingSession) {
-        return updateSession(existingSession.id, data);
+        // Stelle sicher, dass existingSession.id als Zahl übergeben wird
+        const sessionId = typeof existingSession.id === 'string' ? 
+          parseInt(existingSession.id) : existingSession.id;
+        return updateSession(sessionId, data);
       } else {
-        return createSession(heroId, data as Omit<Session, 'id' | 'heroId' | 'createdAt' | 'updatedAt'>);
+        return createSession(heroIdAsNumber, data as Omit<Session, 'id' | 'heroId' | 'createdAt' | 'updatedAt'>);
       }
     },
     onSuccess: async (savedSession) => {
       // Aktualisiere die NPCs, wenn sie dieser Session zugeordnet werden sollen
       for (const npc of npcs) {
         const isSelected = selectedNpcs.includes(npc.id.toString());
-        const wasAlreadyAssigned = existingSession && npc.firstSessionId === existingSession.id;
+        // Bei Vergleich von firstSessionId mit existingSession.id immer toString() verwenden, um Typkonflikte zu vermeiden
+        const wasAlreadyAssigned = existingSession && 
+          npc.firstSessionId !== null && 
+          npc.firstSessionId !== undefined && 
+          npc.firstSessionId.toString() === existingSession.id.toString();
+        
+        // Stelle sicher, dass npc.id als Zahl verwendet wird
+        const npcId = typeof npc.id === 'string' ? parseInt(npc.id) : npc.id;
+        
+        // Verarbeite savedSession.id typgerecht
+        const sessionId = savedSession.id;
         
         if (isSelected && !wasAlreadyAssigned) {
           // Ordne NPC dieser Session zu
-          await updateNpc(npc.id.toString(), {
+          await updateNpc(npcId, {
             ...npc,
-            firstSessionId: savedSession.id
+            firstSessionId: typeof sessionId === 'number' ? sessionId : 
+              sessionId ? parseInt(sessionId.toString()) : null
           });
         } else if (!isSelected && wasAlreadyAssigned) {
           // Entferne Zuordnung
-          await updateNpc(npc.id.toString(), {
+          await updateNpc(npcId, {
             ...npc,
             firstSessionId: null
           });
         }
       }
       
+      // Sicher heroId als Zahl verwenden
+      const heroIdAsNumber = typeof heroId === 'string' ? parseInt(heroId) : heroId;
+      
       // Invalidiere Caches
-      queryClient.invalidateQueries({ queryKey: ['/api/heroes', heroId, 'sessions'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/heroes', heroId, 'npcs'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/heroes', heroIdAsNumber, 'sessions'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/heroes', heroIdAsNumber, 'npcs'] });
       
       toast({
         title: existingSession ? "Session aktualisiert" : "Session erstellt",
@@ -118,11 +138,14 @@ export default function SessionForm({ heroId, existingSession, onSubmit }: Sessi
     }
   });
   
+  // Konvertiere heroId in eine Zahl, falls es ein String ist
+  const heroIdAsNumber = typeof heroId === 'string' ? parseInt(heroId) : heroId;
+  
   const { register, handleSubmit, setValue, formState: { errors } } = useForm<Session>({
     defaultValues: {
-      // heroId ist bereits eine Zahl
+      // Stellen Sie sicher, dass heroId als Zahl übergeben wird
       id: existingSession?.id || undefined,
-      heroId: existingSession?.heroId || heroId,
+      heroId: existingSession?.heroId || heroIdAsNumber,
       title: existingSession?.title || '',
       date: existingSession?.date || new Date().toISOString(),
       content: existingSession?.content || '',
@@ -175,8 +198,11 @@ export default function SessionForm({ heroId, existingSession, onSubmit }: Sessi
   };
   
   const handleNpcFormSubmitted = () => {
+    // Sicher heroId als Zahl verwenden
+    const heroIdAsNumber = typeof heroId === 'string' ? parseInt(heroId) : heroId;
+    
     // Invalidiere den Cache, um die NPCs neu zu laden
-    queryClient.invalidateQueries({ queryKey: ['/api/heroes', heroId, 'npcs'] });
+    queryClient.invalidateQueries({ queryKey: ['/api/heroes', heroIdAsNumber, 'npcs'] });
     
     // Schließe das NPC-Formular
     setIsNpcFormOpen(false);
@@ -354,10 +380,12 @@ export default function SessionForm({ heroId, existingSession, onSubmit }: Sessi
                   className="text-sm font-medium leading-none cursor-pointer flex-1"
                 >
                   {npc.name} 
-                  {npc.firstSessionId && existingSession && npc.firstSessionId.toString() !== existingSession.id.toString() && 
+                  {npc.firstSessionId && existingSession && 
+                   npc.firstSessionId.toString() !== existingSession.id.toString() && 
                     <span className="ml-1 text-xs text-muted-foreground">(Anderer Session zugeordnet)</span>
                   }
-                  {npc.firstSessionId && existingSession && npc.firstSessionId.toString() === existingSession.id.toString() && 
+                  {npc.firstSessionId && existingSession && 
+                   npc.firstSessionId.toString() === existingSession.id.toString() && 
                     <span className="ml-1 text-xs text-secondary/70">(Dieser Session zugeordnet)</span>
                   }
                 </label>
