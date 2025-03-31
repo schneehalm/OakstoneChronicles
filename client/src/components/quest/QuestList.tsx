@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Plus, Search, Loader2 } from "lucide-react";
+import { Plus, Search, Loader2, MapPinIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -9,6 +9,7 @@ import QuestItem from "./QuestItem";
 import QuestForm from "./QuestForm";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { EmptyState } from "@/components/ui/empty-state";
 
 interface QuestListProps {
   heroId: string;
@@ -128,22 +129,21 @@ export default function QuestList({ heroId }: QuestListProps) {
       </div>
       
       {filteredQuests.length === 0 ? (
-        <div className="text-center py-10 bg-[#1e1e2f]/50 rounded-xl border border-[#7f5af0]/20">
-          {searchTerm ? (
-            <p className="text-[#f5f5f5]/70">Keine Aufträge gefunden. Versuche eine andere Suche.</p>
-          ) : (
-            <div className="space-y-3">
-              <p className="text-[#f5f5f5]/70">Du hast noch keine Aufträge erstellt.</p>
-              <Button
-                onClick={handleAddQuest}
-                variant="outline"
-                className="border-[#7f5af0]/40 text-[#7f5af0]"
-              >
-                Ersten Auftrag erstellen
-              </Button>
-            </div>
-          )}
-        </div>
+        searchTerm ? (
+          <EmptyState 
+            title="Keine Aufträge gefunden."
+            hasFilter={true}
+            filterDescription="Versuche eine andere Suche oder"
+            onClearFilter={() => setSearchTerm("")}
+          />
+        ) : (
+          <EmptyState 
+            title="Du hast noch keine Aufträge erstellt."
+            icon={<MapPinIcon className="empty-state-icon" />}
+            actionLabel="Ersten Auftrag erstellen"
+            onAction={handleAddQuest}
+          />
+        )
       ) : (
         <div className="space-y-3">
           {filteredQuests.map((quest) => (

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import { Plus, Search, Filter, Loader2 } from "lucide-react";
+import { Plus, Search, Filter, Loader2, UserIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
@@ -24,6 +24,7 @@ import NpcForm from "./NpcForm";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { EmptyState } from "@/components/ui/empty-state";
 
 interface NpcListProps {
   heroId: string;
@@ -239,35 +240,27 @@ export default function NpcList({ heroId }: NpcListProps) {
       )}
       
       {filteredNpcs.length === 0 ? (
-        <div className="text-center py-10 content-box">
-          {searchTerm || relationshipFilter !== "all" ? (
-            <p className="empty-state">
-              Keine NPCs gefunden. 
-              {relationshipFilter !== "all" && " Versuche einen anderen Beziehungsfilter oder "}
-              {searchTerm && " Versuche eine andere Suche oder "}
-              <Button 
-                variant="link" 
-                onClick={() => {
-                  setSearchTerm("");
-                  setRelationshipFilter("all");
-                }}
-                className="p-0"
-              >
-                setze alle Filter zurück
-              </Button>.
-            </p>
-          ) : (
-            <div className="space-y-3">
-              <p className="empty-state">Du hast noch keine NPCs erstellt.</p>
-              <Button
-                onClick={handleAddNpc}
-                className="btn-accent"
-              >
-                Ersten NPC erstellen
-              </Button>
-            </div>
-          )}
-        </div>
+        searchTerm || relationshipFilter !== "all" ? (
+          <EmptyState 
+            title="Keine NPCs gefunden."
+            hasFilter={true}
+            filterDescription={
+              (relationshipFilter !== "all" ? "Versuche einen anderen Beziehungsfilter oder" : "") +
+              (searchTerm ? " Versuche eine andere Suche oder" : "")
+            }
+            onClearFilter={() => {
+              setSearchTerm("");
+              setRelationshipFilter("all");
+            }}
+          />
+        ) : (
+          <EmptyState 
+            title="Du hast noch keine NPCs erstellt."
+            icon={<UserIcon className="empty-state-icon" />}
+            actionLabel="Ersten NPC erstellen"
+            onAction={handleAddNpc}
+          />
+        )
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredNpcs.map((npc) => (

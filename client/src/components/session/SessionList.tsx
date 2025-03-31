@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Plus, Search, Loader2 } from "lucide-react";
+import { Plus, Search, Loader2, ScrollTextIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -9,6 +9,7 @@ import SessionCard from "./SessionCard";
 import SessionForm from "./SessionForm";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { EmptyState } from "@/components/ui/empty-state";
 
 interface SessionListProps {
   heroId: string;
@@ -135,22 +136,21 @@ export default function SessionList({ heroId }: SessionListProps) {
       </div>
       
       {filteredSessions.length === 0 ? (
-        <div className="text-center py-10 bg-[#1e1e2f]/50 rounded-xl border border-[#7f5af0]/20">
-          {searchTerm ? (
-            <p className="text-[#f5f5f5]/70">Keine Sessions gefunden. Versuche eine andere Suche.</p>
-          ) : (
-            <div className="space-y-3">
-              <p className="text-[#f5f5f5]/70">Du hast noch keine Sessions aufgezeichnet.</p>
-              <Button
-                onClick={handleAddSession}
-                variant="outline"
-                className="border-[#7f5af0]/40 text-[#7f5af0]"
-              >
-                Erste Session erstellen
-              </Button>
-            </div>
-          )}
-        </div>
+        searchTerm ? (
+          <EmptyState 
+            title="Keine Sessions gefunden."
+            hasFilter={true}
+            filterDescription="Versuche eine andere Suche oder"
+            onClearFilter={() => setSearchTerm("")}
+          />
+        ) : (
+          <EmptyState 
+            title="Du hast noch keine Sessions aufgezeichnet."
+            icon={<ScrollTextIcon className="empty-state-icon" />}
+            actionLabel="Erste Session erstellen"
+            onAction={handleAddSession}
+          />
+        )
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {filteredSessions.map((session) => (
