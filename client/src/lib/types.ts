@@ -1,5 +1,6 @@
 export interface Hero {
   id: string;
+  userId: number; // Neu: Referenz zum Besitzer des Helden
   name: string;
   system: string;
   race: string;

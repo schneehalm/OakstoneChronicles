@@ -1,4 +1,11 @@
-import { users, type User, type InsertUser } from "@shared/schema";
+import { 
+  users, type User, type InsertUser,
+  heroes, type Hero, type InsertHero,
+  npcs, type Npc, type InsertNpc,
+  sessions, type Session, type InsertSession,
+  quests, type Quest, type InsertQuest,
+  activities, type Activity, type InsertActivity
+} from "@shared/schema";
 import bcrypt from "bcryptjs";
 
 // modify the interface with any CRUD methods
@@ -10,27 +17,87 @@ import createMemoryStore from 'memorystore';
 const MemoryStore = createMemoryStore(session);
 
 export interface IStorage {
+  // User Management
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   validatePassword(plainPassword: string, hashedPassword: string): Promise<boolean>;
   hashPassword(password: string): Promise<string>;
+  
+  // Hero Management
+  getHeroesByUserId(userId: number): Promise<Hero[]>;
+  getHeroById(id: number): Promise<Hero | undefined>;
+  createHero(hero: InsertHero): Promise<Hero>;
+  updateHero(id: number, hero: Partial<InsertHero>): Promise<Hero | undefined>;
+  deleteHero(id: number): Promise<boolean>;
+  isHeroOwnedByUser(heroId: number, userId: number): Promise<boolean>;
+  
+  // NPC Management
+  getNpcsByHeroId(heroId: number): Promise<Npc[]>;
+  getNpcById(id: number): Promise<Npc | undefined>;
+  createNpc(npc: InsertNpc): Promise<Npc>;
+  updateNpc(id: number, npc: Partial<InsertNpc>): Promise<Npc | undefined>;
+  deleteNpc(id: number): Promise<boolean>;
+  
+  // Session Management
+  getSessionsByHeroId(heroId: number): Promise<Session[]>;
+  getSessionById(id: number): Promise<Session | undefined>;
+  createSession(session: InsertSession): Promise<Session>;
+  updateSession(id: number, session: Partial<InsertSession>): Promise<Session | undefined>;
+  deleteSession(id: number): Promise<boolean>;
+  
+  // Quest Management
+  getQuestsByHeroId(heroId: number): Promise<Quest[]>;
+  getQuestById(id: number): Promise<Quest | undefined>;
+  createQuest(quest: InsertQuest): Promise<Quest>;
+  updateQuest(id: number, quest: Partial<InsertQuest>): Promise<Quest | undefined>;
+  deleteQuest(id: number): Promise<boolean>;
+  
+  // Activity Management
+  getActivitiesByHeroId(heroId: number, limit?: number): Promise<Activity[]>;
+  createActivity(activity: InsertActivity): Promise<Activity>;
+  
   sessionStore: session.Store;
 }
 
 export class MemStorage implements IStorage {
   private users: Map<number, User>;
-  currentId: number;
+  private heroes: Map<number, Hero>;
+  private npcs: Map<number, Npc>;
+  private sessions: Map<number, Session>;
+  private quests: Map<number, Quest>;
+  private activities: Map<number, Activity>;
+  
+  private userId: number;
+  private heroId: number;
+  private npcId: number;
+  private sessionId: number;
+  private questId: number;
+  private activityId: number;
+  
   sessionStore: session.Store;
 
   constructor() {
     this.users = new Map();
-    this.currentId = 1;
+    this.heroes = new Map();
+    this.npcs = new Map();
+    this.sessions = new Map();
+    this.quests = new Map();
+    this.activities = new Map();
+    
+    this.userId = 1;
+    this.heroId = 1;
+    this.npcId = 1;
+    this.sessionId = 1;
+    this.questId = 1;
+    this.activityId = 1;
+    
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000 // Prune expired entries every 24h
     });
   }
 
+  // User Management Methods
   async getUser(id: number): Promise<User | undefined> {
     return this.users.get(id);
   }
@@ -45,7 +112,7 @@ export class MemStorage implements IStorage {
     // Hash the password before storing
     const hashedPassword = await this.hashPassword(insertUser.password);
     
-    const id = this.currentId++;
+    const id = this.userId++;
     const user: User = { ...insertUser, password: hashedPassword, id };
     this.users.set(id, user);
     return user;
@@ -58,6 +125,198 @@ export class MemStorage implements IStorage {
   async hashPassword(password: string): Promise<string> {
     const salt = await bcrypt.genSalt(10);
     return await bcrypt.hash(password, salt);
+  }
+  
+  // Hero Management Methods
+  async getHeroesByUserId(userId: number): Promise<Hero[]> {
+    return Array.from(this.heroes.values()).filter(hero => hero.userId === userId);
+  }
+  
+  async getHeroById(id: number): Promise<Hero | undefined> {
+    return this.heroes.get(id);
+  }
+  
+  async createHero(hero: InsertHero): Promise<Hero> {
+    const id = this.heroId++;
+    const timestamp = new Date().toISOString();
+    const newHero: Hero = { 
+      ...hero, 
+      id, 
+      age: hero.age || null,
+      deceased: hero.deceased || false,
+      portrait: hero.portrait || null,
+      backstory: hero.backstory || null,
+      backstoryPdf: hero.backstoryPdf || null,
+      backstoryPdfName: hero.backstoryPdfName || null,
+      tags: hero.tags || null,
+      stats: hero.stats || null,
+      createdAt: timestamp, 
+      updatedAt: timestamp 
+    };
+    this.heroes.set(id, newHero);
+    return newHero;
+  }
+  
+  async updateHero(id: number, hero: Partial<InsertHero>): Promise<Hero | undefined> {
+    const existingHero = this.heroes.get(id);
+    if (!existingHero) return undefined;
+    
+    const updatedHero: Hero = { 
+      ...existingHero, 
+      ...hero, 
+      updatedAt: new Date().toISOString() 
+    };
+    this.heroes.set(id, updatedHero);
+    return updatedHero;
+  }
+  
+  async deleteHero(id: number): Promise<boolean> {
+    return this.heroes.delete(id);
+  }
+  
+  async isHeroOwnedByUser(heroId: number, userId: number): Promise<boolean> {
+    const hero = await this.getHeroById(heroId);
+    return hero?.userId === userId;
+  }
+  
+  // NPC Management Methods
+  async getNpcsByHeroId(heroId: number): Promise<Npc[]> {
+    return Array.from(this.npcs.values()).filter(npc => npc.heroId === heroId);
+  }
+  
+  async getNpcById(id: number): Promise<Npc | undefined> {
+    return this.npcs.get(id);
+  }
+  
+  async createNpc(npc: InsertNpc): Promise<Npc> {
+    const id = this.npcId++;
+    const timestamp = new Date().toISOString();
+    const newNpc: Npc = { 
+      ...npc, 
+      id, 
+      image: npc.image || null,
+      location: npc.location || null,
+      notes: npc.notes || null,
+      favorite: npc.favorite || false,
+      firstSessionId: npc.firstSessionId || null,
+      createdAt: timestamp, 
+      updatedAt: timestamp 
+    };
+    this.npcs.set(id, newNpc);
+    return newNpc;
+  }
+  
+  async updateNpc(id: number, npc: Partial<InsertNpc>): Promise<Npc | undefined> {
+    const existingNpc = this.npcs.get(id);
+    if (!existingNpc) return undefined;
+    
+    const updatedNpc: Npc = { 
+      ...existingNpc, 
+      ...npc, 
+      updatedAt: new Date().toISOString() 
+    };
+    this.npcs.set(id, updatedNpc);
+    return updatedNpc;
+  }
+  
+  async deleteNpc(id: number): Promise<boolean> {
+    return this.npcs.delete(id);
+  }
+  
+  // Session Management Methods
+  async getSessionsByHeroId(heroId: number): Promise<Session[]> {
+    return Array.from(this.sessions.values()).filter(session => session.heroId === heroId);
+  }
+  
+  async getSessionById(id: number): Promise<Session | undefined> {
+    return this.sessions.get(id);
+  }
+  
+  async createSession(session: InsertSession): Promise<Session> {
+    const id = this.sessionId++;
+    const timestamp = new Date().toISOString();
+    const newSession: Session = { 
+      ...session, 
+      id, 
+      tags: session.tags || null,
+      createdAt: timestamp, 
+      updatedAt: timestamp 
+    };
+    this.sessions.set(id, newSession);
+    return newSession;
+  }
+  
+  async updateSession(id: number, session: Partial<InsertSession>): Promise<Session | undefined> {
+    const existingSession = this.sessions.get(id);
+    if (!existingSession) return undefined;
+    
+    const updatedSession: Session = { 
+      ...existingSession, 
+      ...session, 
+      updatedAt: new Date().toISOString() 
+    };
+    this.sessions.set(id, updatedSession);
+    return updatedSession;
+  }
+  
+  async deleteSession(id: number): Promise<boolean> {
+    return this.sessions.delete(id);
+  }
+  
+  // Quest Management Methods
+  async getQuestsByHeroId(heroId: number): Promise<Quest[]> {
+    return Array.from(this.quests.values()).filter(quest => quest.heroId === heroId);
+  }
+  
+  async getQuestById(id: number): Promise<Quest | undefined> {
+    return this.quests.get(id);
+  }
+  
+  async createQuest(quest: InsertQuest): Promise<Quest> {
+    const id = this.questId++;
+    const timestamp = new Date().toISOString();
+    const newQuest: Quest = { 
+      ...quest, 
+      id, 
+      completed: quest.completed || false,
+      createdAt: timestamp, 
+      updatedAt: timestamp 
+    };
+    this.quests.set(id, newQuest);
+    return newQuest;
+  }
+  
+  async updateQuest(id: number, quest: Partial<InsertQuest>): Promise<Quest | undefined> {
+    const existingQuest = this.quests.get(id);
+    if (!existingQuest) return undefined;
+    
+    const updatedQuest: Quest = { 
+      ...existingQuest, 
+      ...quest, 
+      updatedAt: new Date().toISOString() 
+    };
+    this.quests.set(id, updatedQuest);
+    return updatedQuest;
+  }
+  
+  async deleteQuest(id: number): Promise<boolean> {
+    return this.quests.delete(id);
+  }
+  
+  // Activity Management Methods
+  async getActivitiesByHeroId(heroId: number, limit?: number): Promise<Activity[]> {
+    const activities = Array.from(this.activities.values())
+      .filter(activity => activity.heroId === heroId)
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    
+    return limit ? activities.slice(0, limit) : activities;
+  }
+  
+  async createActivity(activity: InsertActivity): Promise<Activity> {
+    const id = this.activityId++;
+    const newActivity: Activity = { ...activity, id };
+    this.activities.set(id, newActivity);
+    return newActivity;
   }
 }
 
