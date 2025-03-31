@@ -1,6 +1,9 @@
-import { Session } from "@/lib/types";
+import { useState, useEffect } from "react";
+import { Session, Npc } from "@/lib/types";
 import { format } from "date-fns";
 import { de } from "date-fns/locale";
+import { getNpcsBySessionId } from "@/lib/storage";
+import { Users } from "lucide-react";
 
 interface SessionCardProps {
   session: Session;
@@ -8,8 +11,18 @@ interface SessionCardProps {
 }
 
 export default function SessionCard({ session, onClick }: SessionCardProps) {
+  const [npcs, setNpcs] = useState<Npc[]>([]);
+  
   // Format the date using date-fns with German locale
   const formattedDate = format(new Date(session.date), "dd.MM.yyyy", { locale: de });
+  
+  // Lade NPCs, die in dieser Session zum ersten Mal getroffen wurden
+  useEffect(() => {
+    if (session.id) {
+      const sessionNpcs = getNpcsBySessionId(session.id);
+      setNpcs(sessionNpcs);
+    }
+  }, [session.id]);
   
   return (
     <div 
@@ -40,6 +53,23 @@ export default function SessionCard({ session, onClick }: SessionCardProps) {
             {session.tags.length > 3 && (
               <span className="text-xs text-[#f5f5f5]/60">+{session.tags.length - 3} weitere</span>
             )}
+          </div>
+        )}
+        
+        {/* NPCs getroffen in dieser Session */}
+        {npcs.length > 0 && (
+          <div className="mt-3 border-t border-[#d4af37]/20 pt-2">
+            <div className="flex items-center text-sm text-[#d4af37]">
+              <Users className="w-4 h-4 mr-1" />
+              <span>NPCs in dieser Session:</span>
+            </div>
+            <div className="mt-1 flex flex-wrap gap-1">
+              {npcs.map((npc) => (
+                <span key={npc.id} className="text-xs bg-[#7f5af0]/20 border border-[#7f5af0]/40 rounded-full px-2 py-0.5">
+                  {npc.name}
+                </span>
+              ))}
+            </div>
           </div>
         )}
       </div>

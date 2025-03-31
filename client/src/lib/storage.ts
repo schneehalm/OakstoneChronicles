@@ -118,6 +118,11 @@ export const getNpcsByHeroId = (heroId: string): Npc[] => {
   return npcs.filter(npc => npc.heroId === heroId);
 };
 
+export const getNpcsBySessionId = (sessionId: string): Npc[] => {
+  const npcs = getNpcs();
+  return npcs.filter(npc => npc.firstSessionId === sessionId);
+};
+
 export const getNpcById = (id: string): Npc | undefined => {
   const npcs = getNpcs();
   return npcs.find(npc => npc.id === id);
