@@ -7,6 +7,7 @@ import { migrate } from "drizzle-orm/neon-serverless/migrator";
 import * as schema from "../shared/schema";
 
 const app = express();
+app.set("trust proxy", 1); // <<< Füge das hier hinzu
 // Erhöhen der maximalen Payload-Größe für große Bilder und PDFs
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: false, limit: '50mb' }));
