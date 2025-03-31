@@ -188,24 +188,34 @@ export default function AuthPage() {
 
   return (
     <div className="flex min-h-screen">
-      {/* Formular-Bereich */}
-      <div className="flex-1 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md">
+      {/* Formular-Bereich mit CI-Farben */}
+      <div className="flex-1 flex items-center justify-center p-4 bg-[#1e1e2f]">
+        <Card className="w-full max-w-md border-[#d4af37]/30 bg-[#1e1e2f]/95 shadow-[0_0_15px_rgba(127,90,240,0.2)]">
           <CardContent className="pt-6">
             <div className="mb-6 text-center">
               <img 
                 src={logoImg} 
                 alt="Oakstone Chronicles Logo" 
-                className="h-16 mx-auto mb-2" 
+                className="h-20 mx-auto mb-3" 
               />
-              <h1 className="text-2xl font-semibold">Oakstone Chronicles</h1>
-              <p className="text-muted-foreground">Dein Begleiter für epische Abenteuer</p>
+              <h1 className="text-2xl font-['Cinzel_Decorative'] text-[#d4af37] mb-1">Oakstone Chronicles</h1>
+              <p className="text-[#f5f5f5]/80">Dein Begleiter für epische Abenteuer</p>
             </div>
 
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-2 mb-4">
-                <TabsTrigger value="login">Anmelden</TabsTrigger>
-                <TabsTrigger value="register">Registrieren</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-2 mb-4 bg-[#1e1e2f]/70 border border-[#d4af37]/30">
+                <TabsTrigger 
+                  value="login" 
+                  className="data-[state=active]:bg-[#7f5af0]/30 data-[state=active]:text-[#d4af37] data-[state=active]:shadow-none border-r border-[#d4af37]/30"
+                >
+                  Anmelden
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="register" 
+                  className="data-[state=active]:bg-[#7f5af0]/30 data-[state=active]:text-[#d4af37] data-[state=active]:shadow-none"
+                >
+                  Registrieren
+                </TabsTrigger>
               </TabsList>
 
               {/* Login-Formular */}
@@ -217,11 +227,15 @@ export default function AuthPage() {
                       name="username"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Benutzername</FormLabel>
+                          <FormLabel className="text-[#f5f5f5]">Benutzername</FormLabel>
                           <FormControl>
-                            <Input placeholder="Dein Benutzername" {...field} />
+                            <Input 
+                              placeholder="Dein Benutzername" 
+                              className="bg-[#1e1e2f]/80 border-[#7f5af0]/30 focus:border-[#d4af37]/60 focus:ring-[#d4af37]/20 placeholder:text-[#f5f5f5]/50"
+                              {...field} 
+                            />
                           </FormControl>
-                          <FormMessage />
+                          <FormMessage className="text-[#ff5470]" />
                         </FormItem>
                       )}
                     />
@@ -231,18 +245,23 @@ export default function AuthPage() {
                       name="password"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Passwort</FormLabel>
+                          <FormLabel className="text-[#f5f5f5]">Passwort</FormLabel>
                           <FormControl>
-                            <Input type="password" placeholder="Dein Passwort" {...field} />
+                            <Input 
+                              type="password" 
+                              placeholder="Dein Passwort" 
+                              className="bg-[#1e1e2f]/80 border-[#7f5af0]/30 focus:border-[#d4af37]/60 focus:ring-[#d4af37]/20 placeholder:text-[#f5f5f5]/50"
+                              {...field} 
+                            />
                           </FormControl>
-                          <FormMessage />
+                          <FormMessage className="text-[#ff5470]" />
                         </FormItem>
                       )}
                     />
 
                     <Button 
                       type="submit" 
-                      className="w-full" 
+                      className="w-full bg-gradient-to-br from-[#7f5af0] to-[#d4af37]/80 hover:from-[#d4af37] hover:to-[#7f5af0]/80 text-[#1e1e2f] font-medium border-none" 
                       disabled={loginMutation.isPending}
                     >
                       {loginMutation.isPending ? "Anmeldung..." : "Anmelden"}
@@ -260,11 +279,15 @@ export default function AuthPage() {
                       name="username"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Benutzername</FormLabel>
+                          <FormLabel className="text-[#f5f5f5]">Benutzername</FormLabel>
                           <FormControl>
-                            <Input placeholder="Wähle einen Benutzernamen" {...field} />
+                            <Input 
+                              placeholder="Wähle einen Benutzernamen" 
+                              className="bg-[#1e1e2f]/80 border-[#7f5af0]/30 focus:border-[#d4af37]/60 focus:ring-[#d4af37]/20 placeholder:text-[#f5f5f5]/50"
+                              {...field}
+                            />
                           </FormControl>
-                          <FormMessage />
+                          <FormMessage className="text-[#ff5470]" />
                         </FormItem>
                       )}
                     />
@@ -274,15 +297,16 @@ export default function AuthPage() {
                       name="password"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Passwort</FormLabel>
+                          <FormLabel className="text-[#f5f5f5]">Passwort</FormLabel>
                           <FormControl>
                             <Input 
                               type="password" 
                               placeholder="Wähle ein sicheres Passwort" 
+                              className="bg-[#1e1e2f]/80 border-[#7f5af0]/30 focus:border-[#d4af37]/60 focus:ring-[#d4af37]/20 placeholder:text-[#f5f5f5]/50"
                               {...field} 
                             />
                           </FormControl>
-                          <FormMessage />
+                          <FormMessage className="text-[#ff5470]" />
                         </FormItem>
                       )}
                     />
@@ -292,22 +316,23 @@ export default function AuthPage() {
                       name="confirmPassword"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Passwort bestätigen</FormLabel>
+                          <FormLabel className="text-[#f5f5f5]">Passwort bestätigen</FormLabel>
                           <FormControl>
                             <Input 
                               type="password" 
                               placeholder="Passwort wiederholen" 
+                              className="bg-[#1e1e2f]/80 border-[#7f5af0]/30 focus:border-[#d4af37]/60 focus:ring-[#d4af37]/20 placeholder:text-[#f5f5f5]/50"
                               {...field} 
                             />
                           </FormControl>
-                          <FormMessage />
+                          <FormMessage className="text-[#ff5470]" />
                         </FormItem>
                       )}
                     />
 
                     <Button 
                       type="submit" 
-                      className="w-full" 
+                      className="w-full bg-gradient-to-br from-[#7f5af0] to-[#d4af37]/80 hover:from-[#d4af37] hover:to-[#7f5af0]/80 text-[#1e1e2f] font-medium border-none" 
                       disabled={registerMutation.isPending}
                     >
                       {registerMutation.isPending ? "Registrierung..." : "Registrieren"}

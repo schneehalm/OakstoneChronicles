@@ -183,9 +183,14 @@ export default function HeroCard({ hero }: HeroCardProps) {
           <p className="text-sm line-clamp-2 text-[#f5f5f5]/90">
             {hero.backstory || "Keine Hintergrundgeschichte verfügbar."}
           </p>
-          {hero.tags && hero.tags.length > 0 && (
+          {hero.tags && (
             <div className="mt-3 flex flex-wrap gap-2">
-              {hero.tags.slice(0, 3).map((tag, index) => (
+              {(typeof hero.tags === 'string' 
+                ? [hero.tags] 
+                : Array.isArray(hero.tags) 
+                  ? hero.tags.slice(0, 3) 
+                  : []
+              ).map((tag, index) => (
                 <span 
                   key={index}
                   className={cn(

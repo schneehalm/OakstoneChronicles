@@ -365,9 +365,9 @@ export default function HeroDetail({ heroId }: HeroDetailProps) {
               )}
             </div>
             
-            {hero.tags && hero.tags.length > 0 && (
+            {hero.tags && (
               <div className="flex flex-wrap gap-2 mt-4">
-                {hero.tags.map((tag, index) => (
+                {(typeof hero.tags === 'string' ? [hero.tags] : Array.isArray(hero.tags) ? hero.tags : []).map((tag, index) => (
                   <span 
                     key={index}
                     className={`text-xs rounded-full px-2 py-0.5 ${
