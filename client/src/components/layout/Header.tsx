@@ -78,7 +78,17 @@ export default function Header() {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          ) : null}
+          ) : (
+            <Link href="/auth">
+              <Button
+                variant="outline"
+                className="text-[#d4af37] border-[#d4af37]/50 hover:bg-[#d4af37]/10"
+              >
+                <User className="h-5 w-5 mr-2" />
+                <span>Anmelden</span>
+              </Button>
+            </Link>
+          )}
         </div>
       </div>
     </header>
