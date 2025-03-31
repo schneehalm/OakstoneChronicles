@@ -58,14 +58,12 @@ export default function NpcForm({ heroId, existingNpc, onSubmit }: NpcFormProps)
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Prüfe die Dateigröße (max 1MB)
-      if (file.size > 1024 * 1024) {
+      // Zeige eine Toast-Nachricht, dass das Bild verarbeitet wird
+      if (file.size > 2 * 1024 * 1024) { // Größer als 2MB
         toast({
-          title: "Fehler",
-          description: "Die Bilddatei ist zu groß. Bitte verwende ein Bild mit maximal 1MB.",
-          variant: "destructive"
+          title: "Bild wird verarbeitet",
+          description: "Große Bilder werden automatisch komprimiert. Einen Moment bitte...",
         });
-        return;
       }
       
       // Lese die Datei
@@ -74,16 +72,36 @@ export default function NpcForm({ heroId, existingNpc, onSubmit }: NpcFormProps)
         try {
           const result = event.target?.result as string;
           
-          // Komprimiere das Bild wenn möglich
+          // Komprimiere das Bild
           const img = new Image();
           img.onload = () => {
             const canvas = document.createElement('canvas');
-            const MAX_WIDTH = 300;
-            const MAX_HEIGHT = 300;
+            
+            // Berechne die Zielgröße basierend auf der Originalgröße
+            // Bei großen Bildern stärker komprimieren
+            let MAX_WIDTH = 500;
+            let MAX_HEIGHT = 500;
+            let compressionRate = 0.8; // Qualität für kleinere Bilder
+            
+            // Bei großen Bildern stärkere Kompression
+            if (img.width > 1000 || img.height > 1000) {
+              MAX_WIDTH = 400;
+              MAX_HEIGHT = 400;
+              compressionRate = 0.7;
+            }
+            
+            // Bei sehr großen Bildern noch stärkere Kompression
+            if (img.width > 2000 || img.height > 2000) {
+              MAX_WIDTH = 350;
+              MAX_HEIGHT = 350;
+              compressionRate = 0.6;
+            }
+            
+            // Skalierungsfaktor berechnen, um das Seitenverhältnis zu erhalten
             let width = img.width;
             let height = img.height;
             
-            // Skaliere das Bild herunter, wenn es zu groß ist
+            // Berechne den Skalierungsfaktor
             if (width > height) {
               if (width > MAX_WIDTH) {
                 height *= MAX_WIDTH / width;
@@ -96,13 +114,16 @@ export default function NpcForm({ heroId, existingNpc, onSubmit }: NpcFormProps)
               }
             }
             
+            // Setze die Canvas-Größe
             canvas.width = width;
             canvas.height = height;
+            
+            // Zeichne das Bild auf den Canvas
             const ctx = canvas.getContext('2d');
             ctx?.drawImage(img, 0, 0, width, height);
             
             // Erzeuge das komprimierte Bild
-            const compressedImage = canvas.toDataURL('image/jpeg', 0.7);
+            const compressedImage = canvas.toDataURL('image/jpeg', compressionRate);
             
             // Aktualisiere das Formular
             setImagePreview(compressedImage);
@@ -111,6 +132,14 @@ export default function NpcForm({ heroId, existingNpc, onSubmit }: NpcFormProps)
             // Leere das URL-Feld
             const urlInput = document.getElementById('imageUrl') as HTMLInputElement;
             if (urlInput) urlInput.value = '';
+            
+            // Bei großen Bildern eine Erfolgsmeldung anzeigen
+            if (file.size > 2 * 1024 * 1024) {
+              toast({
+                title: "Bild komprimiert",
+                description: "Das Bild wurde erfolgreich komprimiert und kann verwendet werden.",
+              });
+            }
           };
           
           img.src = result;
