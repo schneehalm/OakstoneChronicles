@@ -396,7 +396,8 @@
   }
   
   .search-field-input {
-    @apply w-full pl-10 pr-4 py-2 form-input transition-colors;
+    @apply w-full pl-10 pr-4 py-2 form-input transition-colors text-left;
+    padding-left: 2.5rem; /* Mehr Platz für das Icon, damit Text nicht überlappt */
   }
   
   .search-field-input-default {
@@ -409,6 +410,7 @@
   
   .search-field-icon {
     @apply absolute left-3 top-2.5 h-5 w-5 transition-colors;
+    left: 0.75rem; /* Feinjustierung der Icon-Position */
   }
   
   .search-field-icon-default {
@@ -426,6 +428,7 @@
   
   .filter-field-trigger {
     @apply select-trigger h-10 pl-10 transition-colors;
+    padding-left: 2.5rem; /* Mehr Platz für das Icon, damit Text nicht überlappt */
   }
   
   .filter-field-trigger-default {
@@ -438,6 +441,7 @@
   
   .filter-field-icon {
     @apply absolute left-3 top-2.5 h-5 w-5 transition-colors;
+    left: 0.75rem; /* Feinjustierung der Icon-Position */
   }
   
   .filter-field-icon-default {
