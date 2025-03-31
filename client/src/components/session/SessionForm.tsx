@@ -410,7 +410,7 @@ export default function SessionForm({ heroId, existingSession, onSubmit }: Sessi
       </div>
       
       {/* Buttons */}
-      <div className="flex justify-end gap-2 pt-2">
+      <div className="sticky bottom-0 bg-[#1e1e2f] border-t border-[#7f5af0]/30 mt-6 -mx-6 px-6 py-4 flex justify-end gap-2">
         <Button 
           type="submit" 
           className="PrimaryButton"
