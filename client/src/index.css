@@ -390,68 +390,6 @@
     @apply bg-[hsl(var(--content-box))] text-foreground border border-[hsl(var(--content-border))]/70 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-[hsl(var(--content-border))]/50;
   }
   
-  /* Globale Suchfeld-Klassen - mit Statuswechsel */
-  .search-field {
-    @apply relative flex-grow;
-  }
-  
-  .search-field-input {
-    @apply w-full pl-10 pr-4 py-2 form-input transition-colors text-left;
-    padding-left: 2.5rem; /* Mehr Platz für das Icon, damit Text nicht überlappt */
-  }
-  
-  .search-field-input-default {
-    @apply border-[#d4af37];
-  }
-  
-  .search-field-input-active {
-    @apply border-[#7f5af0];
-  }
-  
-  .search-field-icon {
-    @apply absolute left-3 top-2.5 h-5 w-5 transition-colors;
-    left: 0.75rem; /* Feinjustierung der Icon-Position */
-  }
-  
-  .search-field-icon-default {
-    @apply text-[#d4af37];
-  }
-  
-  .search-field-icon-active {
-    @apply text-[#7f5af0];
-  }
-  
-  /* Filterfeld-Klassen */
-  .filter-field {
-    @apply relative flex-shrink-0;
-  }
-  
-  .filter-field-trigger {
-    @apply select-trigger h-10 pl-10 transition-colors;
-    padding-left: 2.5rem; /* Mehr Platz für das Icon, damit Text nicht überlappt */
-  }
-  
-  .filter-field-trigger-default {
-    @apply border-[#d4af37];
-  }
-  
-  .filter-field-trigger-active {
-    @apply border-[#7f5af0];
-  }
-  
-  .filter-field-icon {
-    @apply absolute left-3 top-2.5 h-5 w-5 transition-colors;
-    left: 0.75rem; /* Feinjustierung der Icon-Position */
-  }
-  
-  .filter-field-icon-default {
-    @apply text-[#d4af37];
-  }
-  
-  .filter-field-icon-active {
-    @apply text-[#7f5af0];
-  }
-  
   /* Tabs Navigation */
   .tab-nav {
     @apply border-b border-[hsl(var(--content-border))]/50 mb-4;
@@ -734,15 +672,15 @@
   
   /* Filter Buttons */
   .filter-chip {
-    @apply rounded-full px-3 py-1 text-sm font-medium transition-colors cursor-pointer border;
+    @apply rounded-full px-3 py-1 text-sm font-medium transition-colors cursor-pointer;
   }
   
   .filter-chip.active {
-    @apply bg-[#7f5af0]/10 text-[#7f5af0] border-[#7f5af0];
+    @apply bg-[hsl(var(--secondary))]/20 text-[hsl(var(--secondary))];
   }
   
   .filter-chip:not(.active) {
-    @apply bg-transparent text-foreground hover:bg-[#d4af37]/10 border-[#d4af37] hover:text-[#d4af37];
+    @apply bg-muted/40 text-muted-foreground hover:bg-muted/60;
   }
 
   /* Global Button Styles */
