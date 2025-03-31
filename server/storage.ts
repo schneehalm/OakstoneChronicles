@@ -9,6 +9,7 @@ import {
 import bcrypt from "bcryptjs";
 import { drizzle } from "drizzle-orm/neon-serverless";
 import { neon } from "@neondatabase/serverless";
+import { eq } from "drizzle-orm";
 
 // Import für Session-Speicher
 import session from 'express-session';
@@ -434,12 +435,12 @@ export class DatabaseStorage implements IStorage {
 
   // User Management Methods
   async getUser(id: number): Promise<User | undefined> {
-    const result = await this.db.select().from(users).where(({ eq }) => eq(users.id, id));
+    const result = await this.db.select().from(users).where(eq(users.id, id));
     return result[0];
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    const result = await this.db.select().from(users).where(({ eq }) => eq(users.username, username));
+    const result = await this.db.select().from(users).where(eq(users.username, username));
     return result[0];
   }
 
@@ -466,14 +467,14 @@ export class DatabaseStorage implements IStorage {
   
   // Hero Management Methods
   async getHeroesByUserId(userId: number): Promise<Hero[]> {
-    const result = await this.db.select().from(heroes).where(({ eq }) => eq(heroes.userId, userId));
+    const result = await this.db.select().from(heroes).where(eq(heroes.userId, userId));
     
     // Konvertieren der Daten in die richtige Form
     return result.map((hero: any) => this.processHero(hero));
   }
   
   async getHeroById(id: number): Promise<Hero | undefined> {
-    const result = await this.db.select().from(heroes).where(({ eq }) => eq(heroes.id, id));
+    const result = await this.db.select().from(heroes).where(eq(heroes.id, id));
     if (result.length === 0) return undefined;
     
     return this.processHero(result[0]);
@@ -527,7 +528,7 @@ export class DatabaseStorage implements IStorage {
     
     const result = await this.db.update(heroes)
       .set(updatedData)
-      .where(({ eq }) => eq(heroes.id, id))
+      .where(eq(heroes.id, id))
       .returning();
     
     if (result.length === 0) return undefined;
@@ -535,7 +536,7 @@ export class DatabaseStorage implements IStorage {
   }
   
   async deleteHero(id: number): Promise<boolean> {
-    const result = await this.db.delete(heroes).where(({ eq }) => eq(heroes.id, id)).returning();
+    const result = await this.db.delete(heroes).where(eq(heroes.id, id)).returning();
     return result.length > 0;
   }
   
@@ -546,12 +547,12 @@ export class DatabaseStorage implements IStorage {
   
   // NPC Management Methods
   async getNpcsByHeroId(heroId: number): Promise<Npc[]> {
-    const result = await this.db.select().from(npcs).where(({ eq }) => eq(npcs.heroId, heroId));
+    const result = await this.db.select().from(npcs).where(eq(npcs.heroId, heroId));
     return result;
   }
   
   async getNpcById(id: number): Promise<Npc | undefined> {
-    const result = await this.db.select().from(npcs).where(({ eq }) => eq(npcs.id, id));
+    const result = await this.db.select().from(npcs).where(eq(npcs.id, id));
     return result[0];
   }
   
@@ -574,7 +575,7 @@ export class DatabaseStorage implements IStorage {
         ...npc,
         updatedAt: new Date().toISOString()
       })
-      .where(({ eq }) => eq(npcs.id, id))
+      .where(eq(npcs.id, id))
       .returning();
     
     if (result.length === 0) return undefined;
@@ -582,20 +583,20 @@ export class DatabaseStorage implements IStorage {
   }
   
   async deleteNpc(id: number): Promise<boolean> {
-    const result = await this.db.delete(npcs).where(({ eq }) => eq(npcs.id, id)).returning();
+    const result = await this.db.delete(npcs).where(eq(npcs.id, id)).returning();
     return result.length > 0;
   }
   
   // Session Management Methods
   async getSessionsByHeroId(heroId: number): Promise<Session[]> {
-    const result = await this.db.select().from(sessions).where(({ eq }) => eq(sessions.heroId, heroId));
+    const result = await this.db.select().from(sessions).where(eq(sessions.heroId, heroId));
     
     // Konvertieren der Daten in die richtige Form
     return result.map((session: any) => this.processSession(session));
   }
   
   async getSessionById(id: number): Promise<Session | undefined> {
-    const result = await this.db.select().from(sessions).where(({ eq }) => eq(sessions.id, id));
+    const result = await this.db.select().from(sessions).where(eq(sessions.id, id));
     if (result.length === 0) return undefined;
     
     return this.processSession(result[0]);
@@ -625,7 +626,7 @@ export class DatabaseStorage implements IStorage {
     
     const result = await this.db.update(sessions)
       .set(updatedData)
-      .where(({ eq }) => eq(sessions.id, id))
+      .where(eq(sessions.id, id))
       .returning();
     
     if (result.length === 0) return undefined;
@@ -633,18 +634,18 @@ export class DatabaseStorage implements IStorage {
   }
   
   async deleteSession(id: number): Promise<boolean> {
-    const result = await this.db.delete(sessions).where(({ eq }) => eq(sessions.id, id)).returning();
+    const result = await this.db.delete(sessions).where(eq(sessions.id, id)).returning();
     return result.length > 0;
   }
   
   // Quest Management Methods
   async getQuestsByHeroId(heroId: number): Promise<Quest[]> {
-    const result = await this.db.select().from(quests).where(({ eq }) => eq(quests.heroId, heroId));
+    const result = await this.db.select().from(quests).where(eq(quests.heroId, heroId));
     return result;
   }
   
   async getQuestById(id: number): Promise<Quest | undefined> {
-    const result = await this.db.select().from(quests).where(({ eq }) => eq(quests.id, id));
+    const result = await this.db.select().from(quests).where(eq(quests.id, id));
     return result[0];
   }
   
@@ -667,7 +668,7 @@ export class DatabaseStorage implements IStorage {
         ...quest,
         updatedAt: new Date().toISOString()
       })
-      .where(({ eq }) => eq(quests.id, id))
+      .where(eq(quests.id, id))
       .returning();
     
     if (result.length === 0) return undefined;
@@ -675,13 +676,13 @@ export class DatabaseStorage implements IStorage {
   }
   
   async deleteQuest(id: number): Promise<boolean> {
-    const result = await this.db.delete(quests).where(({ eq }) => eq(quests.id, id)).returning();
+    const result = await this.db.delete(quests).where(eq(quests.id, id)).returning();
     return result.length > 0;
   }
   
   // Activity Management Methods
   async getActivitiesByHeroId(heroId: number, limit?: number): Promise<Activity[]> {
-    let query = this.db.select().from(activities).where(({ eq }) => eq(activities.heroId, heroId));
+    let query = this.db.select().from(activities).where(eq(activities.heroId, heroId));
     
     // Sortieren und begrenzen
     const result = await query;
