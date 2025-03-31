@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import { Plus, Search, Filter } from "lucide-react";
+import { Plus, Search, Filter, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
@@ -18,11 +18,12 @@ import {
 } from "@/components/ui/select";
 import { Npc } from "@/lib/types";
 import { RELATIONSHIP_TYPES } from "@/lib/theme";
-import { getNpcsByHeroId, deleteNpc } from "@/lib/storage";
+import { fetchNpcsByHeroId, deleteNpc } from "@/lib/api";
 import NpcCard from "./NpcCard";
 import NpcForm from "./NpcForm";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface NpcListProps {
   heroId: string;
@@ -31,23 +32,18 @@ interface NpcListProps {
 export default function NpcList({ heroId }: NpcListProps) {
   const [, navigate] = useLocation();
   const { toast } = useToast();
-  const [npcs, setNpcs] = useState<Npc[]>([]);
+  const queryClient = useQueryClient();
   const [filteredNpcs, setFilteredNpcs] = useState<Npc[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [relationshipFilter, setRelationshipFilter] = useState<string>("all");
   const [selectedNpc, setSelectedNpc] = useState<Npc | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   
-  useEffect(() => {
-    // Load NPCs
-    const loadNpcs = () => {
-      const npcData = getNpcsByHeroId(heroId);
-      setNpcs(npcData);
-      setFilteredNpcs(npcData);
-    };
-    
-    loadNpcs();
-  }, [heroId]);
+  // Lade NPCs über die API
+  const { data: npcs = [], isLoading, error } = useQuery({
+    queryKey: ['/api/heroes', heroId, 'npcs'],
+    queryFn: () => fetchNpcsByHeroId(heroId)
+  });
   
   useEffect(() => {
     // Filter NPCs based on search term and relationship
@@ -89,28 +85,27 @@ export default function NpcList({ heroId }: NpcListProps) {
     setIsFormOpen(true);
   };
   
-  const handleDeleteNpc = (npc: Npc) => {
+  const handleDeleteNpc = async (npc: Npc) => {
     if (window.confirm(`Bist du sicher, dass du "${npc.name}" löschen möchtest?`)) {
-      deleteNpc(npc.id);
-      
-      // Update NPC list
-      const updatedNpcs = npcs.filter(n => n.id !== npc.id);
-      setNpcs(updatedNpcs);
-      
-      toast({
-        title: "NPC gelöscht",
-        description: `${npc.name} wurde erfolgreich gelöscht.`,
-      });
+      try {
+        await deleteNpc(npc.id, heroId);
+        
+        toast({
+          title: "NPC gelöscht",
+          description: `${npc.name} wurde erfolgreich gelöscht.`,
+        });
+      } catch (error) {
+        toast({
+          title: "Fehler beim Löschen",
+          description: error instanceof Error ? error.message : "Unbekannter Fehler",
+          variant: "destructive"
+        });
+      }
     }
   };
   
   const handleFormSubmit = () => {
-    // Reload NPCs
-    const npcData = getNpcsByHeroId(heroId);
-    setNpcs(npcData);
-    setFilteredNpcs(npcData);
-    
-    // Close form
+    // Die Daten werden automatisch neu geladen dank React Query's Cache Invalidation
     setIsFormOpen(false);
   };
   
@@ -119,6 +114,33 @@ export default function NpcList({ heroId }: NpcListProps) {
     const relationship = RELATIONSHIP_TYPES.find(r => r.value === value);
     return relationship ? relationship.label : value;
   };
+  
+  // Zeige Ladezustand, wenn NPCs geladen werden
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-8 w-8 animate-spin text-[#d4af37]" />
+        <span className="ml-3 text-lg">NPCs werden geladen...</span>
+      </div>
+    );
+  }
+  
+  // Zeige Fehlermeldung, wenn ein Fehler aufgetreten ist
+  if (error) {
+    return (
+      <div className="text-center py-12 content-box border-destructive">
+        <p className="text-destructive font-semibold mb-2">Fehler beim Laden der NPCs</p>
+        <p className="text-muted-foreground">{error instanceof Error ? error.message : "Unbekannter Fehler"}</p>
+        <Button 
+          variant="outline" 
+          className="mt-4"
+          onClick={() => queryClient.invalidateQueries({ queryKey: ['/api/heroes', heroId, 'npcs'] })}
+        >
+          Erneut versuchen
+        </Button>
+      </div>
+    );
+  }
   
   return (
     <div className="space-y-6">

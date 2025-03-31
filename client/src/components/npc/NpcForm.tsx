@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Upload, Star } from "lucide-react";
+import { Upload, Star, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -15,10 +15,11 @@ import {
 } from "@/components/ui/select";
 import { RELATIONSHIP_TYPES } from "@/lib/theme";
 import { Npc, Session } from "@/lib/types";
-import { saveNpc, getSessionsByHeroId } from "@/lib/storage";
+import { createNpc, updateNpc, fetchSessionsByHeroId } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { de } from "date-fns/locale";
+import { useQuery } from "@tanstack/react-query";
 
 interface NpcFormProps {
   heroId: string;
@@ -29,17 +30,22 @@ interface NpcFormProps {
 export default function NpcForm({ heroId, existingNpc, onSubmit }: NpcFormProps) {
   const { toast } = useToast();
   const [imagePreview, setImagePreview] = useState<string | null>(existingNpc?.image || null);
-  const [sessions, setSessions] = useState<Session[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
-  useEffect(() => {
-    // Lade alle Sessions für diesen Helden
-    const heroSessions = getSessionsByHeroId(heroId);
-    // Sortiere Sessions nach Datum (neueste zuerst)
-    const sortedSessions = [...heroSessions].sort((a, b) => 
-      new Date(b.date).getTime() - new Date(a.date).getTime()
-    );
-    setSessions(sortedSessions);
-  }, [heroId]);
+  // Lade Sessions über die API
+  const { 
+    data: sessions = [], 
+    isLoading: isLoadingSessions
+  } = useQuery({
+    queryKey: ['/api/heroes', heroId, 'sessions'],
+    queryFn: () => fetchSessionsByHeroId(heroId),
+    select: (data) => {
+      // Sortiere Sessions nach Datum (neueste zuerst)
+      return [...data].sort((a, b) => 
+        new Date(b.date).getTime() - new Date(a.date).getTime()
+      );
+    }
+  });
   
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<Npc>({
     defaultValues: {
@@ -180,8 +186,10 @@ export default function NpcForm({ heroId, existingNpc, onSubmit }: NpcFormProps)
     }
   };
   
-  const handleFormSubmit = (data: Npc) => {
+  const handleFormSubmit = async (data: Npc) => {
     try {
+      setIsSubmitting(true);
+      
       // Stelle sicher, dass das Bild korrekt gesetzt ist
       if (imagePreview) {
         data.image = imagePreview;
@@ -192,30 +200,29 @@ export default function NpcForm({ heroId, existingNpc, onSubmit }: NpcFormProps)
         data.firstSessionId = 'none';
       }
       
-      // Aktualisiere die Zeitstempel
-      const now = new Date().toISOString();
-      if (!data.createdAt) {
-        data.createdAt = now;
+      // Wenn wir ein existingNpc haben, dann aktualisieren wir, sonst erstellen wir
+      if (existingNpc) {
+        await updateNpc(existingNpc.id, data);
+      } else {
+        await createNpc(heroId, data);
       }
-      data.updatedAt = now;
-      
-      // Save NPC
-      saveNpc(data);
       
       toast({
         title: existingNpc ? "NPC aktualisiert" : "NPC erstellt",
         description: `${data.name} wurde erfolgreich ${existingNpc ? 'aktualisiert' : 'erstellt'}.`,
       });
       
-      // Call onSubmit callback
+      // Call onSubmit callback to close the form and reload the list
       onSubmit();
     } catch (error) {
       console.error("Fehler beim Speichern des NPC:", error);
       toast({
         title: "Fehler",
-        description: "Ein Fehler ist aufgetreten. Bitte versuche es erneut.",
+        description: error instanceof Error ? error.message : "Ein Fehler ist aufgetreten. Bitte versuche es erneut.",
         variant: "destructive"
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
   
@@ -337,12 +344,20 @@ export default function NpcForm({ heroId, existingNpc, onSubmit }: NpcFormProps)
         <Select 
           defaultValue={existingNpc?.firstSessionId || 'none'} 
           onValueChange={(value) => setValue('firstSessionId', value)}
+          disabled={isLoadingSessions}
         >
           <SelectTrigger 
             id="firstSessionId"
             className="bg-[#1e1e2f] border border-[#7f5af0]/40"
           >
-            <SelectValue placeholder="In welcher Session wurde dieser NPC getroffen?" />
+            {isLoadingSessions ? (
+              <div className="flex items-center">
+                <Loader2 className="h-4 w-4 animate-spin mr-2 text-[#7f5af0]" />
+                <span>Sessions werden geladen...</span>
+              </div>
+            ) : (
+              <SelectValue placeholder="In welcher Session wurde dieser NPC getroffen?" />
+            )}
           </SelectTrigger>
           <SelectContent className="bg-[#1e1e2f] border border-[#7f5af0]/40 max-h-[300px]">
             <SelectItem value="none">Keine Angabe</SelectItem>
@@ -357,8 +372,19 @@ export default function NpcForm({ heroId, existingNpc, onSubmit }: NpcFormProps)
       
       {/* Buttons */}
       <div className="flex justify-end gap-2 pt-2">
-        <Button type="submit" className="bg-[#7f5af0] hover:bg-[#7f5af0]/90">
-          {existingNpc ? "Aktualisieren" : "Erstellen"}
+        <Button 
+          type="submit" 
+          className="bg-[#7f5af0] hover:bg-[#7f5af0]/90"
+          disabled={isSubmitting || isLoadingSessions}
+        >
+          {isSubmitting ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              {existingNpc ? "Wird aktualisiert..." : "Wird erstellt..."}
+            </>
+          ) : (
+            existingNpc ? "Aktualisieren" : "Erstellen"
+          )}
         </Button>
       </div>
     </form>
