@@ -194,7 +194,7 @@ export default function SessionForm({ heroId, existingSession, onSubmit }: Sessi
         <Input
           id="title"
           placeholder="Titel der Session"
-          className="bg-[#1e1e2f] border border-[#7f5af0]/40"
+          className="form-input"
           {...register('title', { required: true })}
         />
         {errors.title && <p className="text-red-500 text-xs mt-1">Titel ist erforderlich</p>}
@@ -208,7 +208,7 @@ export default function SessionForm({ heroId, existingSession, onSubmit }: Sessi
             <Button
               variant="outline"
               className={cn(
-                "w-full justify-start text-left font-normal bg-[#1e1e2f] border border-[#7f5af0]/40",
+                "w-full justify-start text-left font-normal form-input",
                 !date && "text-muted-foreground"
               )}
             >
@@ -216,7 +216,7 @@ export default function SessionForm({ heroId, existingSession, onSubmit }: Sessi
               {date ? format(date, "PPP", { locale: de }) : <span>Datum wählen</span>}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-auto p-0 bg-[#1e1e2f] border border-[#7f5af0]/40">
+          <PopoverContent className="w-auto p-0 bg-card border-border dropdown-content">
             <Calendar
               mode="single"
               selected={date}
@@ -234,7 +234,7 @@ export default function SessionForm({ heroId, existingSession, onSubmit }: Sessi
         <Textarea
           id="content"
           placeholder="Was ist in dieser Session passiert?"
-          className="bg-[#1e1e2f] border border-[#7f5af0]/40"
+          className="form-textarea"
           rows={8}
           {...register('content', { required: true })}
         />
@@ -272,7 +272,7 @@ export default function SessionForm({ heroId, existingSession, onSubmit }: Sessi
         <div className="flex gap-2">
           <Input
             placeholder="Tag hinzufügen (z.B. Bossfight, Plot Twist)"
-            className="flex-grow bg-[#1e1e2f] border border-[#7f5af0]/40"
+            className="flex-grow form-input"
             value={newTag}
             onChange={(e) => setNewTag(e.target.value)}
             onKeyDown={(e) => {
@@ -309,37 +309,37 @@ export default function SessionForm({ heroId, existingSession, onSubmit }: Sessi
         </div>
         
         {npcs.length === 0 ? (
-          <div className="text-sm text-[#f5f5f5]/60 py-2">
+          <div className="text-sm text-muted-foreground py-2">
             Es wurden noch keine NPCs für diesen Helden erstellt. Erstelle NPCs, um sie dieser Session zuzuordnen.
           </div>
         ) : (
-          <div className="space-y-2 max-h-60 overflow-y-auto p-2 border border-[#7f5af0]/30 rounded-lg bg-[#1e1e2f]">
+          <div className="space-y-2 max-h-60 overflow-y-auto p-2 border border-border rounded-lg bg-card">
             {npcs.map((npc) => (
               <div 
                 key={npc.id}
-                className="flex items-center space-x-2 p-2 rounded-lg hover:bg-[#7f5af0]/10 transition-colors"
+                className="flex items-center space-x-2 p-2 rounded-lg hover:bg-muted/30 transition-colors"
               >
                 <Checkbox 
                   id={`npc-${npc.id}`}
                   checked={selectedNpcs.includes(npc.id)}
                   onCheckedChange={() => toggleNpcSelection(npc.id)}
-                  className="border-[#d4af37] data-[state=checked]:bg-[#d4af37] data-[state=checked]:text-[#1e1e2f]"
+                  className="border-secondary data-[state=checked]:bg-secondary data-[state=checked]:text-secondary-foreground"
                 />
                 <label 
                   htmlFor={`npc-${npc.id}`}
                   className="text-sm font-medium leading-none cursor-pointer flex-1"
                 >
-                  {npc.name} {npc.firstSessionId && npc.firstSessionId !== existingSession?.id && <span className="ml-1 text-xs text-[#f5f5f5]/40">(Anderer Session zugeordnet)</span>}
-                  {npc.firstSessionId && npc.firstSessionId === existingSession?.id && <span className="ml-1 text-xs text-[#d4af37]/70">(Dieser Session zugeordnet)</span>}
+                  {npc.name} {npc.firstSessionId && npc.firstSessionId !== existingSession?.id && <span className="ml-1 text-xs text-muted-foreground">(Anderer Session zugeordnet)</span>}
+                  {npc.firstSessionId && npc.firstSessionId === existingSession?.id && <span className="ml-1 text-xs text-secondary/70">(Dieser Session zugeordnet)</span>}
                 </label>
-                <span className="text-xs text-[#f5f5f5]/40">{npc.relationship}</span>
+                <span className="text-xs text-muted-foreground">{npc.relationship}</span>
               </div>
             ))}
           </div>
         )}
         
         {selectedNpcs.length > 0 && existingSession && (
-          <div className="text-xs text-[#d4af37]">
+          <div className="text-xs text-secondary">
             <Users className="inline-block w-3.5 h-3.5 mr-1" />
             {selectedNpcs.length} NPC{selectedNpcs.length > 1 ? 's' : ''} ausgewählt. 
             Diese werden mit dieser Session verknüpft.
@@ -347,7 +347,7 @@ export default function SessionForm({ heroId, existingSession, onSubmit }: Sessi
         )}
         
         {selectedNpcs.length > 0 && !existingSession && (
-          <div className="text-xs text-[#d4af37]">
+          <div className="text-xs text-secondary">
             <Users className="inline-block w-3.5 h-3.5 mr-1" />
             {selectedNpcs.length} NPC{selectedNpcs.length > 1 ? 's' : ''} ausgewählt. 
             Diese werden als in dieser Session "erstmalig getroffen" markiert.
@@ -364,10 +364,10 @@ export default function SessionForm({ heroId, existingSession, onSubmit }: Sessi
             }
           }}
         >
-          <DialogContent className="bg-[#1e1e2f] border border-[#7f5af0]/40 text-white max-w-xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="dialog-content bg-card border-border text-foreground max-w-xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle className="text-[#d4af37]">Neuen NPC erstellen</DialogTitle>
-              <p className="text-sm text-[#f5f5f5]/60 mt-1">
+              <DialogTitle className="text-secondary">Neuen NPC erstellen</DialogTitle>
+              <p className="text-sm text-muted-foreground mt-1">
                 Erstelle einen neuen NPC, der in dieser Session vorkommt.
               </p>
             </DialogHeader>
@@ -382,7 +382,7 @@ export default function SessionForm({ heroId, existingSession, onSubmit }: Sessi
       
       {/* Buttons */}
       <div className="flex justify-end gap-2 pt-2">
-        <Button type="submit" className="bg-[#7f5af0] hover:bg-[#7f5af0]/90">
+        <Button type="submit" className="bg-primary hover:bg-primary/90 text-primary-foreground">
           {existingSession ? "Aktualisieren" : "Erstellen"}
         </Button>
       </div>
