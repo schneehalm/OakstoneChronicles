@@ -421,18 +421,14 @@ export class DatabaseStorage implements IStorage {
 
   constructor() {
     // PostgreSQL-Verbindung mit Neon Serverless
-    // Die Verbindung muss als String übergeben werden, nicht als Funktion
-    this.db = drizzle(neon(process.env.DATABASE_URL!));
+    // Die Verbindung muss als String übergeben werden
+    const sql = neon(process.env.DATABASE_URL!);
+    this.db = drizzle(sql);
 
-    // PostgreSQL für die Sitzungsverwaltung verwenden
-    // Das stellt sicher, dass Benutzeranmeldungen nach einem Neustart bestehen bleiben
-    this.sessionStore = new PostgresStore({
-      conObject: {
-        connectionString: process.env.DATABASE_URL!,
-        ssl: true
-      },
-      createTableIfMissing: true,
-      tableName: 'session'
+    // Vorübergehend MemoryStore verwenden, bis Session-Problem gelöst ist
+    // Wir werden später auf PostgreSQL umsteigen
+    this.sessionStore = new MemoryStore({
+      checkPeriod: 86400000 // Prune expired entries every 24h
     });
 
     // Session-Tabellenerstellung nicht erforderlich mit MemoryStore
