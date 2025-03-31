@@ -18,7 +18,7 @@ declare global {
   }
 }
 
-// Konfiguriere die Local Strategy für Passport
+// Konfiguriere die Local Strategy für Passportt
 passport.use(
   new LocalStrategy(async (username, password, done) => {
     try {
