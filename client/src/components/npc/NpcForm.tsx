@@ -205,13 +205,12 @@ export default function NpcForm({ heroId, existingNpc, onSubmit }: NpcFormProps)
         >
           <SelectTrigger 
             id="relationship"
-            className="bg-[#1e1e2f] border border-[#7f5af0]/40 text-[#f5f5f5]"
           >
             <SelectValue placeholder="Beziehung wählen" />
           </SelectTrigger>
-          <SelectContent className="bg-[#1e1e2f] border border-[#7f5af0]/40 text-[#f5f5f5]">
+          <SelectContent>
             {RELATIONSHIP_TYPES.map((type) => (
-              <SelectItem key={type.value} value={type.value} className="text-[#f5f5f5] hover:bg-[#7f5af0]/20 focus:bg-[#7f5af0]/30">
+              <SelectItem key={type.value} value={type.value}>
                 {type.label}
               </SelectItem>
             ))}

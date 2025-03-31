@@ -245,13 +245,12 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
             >
               <SelectTrigger 
                 id="heroSystem"
-                className="w-full bg-[#1e1e2f] border border-[#7f5af0]/40 rounded-lg focus:border-[#7f5af0] focus:ring-1 focus:ring-[#7f5af0]"
               >
                 <SelectValue placeholder="Regelwerk auswählen" />
               </SelectTrigger>
-              <SelectContent className="bg-[#1e1e2f] border border-[#7f5af0]/40 text-[#f5f5f5]">
+              <SelectContent>
                 {GAME_SYSTEMS.map((system) => (
-                  <SelectItem key={system.value} value={system.value} className="text-[#f5f5f5] hover:bg-[#7f5af0]/20 focus:bg-[#7f5af0]/30">
+                  <SelectItem key={system.value} value={system.value}>
                     {system.label}
                   </SelectItem>
                 ))}

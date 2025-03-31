@@ -113,15 +113,15 @@ export default function SessionForm({ heroId, existingSession, onSubmit }: Sessi
             <Button
               variant="outline"
               className={cn(
-                "w-full justify-start text-left font-normal bg-[#1e1e2f] border border-[#7f5af0]/40 text-[#f5f5f5]",
-                !date && "text-[#f5f5f5]/50"
+                "w-full justify-start text-left font-normal",
+                !date && "text-white/50"
               )}
             >
               <CalendarIcon className="mr-2 h-4 w-4 text-[#7f5af0]" />
               {date ? format(date, "PPP", { locale: de }) : <span>Datum wählen</span>}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-auto p-0 bg-[#1e1e2f] border border-[#7f5af0]/40">
+          <PopoverContent className="w-auto p-0">
             <Calendar
               mode="single"
               selected={date}
