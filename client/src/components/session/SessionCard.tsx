@@ -16,9 +16,10 @@ export default function SessionCard({ session, onClick }: SessionCardProps) {
   const formattedDate = format(new Date(session.date), "dd.MM.yyyy", { locale: de });
   
   // Lade NPCs über die API
+  const heroId = typeof session.heroId === 'string' ? parseInt(session.heroId) : session.heroId;
   const { data: npcs = [] } = useQuery({
-    queryKey: ['/api/heroes', session.heroId.toString(), 'npcs'],
-    queryFn: () => fetchNpcsByHeroId(session.heroId.toString())
+    queryKey: ['/api/heroes', heroId, 'npcs'],
+    queryFn: () => fetchNpcsByHeroId(heroId)
   });
   
   // Filter auf NPCs, die in dieser Session zum ersten Mal getroffen wurden
@@ -37,15 +38,15 @@ export default function SessionCard({ session, onClick }: SessionCardProps) {
   
   return (
     <div 
-      className="bg-[#1e1e2f]/90 border border-[#d4af37]/30 rounded-xl overflow-hidden transition-all hover:shadow-[0_0_10px_rgba(212,175,55,0.3)] cursor-pointer bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2752%27%20height%3D%2726%27%20viewBox%3D%270%200%2052%2026%27%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%3E%3Cg%20fill%3D%27none%27%20fill-rule%3D%27evenodd%27%3E%3Cg%20fill%3D%27%23d4af37%27%20fill-opacity%3D%270.1%27%3E%3Cpath%20d%3D%27M10%2010c0-2.21-1.79-4-4-4-3.314%200-6-2.686-6-6h2c0%202.21%201.79%204%204%204%203.314%200%206%202.686%206%206%200%202.21%201.79%204%204%204%203.314%200%206%202.686%206%206%200%202.21%201.79%204%204%204v2c-3.314%200-6-2.686-6-6%200-2.21-1.79-4-4-4-3.314%200-6-2.686-6-6zm25.464-1.95l8.486%208.486-1.414%201.414-8.486-8.486%201.414-1.414z%27%20%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E')]"
+      className="bg-[#1e1e2f]/90 dark:bg-[#1e1e2f]/90 bg-white/90 border border-[#d4af37]/30 rounded-xl overflow-hidden transition-all hover:shadow-[0_0_10px_rgba(212,175,55,0.3)] cursor-pointer bg-pattern-light dark:bg-pattern-dark"
       onClick={onClick}
     >
       <div className="p-4">
         <div className="flex justify-between items-center mb-2">
           <h3 className="font-['Cinzel_Decorative'] text-xl text-[#d4af37]">{session.title}</h3>
-          <span className="text-[#f5f5f5]/60 text-sm">{formattedDate}</span>
+          <span className="text-[#1e1e2f]/60 dark:text-[#f5f5f5]/60 text-sm">{formattedDate}</span>
         </div>
-        <p className="text-sm line-clamp-3 whitespace-pre-line">{session.content}</p>
+        <p className="text-sm line-clamp-3 whitespace-pre-line text-[#1e1e2f] dark:text-[#f5f5f5]">{session.content}</p>
         
         {tagsArray.length > 0 && (
           <div className="mt-3 flex flex-wrap gap-2">
@@ -62,7 +63,7 @@ export default function SessionCard({ session, onClick }: SessionCardProps) {
               </span>
             ))}
             {tagsArray.length > 3 && (
-              <span className="text-xs text-[#f5f5f5]/60">+{tagsArray.length - 3} weitere</span>
+              <span className="text-xs text-[#1e1e2f]/60 dark:text-[#f5f5f5]/60">+{tagsArray.length - 3} weitere</span>
             )}
           </div>
         )}
