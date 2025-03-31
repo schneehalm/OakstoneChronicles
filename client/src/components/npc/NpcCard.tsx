@@ -1,4 +1,8 @@
-import { Npc } from "@/lib/types";
+import { useState, useEffect } from "react";
+import { Npc, Session } from "@/lib/types";
+import { getSessionById } from "@/lib/storage";
+import { format } from "date-fns";
+import { de } from "date-fns/locale";
 
 interface NpcCardProps {
   npc: Npc;
@@ -6,6 +10,18 @@ interface NpcCardProps {
 }
 
 export default function NpcCard({ npc, onClick }: NpcCardProps) {
+  const [firstSession, setFirstSession] = useState<Session | null>(null);
+  
+  // Lade die Session-Informationen, wenn ein firstSessionId existiert
+  useEffect(() => {
+    if (npc.firstSessionId) {
+      const session = getSessionById(npc.firstSessionId);
+      if (session) {
+        setFirstSession(session);
+      }
+    }
+  }, [npc.firstSessionId]);
+  
   // Relationship styling based on the relationship type
   const getRelationshipStyle = (relationship: string) => {
     switch (relationship) {
@@ -67,6 +83,11 @@ export default function NpcCard({ npc, onClick }: NpcCardProps) {
           {npc.location && (
             <div className="mt-1 text-xs text-[#f5f5f5]/70">
               Getroffen in: {npc.location}
+            </div>
+          )}
+          {firstSession && (
+            <div className="mt-1 text-xs text-[#d4af37]/80">
+              Erste Begegnung: {firstSession.title} ({format(new Date(firstSession.date), "dd.MM.yyyy", { locale: de })})
             </div>
           )}
         </div>

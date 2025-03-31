@@ -28,6 +28,7 @@ export interface Npc {
   relationship: string;
   location?: string;
   notes?: string;
+  firstSessionId?: string; // ID der Session, wo der NPC zum ersten Mal getroffen wurde
   createdAt: string;
   updatedAt: string;
 }

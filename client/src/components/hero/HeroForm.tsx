@@ -112,8 +112,18 @@ export default function HeroForm({ existingHero }: HeroFormProps) {
   
   const handleImageUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const url = e.target.value;
-    setPortraitPreview(url);
-    setValue('portrait', url);
+    if (url) {
+      setPortraitPreview(url);
+      setValue('portrait', url);
+    } else {
+      // Wenn URL leer ist, behalten wir das hochgeladene Bild bei, falls vorhanden
+      if (portraitPreview && portraitPreview.startsWith('data:image')) {
+        // Tue nichts, behalte das hochgeladene Bild bei
+      } else {
+        setPortraitPreview(null);
+        setValue('portrait', '');
+      }
+    }
   };
   
   const addTag = () => {

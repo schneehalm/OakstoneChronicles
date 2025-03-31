@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Upload } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -13,9 +13,11 @@ import {
   SelectValue
 } from "@/components/ui/select";
 import { RELATIONSHIP_TYPES } from "@/lib/theme";
-import { Npc } from "@/lib/types";
-import { saveNpc } from "@/lib/storage";
+import { Npc, Session } from "@/lib/types";
+import { saveNpc, getSessionsByHeroId } from "@/lib/storage";
 import { useToast } from "@/hooks/use-toast";
+import { format } from "date-fns";
+import { de } from "date-fns/locale";
 
 interface NpcFormProps {
   heroId: string;
@@ -26,6 +28,17 @@ interface NpcFormProps {
 export default function NpcForm({ heroId, existingNpc, onSubmit }: NpcFormProps) {
   const { toast } = useToast();
   const [imagePreview, setImagePreview] = useState<string | null>(existingNpc?.image || null);
+  const [sessions, setSessions] = useState<Session[]>([]);
+  
+  useEffect(() => {
+    // Lade alle Sessions für diesen Helden
+    const heroSessions = getSessionsByHeroId(heroId);
+    // Sortiere Sessions nach Datum (neueste zuerst)
+    const sortedSessions = [...heroSessions].sort((a, b) => 
+      new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+    setSessions(sortedSessions);
+  }, [heroId]);
   
   const { register, handleSubmit, setValue, formState: { errors } } = useForm<Npc>({
     defaultValues: {
@@ -36,6 +49,7 @@ export default function NpcForm({ heroId, existingNpc, onSubmit }: NpcFormProps)
       relationship: existingNpc?.relationship || 'neutral',
       location: existingNpc?.location || '',
       notes: existingNpc?.notes || '',
+      firstSessionId: existingNpc?.firstSessionId || '',
       createdAt: existingNpc?.createdAt || '',
       updatedAt: existingNpc?.updatedAt || ''
     }
@@ -56,8 +70,18 @@ export default function NpcForm({ heroId, existingNpc, onSubmit }: NpcFormProps)
   
   const handleImageUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const url = e.target.value;
-    setImagePreview(url);
-    setValue('image', url);
+    if (url) {
+      setImagePreview(url);
+      setValue('image', url);
+    } else {
+      // Wenn URL leer ist, behalten wir das hochgeladene Bild bei, falls vorhanden
+      if (imagePreview && imagePreview.startsWith('data:image')) {
+        // Tue nichts, behalte das hochgeladene Bild bei
+      } else {
+        setImagePreview(null);
+        setValue('image', '');
+      }
+    }
   };
   
   const handleFormSubmit = (data: Npc) => {
@@ -174,6 +198,30 @@ export default function NpcForm({ heroId, existingNpc, onSubmit }: NpcFormProps)
           rows={4}
           {...register('notes')}
         />
+      </div>
+      
+      {/* First Session */}
+      <div>
+        <Label htmlFor="firstSessionId">Erste Begegnung</Label>
+        <Select 
+          defaultValue={existingNpc?.firstSessionId || ''} 
+          onValueChange={(value) => setValue('firstSessionId', value)}
+        >
+          <SelectTrigger 
+            id="firstSessionId"
+            className="bg-[#1e1e2f] border border-[#7f5af0]/40"
+          >
+            <SelectValue placeholder="In welcher Session wurde dieser NPC getroffen?" />
+          </SelectTrigger>
+          <SelectContent className="bg-[#1e1e2f] border border-[#7f5af0]/40 max-h-[300px]">
+            <SelectItem value="">Keine Angabe</SelectItem>
+            {sessions.map((session) => (
+              <SelectItem key={session.id} value={session.id}>
+                {session.title} ({format(new Date(session.date), "dd.MM.yyyy", { locale: de })})
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
       
       {/* Buttons */}

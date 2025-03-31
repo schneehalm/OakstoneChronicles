@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
-import { ChevronRight, Edit, MoreHorizontal, ChevronUp, ChevronDown, Trash2, FileText, Download } from "lucide-react";
+import { ChevronRight, Edit, MoreHorizontal, ChevronUp, ChevronDown, Trash2, FileText, Download, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { 
   DropdownMenu,
@@ -252,14 +252,25 @@ export default function HeroDetail({ heroId }: HeroDetailProps) {
                       <FileText className="h-5 w-5 text-[#d4af37]" />
                       <span className="text-sm">{hero.backstoryPdfName}</span>
                     </div>
-                    <a 
-                      href={hero.backstoryPdf} 
-                      download={hero.backstoryPdfName}
-                      className="flex items-center gap-1 text-[#43ffaf] hover:text-[#43ffaf]/80 transition-colors text-sm"
-                    >
-                      <Download className="h-4 w-4" />
-                      <span>PDF herunterladen</span>
-                    </a>
+                    <div className="flex items-center gap-2">
+                      <a 
+                        href={hero.backstoryPdf} 
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1 text-[#7f5af0] hover:text-[#7f5af0]/80 transition-colors text-sm"
+                      >
+                        <ExternalLink className="h-4 w-4" />
+                        <span>Öffnen</span>
+                      </a>
+                      <a 
+                        href={hero.backstoryPdf} 
+                        download={hero.backstoryPdfName}
+                        className="flex items-center gap-1 text-[#43ffaf] hover:text-[#43ffaf]/80 transition-colors text-sm"
+                      >
+                        <Download className="h-4 w-4" />
+                        <span>Herunterladen</span>
+                      </a>
+                    </div>
                   </div>
                 </div>
               )}
