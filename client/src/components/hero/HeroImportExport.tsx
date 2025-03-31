@@ -23,7 +23,14 @@ import {
   AlertTitle,
 } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
-import { exportAllHeroes, exportHeroData, importHeroCollection, importHeroData, ExportedHeroCollection, ExportedHero } from "@/lib/storage";
+import { 
+  exportAllHeroes, 
+  exportHeroData, 
+  importHeroData,
+  importHeroCollection,
+  ExportedHeroCollection, 
+  ExportedHero 
+} from "@/lib/api";
 import { Hero } from "@/lib/types";
 
 interface HeroImportExportProps {
@@ -40,7 +47,7 @@ export default function HeroImportExport({ heroes, onImportSuccess }: HeroImport
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   // Exportiere alle Helden als JSON-Datei
-  const handleExportAll = () => {
+  const handleExportAll = async () => {
     if (heroes.length === 0) {
       toast({
         title: "Keine Helden vorhanden",
@@ -51,7 +58,7 @@ export default function HeroImportExport({ heroes, onImportSuccess }: HeroImport
     }
     
     try {
-      const exportData = exportAllHeroes();
+      const exportData = await exportAllHeroes();
       const jsonString = JSON.stringify(exportData, null, 2);
       const blob = new Blob([jsonString], { type: "application/json" });
       const url = URL.createObjectURL(blob);
@@ -80,7 +87,7 @@ export default function HeroImportExport({ heroes, onImportSuccess }: HeroImport
   };
   
   // Helfer-Funktion zum Auswählen und Importieren einer Datei
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     setImportError(null);
     setImportSuccess(null);
     
@@ -89,20 +96,25 @@ export default function HeroImportExport({ heroes, onImportSuccess }: HeroImport
     
     const reader = new FileReader();
     
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       try {
         const content = e.target?.result as string;
         const parsedData = JSON.parse(content);
 
         // Versuche zuerst, die Daten als Sammlung zu verarbeiten
         if (parsedData.version && Array.isArray(parsedData.heroes)) {
-          const data = parsedData as ExportedHeroCollection;
-          const result = importHeroCollection(data, replaceExisting);
-          
-          if (result.success) {
-            setImportSuccess({ imported: result.imported, total: result.total });
-            onImportSuccess();
-          } else {
+          try {
+            const data = parsedData as ExportedHeroCollection;
+            const result = await importHeroCollection(data, replaceExisting);
+            
+            if (result && result.success) {
+              setImportSuccess({ imported: result.imported, total: result.total });
+              onImportSuccess();
+            } else {
+              setImportError("Beim Importieren der Helden ist ein Fehler aufgetreten.");
+            }
+          } catch (error) {
+            console.error("Fehler beim Importieren der Helden-Sammlung:", error);
             setImportError("Beim Importieren der Helden ist ein Fehler aufgetreten.");
           }
           return;
@@ -112,9 +124,9 @@ export default function HeroImportExport({ heroes, onImportSuccess }: HeroImport
         if (parsedData.hero && Array.isArray(parsedData.npcs) && Array.isArray(parsedData.sessions) && Array.isArray(parsedData.quests)) {
           try {
             const singleHeroData = parsedData as ExportedHero;
-            const success = importHeroData(singleHeroData, replaceExisting);
+            const success = await importHeroData(singleHeroData, replaceExisting);
             
-            if (success) {
+            if (success === true) {
               setImportSuccess({ imported: 1, total: 1 });
               onImportSuccess();
             } else {
