@@ -154,10 +154,14 @@ export const fetchSessionById = async (id: string): Promise<Session> => {
 };
 
 export const createSession = async (heroId: string, session: Omit<Session, 'id' | 'heroId' | 'createdAt' | 'updatedAt'>): Promise<Session> => {
-  // Erstelle eine Kopie der Daten und entferne Timestamps, um Validierungsfehler zu vermeiden
-  const formattedSession = { ...session, heroId };
-  delete (formattedSession as any).createdAt;
-  delete (formattedSession as any).updatedAt;
+  // Erstelle eine Kopie der Daten mit Timestamps
+  const now = new Date().toISOString();
+  const formattedSession = { 
+    ...session, 
+    heroId: parseInt(heroId), // Konvertiere heroId zu einer Zahl
+    createdAt: now,
+    updatedAt: now
+  };
   
   // Konvertiere Tags-Array zu String, falls nötig
   if (Array.isArray(formattedSession.tags)) {
@@ -207,10 +211,14 @@ export const fetchQuestById = async (id: string): Promise<Quest> => {
 };
 
 export const createQuest = async (heroId: string, quest: Omit<Quest, 'id' | 'heroId' | 'createdAt' | 'updatedAt'>): Promise<Quest> => {
-  // Erstelle eine Kopie der Daten und entferne Timestamps, um Validierungsfehler zu vermeiden
-  const formattedQuest = { ...quest, heroId };
-  delete (formattedQuest as any).createdAt;
-  delete (formattedQuest as any).updatedAt;
+  // Erstelle eine Kopie der Daten mit Timestamps
+  const now = new Date().toISOString();
+  const formattedQuest = { 
+    ...quest, 
+    heroId: parseInt(heroId), // Konvertiere heroId zu einer Zahl
+    createdAt: now,
+    updatedAt: now
+  };
   
   const response = await apiRequest('POST', `/api/heroes/${heroId}/quests`, formattedQuest);
   // Ungültig machen der Quest-Liste für diesen Helden
