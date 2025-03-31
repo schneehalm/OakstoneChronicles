@@ -281,14 +281,44 @@
     @apply focus:outline-none;
   }
   
+  /* Spezifische Accordion-Selektoren */
+  [data-radix-accordion-root] {
+    @apply border-0;
+  }
+  
+  [data-radix-accordion-item] {
+    @apply border-0;
+  }
+  
   [data-radix-accordion-trigger] {
-    @apply focus:outline-none;
+    @apply focus:outline-none border-0;
+  }
+  
+  [data-radix-accordion-content] {
+    @apply border-0 outline-none focus:outline-none focus-visible:outline-none;
   }
   
   [data-radix-accordion-content] input,
   [data-radix-accordion-content] textarea,
   [data-radix-accordion-content] select {
-    @apply focus:outline-none focus:ring-0 focus:border-[#d4af37] focus-visible:ring-0 focus-visible:outline-none;
+    @apply focus:outline-none focus:ring-0 focus:border-[#d4af37] focus-visible:ring-0 focus-visible:outline-none border-0;
+  }
+  
+  /* Entferne alle Ränder aus den Shadowcn-UI Accordion-Komponenten */
+  [data-orientation="vertical"],
+  [data-orientation="vertical"] *,
+  [role="region"],
+  [role="region"] * {
+    @apply border-0 !important;
+  }
+
+  /* Spezifische Override für Shadcn's Accordion-Komponenten */
+  div[role="region"] {
+    @apply border-0 !important;
+  }
+  
+  div[role="region"] > div {
+    @apply border-0 !important;
   }
   
   /* Dropdown-Menüs */
