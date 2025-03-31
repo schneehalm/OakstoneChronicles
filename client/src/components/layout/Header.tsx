@@ -37,6 +37,8 @@ export default function Header() {
     checkAuth();
   }, []);
   
+  const [, navigate] = useLocation();
+  
   const handleLogout = async () => {
     try {
       await fetch('/api/logout', { 
@@ -44,6 +46,8 @@ export default function Header() {
         credentials: 'include'
       });
       setUser(null);
+      // Nach dem Abmelden zur Login-Seite umleiten
+      navigate('/auth');
     } catch (error) {
       console.error('Fehler beim Abmelden:', error);
     }
