@@ -151,13 +151,27 @@ export function setupAuth(app: Express) {
   
   // Logout
   app.post('/api/logout', (req: Request, res: Response) => {
-    req.logout((err) => {
+  req.logout((err) => {
+    if (err) {
+      return res.status(500).json({ message: 'Fehler beim Abmelden' });
+    }
+
+    req.session.destroy((err) => {
       if (err) {
-        return res.status(500).json({ message: 'Fehler beim Abmelden' });
+        return res.status(500).json({ message: 'Fehler beim Beenden der Session' });
       }
-      res.json({ message: 'Erfolgreich abgemeldet' });
+
+      res.clearCookie('connect.sid', {
+        path: '/',
+        sameSite: 'none',
+        secure: process.env.NODE_ENV === 'production',
+      });
+
+      return res.json({ message: 'Erfolgreich abgemeldet' });
+      });
     });
   });
+
   
   // Aktuelle Benutzerdaten abrufen
   app.get('/api/user', (req: Request, res: Response) => {
