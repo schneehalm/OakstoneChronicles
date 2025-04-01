@@ -238,7 +238,8 @@ export class MemStorage implements IStorage {
   }
   
   async deleteHero(id: number): Promise<boolean> {
-    return this.heroes.delete(id);
+    const result = await this.db.delete(heroes).where(eq(heroes.id, id));
+    return result.rowCount > 0;
   }
   
   async isHeroOwnedByUser(heroId: number, userId: number): Promise<boolean> {
