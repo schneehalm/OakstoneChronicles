@@ -36,7 +36,8 @@ export const heroes = pgTable("heroes", {
 // Define the npcs table
 export const npcs = pgTable("npcs", {
   id: serial("id").primaryKey(),
-  heroId: integer("hero_id").notNull(),
+  heroId: integer("hero_id").notNull()
+    .references(() => heroes.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
   image: text("image"),
   relationship: text("relationship").notNull(),
@@ -48,22 +49,24 @@ export const npcs = pgTable("npcs", {
   updatedAt: text("updated_at").notNull(),
 });
 
-// Define the sessions table
+// sessions
 export const sessions = pgTable("sessions", {
   id: serial("id").primaryKey(),
-  heroId: integer("hero_id").notNull(),
+  heroId: integer("hero_id").notNull()
+    .references(() => heroes.id, { onDelete: "cascade" }),
   title: text("title").notNull(),
   date: text("date").notNull(),
   content: text("content").notNull(),
-  tags: text("tags"), // Komma-getrennte Tags
+  tags: text("tags"),
   createdAt: text("created_at").notNull(),
   updatedAt: text("updated_at").notNull(),
 });
 
-// Define the quests table
+// quests
 export const quests = pgTable("quests", {
   id: serial("id").primaryKey(),
-  heroId: integer("hero_id").notNull(),
+  heroId: integer("hero_id").notNull()
+    .references(() => heroes.id, { onDelete: "cascade" }),
   title: text("title").notNull(),
   description: text("description").notNull(),
   type: text("type").notNull(),
@@ -72,10 +75,11 @@ export const quests = pgTable("quests", {
   updatedAt: text("updated_at").notNull(),
 });
 
-// Define the activities table
+// activities
 export const activities = pgTable("activities", {
   id: serial("id").primaryKey(),
-  heroId: integer("hero_id").notNull(),
+  heroId: integer("hero_id").notNull()
+    .references(() => heroes.id, { onDelete: "cascade" }),
   type: text("type").notNull(),
   message: text("message").notNull(),
   date: text("date").notNull(),
